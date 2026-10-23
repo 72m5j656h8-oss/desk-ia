@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Desk IA Trading</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: HUD band, three-desk strip, isometric floor (trading row + research row) beside an asset detail panel with tabs. Single committed night-purple look. */
+:root{
+  color-scheme: dark;
+  --bg:#140c2b; --panel:#1d1340; --panel2:#251a52; --line:#3a2c78;
+  --fg:#ece7ff; --mute:#a99cd6; --accent:#8b6cff; --warm:#ff9a3c; --bench:#6fa0ff;
+  --gain:#3ee08f; --loss:#ff5d7a;
+  --f-disp:"Chakra Petch", "Rajdhani", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg);margin:0}
+body{font-family:var(--f-body);font-size:14px;line-height:1.45;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:14px 28px;display:grid;gap:12px}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.up{color:var(--gain)} .dn{color:var(--loss)} .mu{color:var(--mute)}
+
+.hud{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 16px;align-items:end}
+@media (max-width:640px){.hud{grid-template-columns:minmax(0,1fr)}}
+.brand{font-family:var(--f-disp);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:var(--mute);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.brand b{color:var(--fg)}
+.pill{font-size:10px;letter-spacing:.12em;padding:2px 7px;border-radius:99px;border:1px solid var(--line);color:var(--warm)}
+.pill.live{color:var(--gain);display:inline-flex;align-items:center;gap:5px}
+.pill.live::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.off{color:var(--loss)}
+.eqv{font-family:var(--f-disp);font-weight:700;font-size:clamp(32px,7vw,48px);line-height:1;font-variant-numeric:tabular-nums}
+.sub{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12.5px;color:var(--mute);margin-top:6px}
+.sub b{font-weight:600}
+.vs{display:grid;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:230px}
+.vs .r{display:flex;justify-content:space-between;gap:14px;font-size:12.5px}
+.vs .r span{color:var(--mute);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:2px;display:inline-block}
+.vs .verdict{font-size:12px;border-top:1px solid var(--line);padding-top:5px;margin-top:2px;max-width:34ch}
+
+.strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:700px){.strip{grid-template-columns:minmax(0,1fr)}}
+.desk{display:grid;gap:3px;text-align:left;font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;min-width:0}
+.desk:hover{border-color:var(--accent)}
+.desk:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.desk[aria-pressed="true"]{border-color:var(--accent);background:var(--panel2)}
+.desk .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.desk .nm{font-family:var(--f-disp);font-weight:700;letter-spacing:.05em;font-size:15px}
+.desk .ch{font-size:12px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{font-size:10px;padding:1px 6px;border-radius:4px;font-family:var(--f-disp);font-weight:700;letter-spacing:.08em}
+.chip.long{background:rgba(62,224,143,.15);color:var(--gain)}
+.chip.short{background:rgba(255,93,122,.15);color:var(--loss)}
+.chip.flat{background:rgba(169,156,214,.12);color:var(--mute)}
+.chip.champ{background:rgba(139,108,255,.22);color:#cfc2ff}
+.chip.bench{background:rgba(111,160,255,.18);color:#a9c6ff}
+.chip.demo{background:rgba(255,154,60,.18);color:var(--warm)}
+
+.ticker{overflow:hidden;white-space:nowrap;border-block:1px solid var(--line);padding:7px 0;font-size:12.5px;display:flex;gap:10px;align-items:center}
+.ticker .tag{font-family:var(--f-disp);font-weight:700;font-size:11px;letter-spacing:.12em;background:var(--warm);color:#1b1030;padding:2px 7px;border-radius:4px;flex:none}
+#news{overflow:hidden;text-overflow:ellipsis;min-width:0}
+
+.main{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:12px;align-items:start}
+@media (max-width:960px){.main{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;border-radius:14px;overflow:hidden;background:var(--panel);border:1px solid var(--line);height:min(58vh,560px);min-height:320px}
+@media (max-width:600px){.stage{height:340px}}
+canvas#c{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.hint{position:absolute;left:10px;bottom:8px;font-size:11px;color:var(--mute);background:rgba(20,12,43,.75);padding:3px 8px;border-radius:6px;pointer-events:none;max-width:calc(100% - 140px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zoom{position:absolute;right:8px;bottom:8px;display:flex;gap:4px}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;background:rgba(20,12,43,.78);font-size:14px}
+.overlay b{display:block;font-family:var(--f-disp);font-size:18px;margin-bottom:4px}
+.btn{font-family:var(--f-disp);font-weight:600;font-size:13px;letter-spacing:.05em;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 11px;cursor:pointer;min-width:34px}
+.btn:hover{border-color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.side{display:grid;gap:12px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.card h3{margin:0;font-family:var(--f-disp);font-weight:700;font-size:18px;letter-spacing:.04em}
+.kick{font-family:var(--f-disp);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.dhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.kv div{background:var(--panel2);border-radius:8px;padding:7px 8px;min-width:0}
+.kv span{display:block;font-size:10.5px;color:var(--mute);letter-spacing:.06em;text-transform:uppercase}
+.kv b{font-family:var(--f-mono);font-weight:500;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.kv small{display:block;font-size:11px;color:var(--mute)}
+canvas.spark{width:100%;height:64px;display:block;margin-top:10px}
+.why{margin-top:10px;font-size:13px;background:var(--panel2);border-radius:8px;padding:9px 10px;border-left:3px solid var(--warm)}
+.why small{display:block;color:var(--mute);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+
+.tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.pane{display:grid;gap:5px;max-height:520px;overflow:auto;min-width:0}
+.lrow{display:grid;grid-template-columns:18px minmax(0,1fr) auto auto;gap:8px;align-items:center;font-size:12.5px;padding:6px 8px;border-radius:8px;background:var(--panel2)}
+.lrow .nm{min-width:0;line-height:1.3}
+.lrow .nm small{display:block;color:var(--mute);font-size:11px}
+.lrow .v{font-family:var(--f-mono);text-align:right;font-size:12px}
+.lrow .v small{display:block;color:var(--mute);font-size:10.5px}
+.lrow.ref{background:transparent;border:1px dashed var(--line)}
+.lrow.ok{box-shadow:inset 3px 0 0 var(--gain)}
+.lrow.cur{box-shadow:inset 3px 0 0 var(--accent)}
+.note{color:var(--mute);font-size:12.5px;padding:4px 2px;line-height:1.5}
+.note b{color:var(--fg)}
+.ev{padding:8px 10px;border-radius:8px;background:var(--panel2);font-size:12.5px;min-width:0}
+.ev .top{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ev .t{color:var(--mute);font-family:var(--f-mono);font-size:11px;margin-left:auto}
+.ev p{margin:3px 0 0;color:var(--mute)}
+canvas.wf{width:100%;height:150px;display:block;margin-top:6px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mute)}
+.legend span{display:flex;align-items:center;gap:6px}
+.grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+@media (max-width:480px){.grade{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.grade div{background:var(--panel2);border-radius:10px;padding:8px 10px;min-width:0;display:grid;gap:2px}
+.grade span{font-size:10.5px;color:var(--mute);letter-spacing:.06em;text-transform:uppercase}
+.grade b{font-family:var(--f-mono);font-weight:500;font-size:14px}
+.grade small{font-size:11px;color:var(--mute)}
+
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:800px){.how{grid-template-columns:minmax(0,1fr)}}
+.how h4{margin:0 0 4px;font-family:var(--f-disp);font-size:14px;letter-spacing:.04em}
+.how p{margin:0;color:var(--mute);font-size:13px;max-width:60ch}
+footer{font-size:11.5px;color:var(--mute);max-width:80ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hud">
+    <div style="min-width:0">
+      <div class="brand"><b>Desk IA</b><span class="pill">SOLDI FINTI · PREZZI VERI</span><span class="pill live" id="livePill">IN ATTESA</span></div>
+      <div class="eqv num" id="eq">$30.000,00</div>
+      <div class="sub">
+        <span>Dall'avvio <b id="tot" class="num">–</b></span>
+        <span>Giorni <b id="days" class="num">–</b></span>
+        <span>Ultimo giro <b id="last">–</b></span>
+      </div>
+    </div>
+    <div class="vs">
+      <div class="r"><span><i class="dot" style="background:var(--accent)"></i>Desk IA</span><b class="num" id="vsDesk">–</b></div>
+      <div class="r"><span><i class="dot" style="background:var(--bench)"></i>Benchmark</span><b class="num" id="vsBench">–</b></div>
+      <div class="verdict mu" id="verdict">Il benchmark è: compro e tengo Bitcoin e Nasdaq, liquidità per l'euro-dollaro.</div>
+    </div>
+  </header>
+
+  <div class="strip" id="strip"></div>
+
+  <div class="ticker"><span class="tag" id="tagT">DESK</span><span id="news">Collegamento al desk…</span></div>
+
+  <div class="main">
+    <div class="stage">
+      <canvas id="c" aria-label="Sala con tre desk di trading e tre reparti ricerca"></canvas>
+      <div class="hint">Davanti le sale trading, dietro i reparti ricerca · tocca per aprire</div>
+      <div class="zoom"><button class="btn" id="zin" aria-label="Avvicina">+</button><button class="btn" id="zout" aria-label="Allontana">−</button><button class="btn" id="zfit" aria-label="Inquadra tutto">⤢</button></div>
+      <div class="overlay" id="overlay" hidden><div><b id="ovT">Il desk non ha ancora fatto il primo giro</b><span id="ovS">Su GitHub: Actions → Desk IA - giro giornaliero → Run workflow.</span></div></div>
+    </div>
+
+    <div class="side">
+      <section class="card">
+        <div class="dhead">
+          <div style="min-width:0"><div class="kick" id="dkick">Sala</div><h3 id="dname">–</h3><div class="tags" id="dtags"></div></div>
+          <div style="text-align:right"><div class="kick" id="ddate">Prezzo</div><div class="num" id="dprice" style="font-size:16px">–</div><div class="num" id="dchg" style="font-size:12px">–</div></div>
+        </div>
+        <canvas class="spark" id="spark" aria-label="Ultimi 90 giorni di prezzo"></canvas>
+        <div class="kv">
+          <div><span>Desk dal vivo</span><b id="dlive">–</b><small id="dlive2">–</small></div>
+          <div><span>Benchmark</span><b id="dbench">–</b><small id="dbench2">–</small></div>
+          <div><span>Revisione</span><b id="dnext">–</b><small id="dnext2">–</small></div>
+        </div>
+        <div class="why"><small>Perché questa strategia</small><span id="dwhy">–</span></div>
+      </section>
+
+      <section class="card">
+        <div class="tabs" role="tablist">
+          <button class="btn tab" data-t="research" aria-pressed="true">Ricerca</button>
+          <button class="btn tab" data-t="verify" aria-pressed="false">Verifica</button>
+          <button class="btn tab" data-t="trades" aria-pressed="false">Operazioni</button>
+          <button class="btn tab" data-t="log" aria-pressed="false">Decisioni</button>
+        </div>
+        <div class="pane" id="p-research"></div>
+        <div class="pane" id="p-verify" hidden></div>
+        <div class="pane" id="p-trades" hidden></div>
+        <div class="pane" id="p-log" hidden></div>
+      </section>
+    </div>
+  </div>
+
+  <section class="card how">
+    <div><h4>Sale trading</h4><p>Bitcoin, Nasdaq-100 ed Euro/Dollaro, $10.000 finti ciascuna. Tutti i trader di una sala usano la strategia campione. Si decide con la chiusura di ogni giorno, con commissioni, slippage e costo dello short. L'euro-dollaro usa leva 3, come un conto forex prudente.</p></div>
+    <div><h4>Reparto ricerca</h4><p>Ogni sala ha 18 strategie candidate, provate su tutto lo storico e seguite ogni giorno in avanti. Una strategia diventa candidata solo se negli ultimi 2 anni ha battuto il benchmark sia nel rendimento sia nel rapporto rischio/rendimento, con margine.</p></div>
+    <div><h4>Revisioni e retrocessioni</h4><p>Ogni 3 mesi si sceglie il campione, ma solo se il metodo di scelta ha battuto il benchmark fuori campione su tutto lo storico. Altrimenti la sala resta sul benchmark. Se il campione fa peggio del benchmark di oltre 5 punti dopo 20 giorni, viene retrocesso.</p></div>
+  </section>
+
+  <footer>Test con soldi finti: nessun ordine reale viene inviato. Si opera alla chiusura giornaliera, un'ipotesi leggermente ottimistica. Fonti dei prezzi: Coinbase, Yahoo Finance, Stooq, BCE. Il backtest mostra cosa sarebbe successo con queste regole, non garantisce il futuro. Non è consulenza finanziaria.</footer>
+</div>
+
+<script>
+(()=>{
+'use strict';
+const KEYS=['BTC','NDX','EURUSD'];
+const $=id=>document.getElementById(id);
+const fmt=(n,d=2)=>Number(n).toLocaleString('it-IT',{minimumFractionDigits:d,maximumFractionDigits:d});
+const usd=n=>(n<0?'-':'')+'$'+fmt(Math.abs(n));
+const pct=r=>r==null?'–':(r>=0?'+':'')+fmt(r*100,2)+'%';
+const cls=n=>n>=0?'up':'dn';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pdec=p=>p>=1000?2:p>=10?2:4;
+const price=(p,k)=>k==='EURUSD'?fmt(p,4):'$'+fmt(p,pdec(p));
+const dIt=d=>new Date(d+'T12:00:00Z').toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'});
+const dSh=d=>new Date(d+'T12:00:00Z').toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'});
+const ago=iso=>{const m=Math.round((Date.now()-Date.parse(iso))/60000);return m<1?'adesso':m<60?m+' min fa':m<1440?Math.floor(m/60)+' h fa':Math.floor(m/1440)+' g fa'};
+const posChip=p=>p>0?'<span class="chip long">LONG</span>':p<0?'<span class="chip short">SHORT</span>':'<span class="chip flat">FLAT</span>';
+const champChip=a=>a.champion.id==='bench'?(a.champion.kind==='retrocessione'?'<span class="chip demo">RETROCESSO · BENCHMARK</span>':'<span class="chip bench">BENCHMARK</span>'):'<span class="chip champ">STRATEGIA CAMPIONE</span>';
+
+let V=null, sel=0, tab='research';
+const A=()=>V&&V.assets[KEYS[sel]];
+
+/* ---------- strip ---------- */
+const strip=$('strip');
+strip.innerHTML=KEYS.map((k,i)=>`<button class="desk" data-i="${i}" aria-pressed="${i===0}"><span class="top"><span class="nm" data-f="nm">${k}</span><span class="num" data-f="pnl">–</span></span><span class="ch" data-f="ch">–</span></button>`).join('');
+strip.addEventListener('click',e=>{const b=e.target.closest('.desk');if(b)select(+b.dataset.i)});
+function select(i){sel=i;[...strip.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i));renderDetail();renderTab()}
+function renderStrip(){
+  [...strip.children].forEach((b,i)=>{const a=V.assets[KEYS[i]];if(!a)return;
+    b.querySelector('[data-f=nm]').textContent=a.short;
+    const p=b.querySelector('[data-f=pnl]');p.innerHTML=`<span class="${cls(a.live.ret)}">${pct(a.live.ret)}</span> <span class="mu" style="font-size:11px">vs ${pct(a.live.bench)}</span>`;
+    b.querySelector('[data-f=ch]').innerHTML=`${a.position>0?'LONG':a.position<0?'SHORT':'FLAT'} · ${esc(a.champion.id==='bench'?a.benchName:a.champion.name)}`;});
+}
+
+/* ---------- HUD ---------- */
+function renderHud(){
+  const c=V.total.curve,cap=V.total.capital,last=c.length?c[c.length-1]:[null,cap,cap];
+  const de=last[1]/cap-1,db=last[2]/cap-1;
+  $('eq').textContent=usd(last[1]);const t=$('tot');t.textContent=`${usd(last[1]-cap).replace('$','$')} (${pct(de)})`;t.className='num '+cls(de);
+  $('days').textContent=Math.max(0,c.length-1);$('last').textContent=ago(V.lastRun);
+  const a=$('vsDesk');a.textContent=pct(de);a.className='num '+cls(de);const b=$('vsBench');b.textContent=pct(db);b.className='num '+cls(db);
+  const diff=de-db,dd=c.length-1;
+  $('verdict').innerHTML=dd<60?`Primi ${dd} giorni: troppo presto per giudicare. Differenza <b class="num ${cls(diff)}">${pct(diff)}</b>.`:`Il desk ${diff>=0?'sta battendo':'sta facendo peggio del'} benchmark: <b class="num ${cls(diff)}">${pct(diff)}</b>.`;
+  const pill=$('livePill'),stale=Date.now()-Date.parse(V.lastRun)>30*3600e3;pill.textContent=stale?'FERMO DA '+ago(V.lastRun).replace(' fa','').toUpperCase():'IN FUNZIONE';pill.className='pill live'+(stale?' off':'');
+}
+function renderTicker(){
+  const ev=[];KEYS.forEach(k=>{const a=V.assets[k];if(!a)return;(a.log||[]).forEach(l=>ev.push({d:l.d,tag:l.kind==='retrocessione'?'RETROCESSIONE':l.kind==='avvio'?'AVVIO':'REVISIONE',txt:`${a.short}: ${l.why}`}));(a.trades||[]).forEach(t=>ev.push({d:t.d,tag:t.to>0?'LONG':t.to<0?'SHORT':'FLAT',txt:`${a.short} a ${price(t.price,k)} · ${t.why}`}))});
+  ev.sort((x,y)=>x.d<y.d?1:-1);const e=ev[0];if(!e)return;$('tagT').textContent=e.tag;$('news').textContent=`${dSh(e.d)} · ${e.txt}`;
+}
+
+/* ---------- detail ---------- */
+function renderDetail(){
+  const a=A();if(!a)return;const k=KEYS[sel];
+  $('dkick').textContent=`Sala ${a.short}${a.lev>1?' · leva '+a.lev:''}`;$('dname').textContent=a.champion.id==='bench'?a.benchName:a.champion.name;
+  $('dtags').innerHTML=champChip(a)+' '+posChip(a.position);
+  $('ddate').textContent='Chiusura '+dSh(a.last.d);$('dprice').textContent=price(a.last.c,k);const ch=$('dchg');ch.textContent=pct(a.last.chg)+' nel giorno';ch.className='num '+cls(a.last.chg);
+  const l=$('dlive');l.textContent=pct(a.live.ret);l.className=cls(a.live.ret);$('dlive2').textContent=`${usd(a.live.equity)} · ${a.live.days} giorni`;
+  const b=$('dbench');b.textContent=pct(a.live.bench);b.className=cls(a.live.bench);$('dbench2').textContent=a.benchKind==='cash'?'liquidità':'compro e tengo';
+  $('dnext').textContent=dSh(a.nextReview);$('dnext2').textContent=`campione dal ${dSh(a.champion.since)}`;
+  $('dwhy').textContent=a.champion.why;
+  const sc=$('spark'),r=sc.getBoundingClientRect(),dp=Math.min(2,devicePixelRatio||1);sc.width=r.width*dp;sc.height=r.height*dp;
+  const g=sc.getContext('2d');g.setTransform(dp,0,0,dp,0,0);const h=a.prices.map(x=>x[1]),w=r.width,hh=r.height;if(h.length<2)return;
+  let mn=Math.min(...h),mx=Math.max(...h);if(mx===mn)mx=mn*1.0001;const Y=v=>4+(hh-8)*(1-(v-mn)/(mx-mn));
+  g.beginPath();h.forEach((v,i)=>{const x=w*i/(h.length-1);i?g.lineTo(x,Y(v)):g.moveTo(x,Y(v))});
+  const up=h[h.length-1]>=h[0],col=up?'#3ee08f':'#ff5d7a';g.strokeStyle=col;g.lineWidth=1.6;g.stroke();g.lineTo(w,hh);g.lineTo(0,hh);g.closePath();g.fillStyle=up?'rgba(62,224,143,.1)':'rgba(255,93,122,.1)';g.fill();
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));['research','verify','trades','log'].forEach(id=>$('p-'+id).hidden=id!==tab);renderTab()});
+function renderTab(){
+  const a=A();if(!a)return;const k=KEYS[sel],R=a.research;
+  if(tab==='research'){
+    const bench=R.bench||{ret:0,sharpe:0};
+    const rows=R.board.slice(0,10).map((x,i)=>`<div class="lrow ${x.id===a.champion.id?'cur':x.ok?'ok':''}"><span class="mu num" style="font-size:11px">${i+1}</span><span class="nm">${esc(x.name)}<small>${x.trades} cambi in 2 anni · perdita max -${fmt(x.maxDD*100,1)}%</small></span><span class="v ${cls(x.ret)}">${pct(x.ret)}<small>Sharpe ${fmt(x.sharpe,2)}</small></span><span class="v ${cls(x.fwd)}">${pct(x.fwd)}<small>dal vivo</small></span></div>`).join('');
+    $('p-research').innerHTML=`<div class="note">Le ${R.tested} strategie candidate per ${esc(a.name)}, giudicate sugli <b>ultimi 2 anni</b> (storico dal ${dIt(R.history)}). Colonna destra: come vanno in avanti dall'avvio del desk. Bordo verde = batte il benchmark con margine, viola = campione in uso.</div>`
+      +rows+`<div class="lrow ref"><span>–</span><span class="nm">${esc(a.benchName)}<small>riferimento</small></span><span class="v ${cls(bench.ret)}">${pct(bench.ret)}<small>Sharpe ${fmt(bench.sharpe,2)}</small></span><span class="v ${cls(R.fwdBench)}">${pct(R.fwdBench)}<small>dal vivo</small></span></div>`
+      +`<div class="note">Scelta di oggi del reparto: <b>${esc(R.pickName)}</b>. ${esc(R.pickWhy.charAt(0).toUpperCase()+R.pickWhy.slice(1))}. Diventa campione solo alla revisione del ${dIt(a.nextReview)}, e solo se il metodo di scelta resta valido fuori campione.</div>`;
+  } else if(tab==='verify'){
+    const W=R.wf;if(!W){$('p-verify').innerHTML='<div class="note">Storico ancora insufficiente per la verifica.</div>';return}
+    $('p-verify').innerHTML=`<div class="note">La domanda giusta non è "quale strategia è andata meglio", ma <b>"il modo in cui scegliamo funziona?"</b>. Qui il reparto ricerca è stato rimesso nel passato. Dal ${dIt(W.from)}, ogni 3 mesi ha scelto il campione usando solo i dati fino a quel giorno, e poi si è visto come andava nei 3 mesi successivi.</div>
+      <canvas class="wf" id="wfc" aria-label="Metodo di scelta contro benchmark, fuori campione"></canvas><div class="note" style="padding:0">Scala logaritmica: ×2 = capitale raddoppiato.</div>
+      <div class="legend"><span><i class="dot" style="background:var(--accent)"></i>Metodo di scelta ${pct(W.ret)}</span><span><i class="dot" style="background:var(--bench)"></i>${esc(a.benchName)} ${pct(W.bench.ret)}</span></div>
+      <div class="grade"><div><span>Rendimento annuo</span><b class="${cls(W.cagr??0)}">${pct(W.cagr)}</b><small>Benchmark ${pct(W.bench.cagr)}</small></div><div><span>Sharpe</span><b>${fmt(W.sharpe,2)}</b><small>Benchmark ${fmt(W.bench.sharpe,2)}</small></div><div><span>Perdita massima</span><b>-${fmt(W.maxDD*100,1)}%</b><small>Benchmark -${fmt(W.bench.maxDD*100,1)}%</small></div><div><span>Trimestri vinti</span><b>${W.beaten} / ${W.quarters}</b><small>contro il benchmark</small></div><div><span>Esito</span><b class="${W.valid?'up':'dn'}">${W.valid?'VALIDO':'NON VALIDO'}</b><small>${W.valid?'si può promuovere un campione':'la sala resta sul benchmark'}</small></div></div>
+      <div class="note" style="margin-top:6px">Ultime scelte del metodo:</div>${W.picks.slice().reverse().map(p=>`<div class="lrow"><span class="mu num" style="font-size:11px">·</span><span class="nm">${esc(p.name==='Benchmark'?a.benchName:p.name)}<small>trimestre dal ${dIt(p.d)}</small></span><span class="v ${cls(p.ret)}">${pct(p.ret)}<small>scelta</small></span><span class="v ${cls(p.bench)}">${pct(p.bench)}<small>benchmark</small></span></div>`).join('')}`;
+    const cv=$('wfc'),r=cv.getBoundingClientRect(),dp=Math.min(2,devicePixelRatio||1);cv.width=r.width*dp;cv.height=r.height*dp;
+    const g=cv.getContext('2d');g.setTransform(dp,0,0,dp,0,0);const s=W.curve,w=r.width,h=r.height,pad=40;
+    const all=s.flatMap(x=>[x[1],x[2]]).filter(v=>v>0).map(Math.log);let mn=Math.min(...all),mx=Math.max(...all);const sp=(mx-mn)||0.1;mn-=sp*.05;mx+=sp*.05;
+    const X=i=>pad+(w-pad-4)*i/Math.max(1,s.length-1),Y=v=>6+(h-24)*(1-(Math.log(Math.max(v,1e-6))-mn)/(mx-mn));
+    g.font='10px "IBM Plex Mono",monospace';g.fillStyle='#a99cd6';g.strokeStyle='rgba(160,140,255,.14)';g.lineWidth=1;
+    for(let i=0;i<=3;i++){const v=Math.exp(mn+(mx-mn)*i/3),y=Y(v);g.beginPath();g.moveTo(pad,y);g.lineTo(w-4,y);g.stroke();g.fillText('×'+fmt(v,v>=10?0:2),2,y+3)}
+    g.fillText(s[0][0].slice(0,4),pad,h-4);g.textAlign='right';g.fillText(s[s.length-1][0].slice(0,4),w-4,h-4);g.textAlign='left';
+    [[2,'#6fa0ff'],[1,'#c9bbff']].forEach(([kk,c])=>{g.beginPath();s.forEach((x,i)=>i?g.lineTo(X(i),Y(x[kk])):g.moveTo(X(i),Y(x[kk])));g.strokeStyle=c;g.lineWidth=1.6;g.stroke()});
+  } else if(tab==='trades'){
+    $('p-trades').innerHTML=a.trades.length?a.trades.map(t=>`<div class="ev"><div class="top">${posChip(t.to)}<span class="num">${price(t.price,k)}</span>${t.res!=null?`<span class="num ${cls(t.res)}">${pct(t.res)} chiusa</span>`:''}<span class="t">${dIt(t.d)}</span></div><p>${esc(t.why)}</p></div>`).join(''):'<div class="note">Nessun cambio di posizione ancora.</div>';
+  } else {
+    $('p-log').innerHTML=a.log.map(l=>`<div class="ev"><div class="top"><span class="chip ${l.kind==='retrocessione'?'demo':l.id==='bench'?'bench':'champ'}">${l.kind.toUpperCase()}</span><b>${esc(l.id==='bench'?a.benchName:(V.names&&V.names[l.id])||l.id)}</b><span class="t">${dIt(l.d)}</span></div><p>${esc(l.why)}</p></div>`).join('');
+  }
+}
+
+/* ---------- sala isometrica ---------- */
+const XMAX=14.4,YMIN=-3.4,YMAX=6.2,WH=3.2;
+const PODS=[];
+KEYS.forEach((k,i)=>PODS.push({x:0.7+i*4.65,y:2.6,w:3.6,seats:3,asset:i,kind:'trade'}));
+KEYS.forEach((k,i)=>PODS.push({x:0.7+i*4.65,y:-1.6,w:3.6,seats:2,asset:i,kind:'lab'}));
+const SKIN=['#f2c29b','#d9a07a','#a8714d','#7a4a2c','#e8b48c'];
+const SHIRT=['#5b7cff','#c26bff','#4fc3c9','#f06fa8','#7c8cff','#58d39b','#b48cff'];
+PODS.forEach((p,pi)=>{p.ag=[];for(let s=0;s<p.seats;s++)p.ag.push({skin:SKIN[(pi*3+s)%5],shirt:p.kind==='lab'?'#e9e4ff':s===0?'#ff9a3c':SHIRT[(pi*2+s)%7],ph:Math.random()*6})});
+const cv=$('c'),ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1,zoom=innerWidth<600?1.3:1,panX=0,panY=0,K=10,CX=0,CY=0;
+function resize(){const r=cv.getBoundingClientRect();DPR=Math.min(2,devicePixelRatio||1);W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR}
+new ResizeObserver(resize).observe(cv);resize();
+function camera(){const uMin=-YMAX,uMax=XMAX-YMIN,vMin=YMIN/2-WH,vMax=(XMAX+YMAX)/2;K=Math.min(W/(uMax-uMin),H/(vMax-vMin))*0.97*zoom;CX=W/2-K*(uMin+uMax)/2+panX;CY=H/2-K*(vMin+vMax)/2+panY}
+const P=(x,y,z=0)=>[CX+(x-y)*K,CY+(x+y)*K*0.5-z*K];
+function poly(pts,fill,stroke){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.stroke()}}
+function box(x,y,z,w,d,h,top,left,right){poly([P(x,y+d,z),P(x+w,y+d,z),P(x+w,y+d,z+h),P(x,y+d,z+h)],left);poly([P(x+w,y,z),P(x+w,y+d,z),P(x+w,y+d,z+h),P(x+w,y,z+h)],right);poly([P(x,y,z+h),P(x+w,y,z+h),P(x+w,y+d,z+h),P(x,y+d,z+h)],top)}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+const hits=[];
+function draw(now){
+  camera();ctx.setTransform(DPR,0,0,DPR,0,0);ctx.fillStyle='#1d1340';ctx.fillRect(0,0,W,H);
+  poly([P(0,YMIN,0),P(XMAX,YMIN,0),P(XMAX,YMIN,WH),P(0,YMIN,WH)],'#2a1d5c');
+  poly([P(0,YMIN,0),P(0,YMAX,0),P(0,YMAX,WH),P(0,YMIN,WH)],'#22174c');
+  poly([P(0,YMIN),P(XMAX,YMIN),P(XMAX,YMAX),P(0,YMAX)],'#33246b');
+  poly([P(0,YMIN),P(XMAX,YMIN),P(XMAX,0.9),P(0,0.9)],'#2c1f5e');   // pavimento del reparto ricerca
+  ctx.lineWidth=1;ctx.strokeStyle='rgba(160,140,255,.08)';ctx.beginPath();
+  for(let x=1;x<XMAX;x++){const a=P(x,YMIN),b=P(x,YMAX);ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1])}
+  for(let y=Math.ceil(YMIN);y<YMAX;y++){const a=P(0,y),b=P(XMAX,y);ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1])}
+  ctx.stroke();
+  wallScreen();
+  const sp=PODS[sel];ctx.lineWidth=2;poly([P(sp.x-.25,sp.y-.25),P(sp.x+sp.w+.25,sp.y-.25),P(sp.x+sp.w+.25,sp.y+1.85),P(sp.x-.25,sp.y+1.85)],'rgba(139,108,255,.18)','#8b6cff');
+  const lp=PODS[sel+3];poly([P(lp.x-.25,lp.y-.25),P(lp.x+lp.w+.25,lp.y-.25),P(lp.x+lp.w+.25,lp.y+1.85),P(lp.x-.25,lp.y+1.85)],'rgba(139,108,255,.08)','rgba(139,108,255,.5)');ctx.lineWidth=1;
+  const order=PODS.map((p,i)=>i).sort((a,b)=>(PODS[a].x+PODS[a].y)-(PODS[b].x+PODS[b].y));
+  for(const pi of order)drawPod(PODS[pi],pi,now);
+  hits.length=0;for(const pi of order)label(PODS[pi],pi);
+}
+function drawPod(p,pi,now){
+  const a=V&&V.assets[KEYS[p.asset]];
+  box(p.x,p.y,0,p.w,0.8,0.55,p.kind==='lab'?'#d9d2f5':'#e7defd',p.kind==='lab'?'#a99ad8':'#b9a9ea',p.kind==='lab'?'#8b7bc9':'#9886da');
+  p.ag.forEach((ag,s)=>{
+    const mx=p.x+0.25+s*(p.kind==='lab'?1.7:1.2);let scr='#6d8bff';
+    if(a&&p.kind==='trade')scr=a.position>0?'#3ee08f':a.position<0?'#ff5d7a':'#6d8bff';
+    if(a&&p.kind==='lab')scr=a.research.pick!=='bench'?'#3ee08f':'#ffb46b';
+    const fl=0.75+0.25*Math.sin(now/300+ag.ph*3);
+    const sw=p.kind==='lab'?1.2:0.75;
+    box(mx,p.y+0.18,0.55,sw,0.07,0.42,'#3b2d78','#2a1f5a','#221a4c');
+    ctx.globalAlpha=fl;poly([P(mx+0.06,p.y+0.25,0.6),P(mx+sw-0.06,p.y+0.25,0.6),P(mx+sw-0.06,p.y+0.25,0.92),P(mx+0.06,p.y+0.25,0.92)],scr);ctx.globalAlpha=1;
+    if(p.kind==='lab'){ctx.strokeStyle='rgba(20,12,43,.7)';ctx.lineWidth=1;ctx.beginPath();for(let k=0;k<6;k++){const [x1,y1]=P(mx+0.15+k*0.17,p.y+0.25,0.64+((k*37+Math.floor(now/900))%5)*0.05);k?ctx.lineTo(x1,y1):ctx.moveTo(x1,y1)}ctx.stroke()}
+  });
+  p.ag.forEach((ag,s)=>{
+    const ax=p.x+0.6+s*(p.kind==='lab'?1.7:1.2)+(p.kind==='lab'?0.25:0),ay=p.y+1.3,bob=Math.sin(now/600+ag.ph)*0.03;
+    box(ax-0.28,ay-0.05,0,0.56,0.5,0.32,'#4a3a8a','#3a2d72','#30255f');
+    const [bx,by]=P(ax,ay+0.2,0.62+bob);ctx.fillStyle=ag.shirt;ctx.beginPath();ctx.ellipse(bx,by,K*0.24,K*0.3,0,0,Math.PI*2);ctx.fill();
+    const [hx,hy]=P(ax,ay+0.2,1.08+bob);ctx.fillStyle=ag.skin;ctx.beginPath();ctx.arc(hx,hy,K*0.17,0,Math.PI*2);ctx.fill();
+    const busy=p.kind==='lab'?Math.sin(now/1300+ag.ph*5)>0.6:Math.sin(now/2100+ag.ph*7)>0.93;
+    if(busy){const bw=K*0.75,bh=K*0.42,x0=hx+K*0.1,y0=hy-K*0.8;ctx.fillStyle='#fff';rr(x0,y0,bw,bh,bh/2);ctx.fill();ctx.fillStyle='#5a48a8';for(let k=0;k<3;k++){ctx.globalAlpha=Math.floor(now/250)%3>=k?1:.35;ctx.beginPath();ctx.arc(x0+bw*(0.28+k*0.22),y0+bh/2,K*0.055,0,7);ctx.fill()}ctx.globalAlpha=1}
+  });
+}
+function label(p,pi){
+  const a=V&&V.assets[KEYS[p.asset]];
+  const [sx,sy]=P(p.x+p.w/2,p.y+0.4,1.75);let t1,t2='',col='#a99cd6';
+  if(p.kind==='trade'){t1=a?a.short:KEYS[p.asset];if(a){t2=pct(a.live.ret);col=a.live.ret>=0?'#3ee08f':'#ff5d7a'}}
+  else{t1='RICERCA';if(a){t2=a.research.pick!=='bench'?'TROVATA':'IN PROVA';col=a.research.pick!=='bench'?'#3ee08f':'#ff9a3c'}}
+  const fs=Math.max(10,Math.min(14,K*0.62));
+  ctx.font=`700 ${fs}px "Chakra Petch",sans-serif`;const w1=ctx.measureText(t1).width;ctx.font=`500 ${fs*0.8}px "IBM Plex Mono",monospace`;const w2=t2?ctx.measureText(t2).width:0;
+  const w=Math.max(w1,w2)+12,h=t2?fs*2.1:fs*1.4,x=sx-w/2,y=sy-h;
+  const on=p.asset===sel&&p.kind==='trade';
+  ctx.fillStyle=on?'rgba(139,108,255,.95)':'rgba(30,20,70,.9)';rr(x,y,w,h,5);ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.stroke();ctx.lineWidth=1;
+  ctx.textAlign='center';ctx.textBaseline='top';ctx.fillStyle='#fff';ctx.font=`700 ${fs}px "Chakra Petch",sans-serif`;ctx.fillText(t1,sx,y+3);
+  if(t2){ctx.font=`500 ${fs*0.8}px "IBM Plex Mono",monospace`;ctx.fillStyle=on?'#fff':col;ctx.fillText(t2,sx,y+3+fs*1.05)}
+  ctx.textBaseline='alphabetic';hits.push({x,y,w,h,i:p.asset,tab:p.kind==='lab'?'research':null});
+}
+function wallScreen(){
+  const x0=5.2,x1=13.9,z0=1.35,z1=3.05,y=YMIN+0.01,U=40,o=P(x0,y,z1);
+  ctx.save();ctx.setTransform(DPR*K/U,DPR*K*0.5/U,0,DPR*K/U,DPR*o[0],DPR*o[1]);
+  const w=(x1-x0)*U,h=(z1-z0)*U;ctx.fillStyle='#120a2c';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#8b6cff';ctx.lineWidth=2;ctx.strokeRect(0,0,w,h);
+  const c=V?V.total.curve:[],cap=V?V.total.capital:30000,last=c.length?c[c.length-1]:[0,cap,cap];
+  ctx.fillStyle='#a99cd6';ctx.font='600 9px "Chakra Petch",sans-serif';ctx.fillText('PATRIMONIO · DESK IA',10,15);
+  ctx.fillStyle='#fff';ctx.font='700 22px "Chakra Petch",sans-serif';ctx.fillText(usd(last[1]),10,40);
+  ctx.font='500 10px "IBM Plex Mono",monospace';ctx.fillStyle=last[1]>=cap?'#3ee08f':'#ff5d7a';ctx.fillText('DESK  '+pct(last[1]/cap-1),10,55);ctx.fillStyle='#6fa0ff';ctx.fillText('BENCH '+pct(last[2]/cap-1),10,67);
+  const cx=150,cw=w-160,cy=10,ch=h-18;
+  if(c.length>1){const all=c.flatMap(r=>[r[1],r[2]]);let mn=Math.min(...all),mx=Math.max(...all);if(mx-mn<2){mn-=1;mx+=1}
+    [[2,'#6fa0ff'],[1,'#c9bbff']].forEach(([kk,col])=>{ctx.beginPath();c.forEach((r,i)=>{const px=cx+cw*i/(c.length-1),py=cy+ch*(1-(r[kk]-mn)/(mx-mn));i?ctx.lineTo(px,py):ctx.moveTo(px,py)});ctx.strokeStyle=col;ctx.lineWidth=1.6;ctx.stroke()});
+  }else{ctx.fillStyle='#a99cd6';ctx.font='500 9px "IBM Plex Mono",monospace';ctx.fillText('Il grafico si riempie un giorno alla volta',cx,cy+ch/2)}
+  ctx.restore();
+}
+const pts=new Map();
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.offsetX,y:e.offsetY,x0:e.offsetX,y0:e.offsetY,t:performance.now()})});
+cv.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;
+  if(pts.size===1){panX+=e.offsetX-p.x;panY+=e.offsetY-p.y}
+  else if(pts.size===2){const [a,b]=[...pts.values()];const d0=Math.hypot(a.x-b.x,a.y-b.y);p.x=e.offsetX;p.y=e.offsetY;const d1=Math.hypot(a.x-b.x,a.y-b.y);if(d0>0)zoomAt(d1/d0,(a.x+b.x)/2,(a.y+b.y)/2);return}
+  p.x=e.offsetX;p.y=e.offsetY});
+cv.addEventListener('pointerup',e=>{const p=pts.get(e.pointerId);pts.delete(e.pointerId);
+  if(p&&Math.hypot(p.x-p.x0,p.y-p.y0)<6&&performance.now()-p.t<400){for(let h=hits.length-1;h>=0;h--){const r=hits[h];if(e.offsetX>=r.x-6&&e.offsetX<=r.x+r.w+6&&e.offsetY>=r.y-6&&e.offsetY<=r.y+r.h+30){select(r.i);if(r.tab){document.querySelector('.tab[data-t="research"]').click()}break}}}});
+cv.addEventListener('pointercancel',e=>pts.delete(e.pointerId));
+cv.addEventListener('wheel',e=>{e.preventDefault();zoomAt(Math.exp(-e.deltaY*0.0015),e.offsetX,e.offsetY)},{passive:false});
+function zoomAt(f,mx,my){const nz=Math.min(4,Math.max(0.7,zoom*f));f=nz/zoom;zoom=nz;panX=mx-W/2-f*(mx-W/2-panX);panY=my-H/2-f*(my-H/2-panY)}
+$('zin').onclick=()=>zoomAt(1.3,W/2,H/2);$('zout').onclick=()=>zoomAt(1/1.3,W/2,H/2);$('zfit').onclick=()=>{zoom=1;panX=0;panY=0};
+function frame(now){draw(now);requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+
+/* ---------- dati ---------- */
+async function load(){
+  try{
+    const r=await fetch('data/view.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(r.status);
+    V=await r.json();$('overlay').hidden=true;
+    renderHud();renderStrip();renderTicker();renderDetail();renderTab();
+  }catch(e){$('overlay').hidden=false;$('news').textContent='Il desk non ha ancora fatto il primo giro.'}
+}
+load();setInterval(load,10*60*1000);setInterval(()=>{if(V)renderHud()},60000);
+})();
+</script>
+</body>
+</html>
