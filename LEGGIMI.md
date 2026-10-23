@@ -14,7 +14,8 @@ Nessun ordine reale viene mai inviato e non serve nessuna chiave o password.
 
 | File | A cosa serve |
 |---|---|
-| `research.js` | Il reparto ricerca: le 18 strategie, i costi, la verifica fuori campione |
+| `docs/research.js` | Il reparto ricerca: le 18 strategie, i costi, la verifica fuori campione (usato anche dal Laboratorio nell'app) |
+| `order.js` + `.github/workflows/ordine.yml` | La tua sala: il pulsante per dare ordini al desk |
 | `desk.js` | Il giro giornaliero: prezzi, revisioni, retrocessioni, risultati |
 | `.github/workflows/desk.yml` | Dice a GitHub di fare un giro ogni giorno alle 02:23 ora italiana (01:23 d'inverno) |
 | `docs/index.html` | La dashboard con la sala trading e i reparti ricerca |
@@ -32,6 +33,11 @@ Nessun ordine reale viene mai inviato e non serve nessuna chiave o password.
 7. Apri la dashboard su `https://TUO-NOME-UTENTE.github.io/desk-ia/` (la prima pubblicazione può richiedere qualche minuto). Puoi aggiungerla alla schermata Home del telefono come una app.
 
 Da qui in poi gira da solo, anche con telefono e computer spenti.
+
+## La tua sala e il Laboratorio
+
+- **La tua sala**: nell'app tocca **Dai un ordine**. Si apre GitHub: premi **Run workflow**, scegli mercato, LONG, SHORT o FLAT e la quota, poi il pulsante verde **Run workflow**. L'ordine viene eseguito alla prima chiusura successiva, con le stesse commissioni delle altre sale.
+- **Laboratorio**: nell'app scegli mercato, strategia e impostazioni e premi **Prova**. Gira sul tuo dispositivo con i prezzi salvati, gratis e senza limiti. Guarda sempre la "prova del nove": una strategia seria deve funzionare in entrambe le metà del periodo.
 
 ## Se qualcosa non va
 

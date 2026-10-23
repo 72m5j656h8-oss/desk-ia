@@ -11,7 +11,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const R = require('./research.js');
+const R = require('./docs/research.js');
 
 const ROOT = __dirname, DATA = path.join(ROOT, 'docs', 'data'), PRICES = path.join(DATA, 'prices');
 const TODAY = process.env.DESK_TODAY || new Date().toISOString().slice(0, 10);   // si usano solo giorni chiusi (< oggi)
@@ -206,11 +206,43 @@ function viewAsset(L, S) {
   };
 }
 
+/* ---------- la tua sala: ordini manuali ---------- */
+// un giorno "chiude" a quest'ora UTC: l'ordine viene eseguito alla prima chiusura dopo l'ordine
+const CLOSE_H = { BTC: 24, NDX: 20, EURUSD: 21 };
+function meAsset(key, bars, launch, orders) {
+  const L = R.buildLab(key, bars), A = L.A, end = L.dates.length - 1, li = Math.max(0, R.idxOnOrBefore(L.dates, launch));
+  const mine = orders.filter(o => o.asset === key).sort((a, b) => (a.ts < b.ts ? -1 : 1));
+  const done = [];
+  const out = mine.map(o => {
+    const ts = Date.parse(o.ts);
+    let t = -1;
+    for (let k = li; k <= end; k++) if (R.dms(L.dates[k]) + CLOSE_H[key] * 3600e3 > ts) { t = k; break; }
+    const target = o.pos === 'LONG' ? o.quota / 100 : o.pos === 'SHORT' ? -o.quota / 100 : 0;
+    if (t >= 0) done.push({ i: t, target });
+    return { ...o, status: t >= 0 ? 'eseguito' : 'in attesa', d: t >= 0 ? L.dates[t] : null, price: t >= 0 ? L.c[t] : null };
+  });
+  const posAt = t => { let p = 0; for (const x of done) if (x.i <= t) p = x.target; return p; };
+  const rets = R.returns(A, L.dates, L.c, posAt, li + 1, 0);
+  const curve = []; let e = A.capital; curve.push([L.dates[li], r2(e)]);
+  for (let t = li + 1; t <= end; t++) { e *= 1 + rets[t]; curve.push([L.dates[t], r2(e)]); }
+  return { key, short: A.short, pos: posAt(end), equity: r2(e), ret: r4(e / A.capital - 1), curve, orders: out };
+}
+function combine(curvesByKey) {           // somma giorno per giorno, usando l'ultimo valore noto di ogni asset
+  const keys = Object.keys(curvesByKey), days = [...new Set(keys.flatMap(k => curvesByKey[k].map(x => x[0])))].sort();
+  const idx = Object.fromEntries(keys.map(k => [k, new Map(curvesByKey[k].map(x => [x[0], x]))])), last = {}, out = [];
+  for (const d of days) {
+    for (const k of keys) { const x = idx[k].get(d); if (x) last[k] = x; }
+    if (keys.every(k => last[k])) out.push([d, ...[1, 2].map(j => r2(keys.reduce((s, k) => s + (last[k][j] ?? 0), 0)))]);
+  }
+  return out;
+}
+
 /* ---------- giro ---------- */
 (async () => {
   const state = readJson(path.join(DATA, 'desk.json'), { v: 1, runs: 0, assets: {} });
   const view = { v: 1, generatedAt: new Date().toISOString(), assets: {}, sources: {} };
-  const lines = [];
+  const lines = [], meIn = {};
+  const orders = readJson(path.join(DATA, 'orders.json'), []);
   for (const key of Object.keys(R.ASSETS)) {
     let p;
     try { p = await updatePrices(key); }
@@ -218,6 +250,7 @@ function viewAsset(L, S) {
     view.sources[key] = { source: p.source, bars: p.bars.length, from: p.bars[0][0], to: p.bars[p.bars.length - 1][0], warn: p.warn || null };
     const { S, view: v, events } = runAsset(key, p.bars, state.assets[key]);
     state.assets[key] = S; view.assets[key] = v;
+    meIn[key] = { bars: p.bars, launch: S.launch };
     lines.push(`${key}: ${p.source}, ${p.bars.length} giorni (+${p.added}) · campione ${v.champion.name} · posizione ${v.position > 0 ? 'LONG' : v.position < 0 ? 'SHORT' : 'FLAT'} · dal vivo ${pct(v.live.ret)} vs ${pct(v.live.bench)}` + (events.length ? ' · ' + events.join(', ') : ''));
   }
   // totale del fondo, giorno per giorno (gli asset hanno calendari diversi: si usa l'ultimo valore noto)
@@ -229,6 +262,12 @@ function viewAsset(L, S) {
   }
   if (!Object.keys(view.assets).length) throw new Error('nessun asset disponibile: ' + lines.join(' | '));
   view.total = { capital: Object.values(view.assets).reduce((s, a) => s + a.capital, 0), curve: total };
+  const me = Object.fromEntries(Object.entries(meIn).map(([k, x]) => [k, meAsset(k, x.bars, x.launch, Array.isArray(orders) ? orders : [])]));
+  view.me = {
+    assets: Object.fromEntries(Object.entries(me).map(([k, m]) => [k, { short: m.short, pos: m.pos, equity: m.equity, ret: m.ret }])),
+    curve: combine(Object.fromEntries(Object.entries(me).map(([k, m]) => [k, m.curve]))).map(x => [x[0], x[1]]),
+    orders: Object.values(me).flatMap(m => m.orders).sort((a, b) => (a.ts < b.ts ? 1 : -1)).slice(0, 40),
+  };
   state.runs++; state.lastRun = new Date().toISOString(); view.runs = state.runs; view.lastRun = state.lastRun;
   view.rules = R.RULES;
   view.names = Object.fromEntries([...R.VARIANTS, R.BENCH].map(v => [v.id, v.name]));

@@ -130,6 +130,20 @@ canvas.wf{width:100%;height:150px;display:block;margin-top:6px}
 @media (max-width:800px){.how{grid-template-columns:minmax(0,1fr)}}
 .how h4{margin:0 0 4px;font-family:var(--f-disp);font-size:14px;letter-spacing:.04em}
 .how p{margin:0;color:var(--mute);font-size:13px;max-width:60ch}
+.btn.go{background:var(--warm);border-color:var(--warm);color:#1b1030;text-decoration:none;display:inline-flex;align-items:center}
+.btn.go:hover{filter:brightness(1.08)}
+.meGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+@media (max-width:700px){.meGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.meGrid div{background:var(--panel2);border-radius:10px;padding:8px 10px;min-width:0;display:grid;gap:3px}
+.meGrid span{font-size:10.5px;color:var(--mute);letter-spacing:.06em;text-transform:uppercase}
+.meGrid b{font-family:var(--f-mono);font-weight:500;font-size:15px}
+.meGrid .chip{justify-self:start}
+.labForm{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:flex-end;margin-top:10px}
+.labForm label{display:grid;gap:3px;font-size:11px;color:var(--mute);letter-spacing:.04em;min-width:0}
+.labForm select,.labForm input{font:inherit;font-size:14px;color:var(--fg);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 8px;min-width:0;max-width:100%}
+.labForm input{width:96px}
+.labForm select:focus-visible,.labForm input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.btVerdict{margin:10px 0 0;font-size:14px;max-width:75ch;border-left:3px solid var(--accent);padding-left:10px}
 footer{font-size:11.5px;color:var(--mute);max-width:80ch}
 </style>
 </head>
@@ -147,6 +161,7 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
     </div>
     <div class="vs">
       <div class="r"><span><i class="dot" style="background:var(--accent)"></i>Desk IA</span><b class="num" id="vsDesk">–</b></div>
+      <div class="r"><span><i class="dot" style="background:var(--warm)"></i>Tua sala</span><b class="num" id="vsMe">–</b></div>
       <div class="r"><span><i class="dot" style="background:var(--bench)"></i>Benchmark</span><b class="num" id="vsBench">–</b></div>
       <div class="verdict mu" id="verdict">Il benchmark è: compro e tengo Bitcoin e Nasdaq, liquidità per l'euro-dollaro.</div>
     </div>
@@ -194,6 +209,37 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
     </div>
   </div>
 
+  <section class="card" id="meCard">
+    <div class="dhead" style="flex-wrap:wrap;align-items:center"><div><div class="kick">$10.000 finti per mercato · comandi tu</div><h3>La tua sala</h3></div><a class="btn go" id="orderBtn" href="#" target="_blank" rel="noopener">Dai un ordine ↗</a></div>
+    <div class="meGrid" id="meGrid"></div>
+    <div class="note" id="meNote">Gli ordini vengono eseguiti alla <b>prima chiusura dopo l'ordine</b> (Bitcoin a mezzanotte UTC, Nasdaq alle 22 italiane, euro-dollaro alle 23), con le stesse commissioni delle altre sale. Su GitHub scegli mercato, LONG, SHORT o FLAT e la quota, poi premi il pulsante verde <b>Run workflow</b>. In un minuto l'ordine compare qui.</div>
+    <div class="kick" style="margin-top:10px">I tuoi ordini</div>
+    <div class="pane" id="meOrders" style="max-height:320px;margin-top:6px"></div>
+  </section>
+
+  <section class="card" id="labCard">
+    <div class="dhead" style="flex-wrap:wrap;align-items:baseline"><div><div class="kick">14 anni di prezzi veri · gira sul tuo dispositivo</div><h3>Laboratorio</h3></div><span class="kick" id="labTries">–</span></div>
+    <div class="labForm">
+      <label>Mercato<select id="lAsset"><option value="BTC">Bitcoin</option><option value="NDX">Nasdaq-100</option><option value="EURUSD">Euro/Dollaro (leva 3)</option></select></label>
+      <label>Strategia<select id="lFam"><option value="ma">Incrocio di medie</option><option value="don">Rottura dei massimi/minimi</option><option value="mr">Contro gli eccessi</option><option value="t200">Filtro media 200</option></select></label>
+      <label id="lP1w"><span id="lP1n">Media veloce (giorni)</span><input id="lP1" type="number" inputmode="numeric"></label>
+      <label id="lP2w"><span id="lP2n">Media lenta (giorni)</span><input id="lP2" type="number" inputmode="decimal"></label>
+      <label id="lLsw">Direzione<select id="lLs"><option value="1">Long e short</option><option value="0">Solo long</option></select></label>
+      <label>Dal<select id="lFrom"></select></label>
+      <button class="btn go" id="lRun">Prova</button>
+    </div>
+    <div id="lErr" class="note" hidden></div>
+    <div id="lOut" hidden>
+      <p class="btVerdict" id="lVerdict"></p>
+      <canvas class="wf" id="lChart" style="height:190px" aria-label="Strategia contro benchmark"></canvas>
+      <div class="legend"><span><i class="dot" style="background:var(--accent)"></i><span id="lLegS">Strategia</span></span><span><i class="dot" style="background:var(--bench)"></i><span id="lLegB">Benchmark</span></span><span class="mu">scala logaritmica</span></div>
+      <div class="grade" id="lGrade"></div>
+      <div class="kick" style="margin-top:12px">Prova del nove: le due metà del periodo</div>
+      <div class="grade" id="lHalves"></div>
+      <div class="note" id="lHalfNote"></div>
+    </div>
+  </section>
+
   <section class="card how">
     <div><h4>Sale trading</h4><p>Bitcoin, Nasdaq-100 ed Euro/Dollaro, $10.000 finti ciascuna. Tutti i trader di una sala usano la strategia campione. Si decide con la chiusura di ogni giorno, con commissioni, slippage e costo dello short. L'euro-dollaro usa leva 3, come un conto forex prudente.</p></div>
     <div><h4>Reparto ricerca</h4><p>Ogni sala ha 18 strategie candidate, provate su tutto lo storico e seguite ogni giorno in avanti. Una strategia diventa candidata solo se negli ultimi 2 anni ha battuto il benchmark sia nel rendimento sia nel rapporto rischio/rendimento, con margine.</p></div>
@@ -203,6 +249,7 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
   <footer>Test con soldi finti: nessun ordine reale viene inviato. Si opera alla chiusura giornaliera, un'ipotesi leggermente ottimistica. Fonti dei prezzi: Coinbase, Yahoo Finance, Stooq, BCE. Il backtest mostra cosa sarebbe successo con queste regole, non garantisce il futuro. Non è consulenza finanziaria.</footer>
 </div>
 
+<script src="research.js"></script>
 <script>
 (()=>{
 'use strict';
@@ -302,10 +349,11 @@ function renderTab(){
 }
 
 /* ---------- sala isometrica ---------- */
-const XMAX=14.4,YMIN=-3.4,YMAX=6.2,WH=3.2;
+const XMAX=14.4,YMIN=-3.4,YMAX=8.2,WH=3.2;
 const PODS=[];
 KEYS.forEach((k,i)=>PODS.push({x:0.7+i*4.65,y:2.6,w:3.6,seats:3,asset:i,kind:'trade'}));
 KEYS.forEach((k,i)=>PODS.push({x:0.7+i*4.65,y:-1.6,w:3.6,seats:2,asset:i,kind:'lab'}));
+PODS.push({x:5.35,y:5.8,w:3.6,seats:3,asset:-1,kind:'me'});
 const SKIN=['#f2c29b','#d9a07a','#a8714d','#7a4a2c','#e8b48c'];
 const SHIRT=['#5b7cff','#c26bff','#4fc3c9','#f06fa8','#7c8cff','#58d39b','#b48cff'];
 PODS.forEach((p,pi)=>{p.ag=[];for(let s=0;s<p.seats;s++)p.ag.push({skin:SKIN[(pi*3+s)%5],shirt:p.kind==='lab'?'#e9e4ff':s===0?'#ff9a3c':SHIRT[(pi*2+s)%7],ph:Math.random()*6})});
@@ -343,6 +391,7 @@ function drawPod(p,pi,now){
     const mx=p.x+0.25+s*(p.kind==='lab'?1.7:1.2);let scr='#6d8bff';
     if(a&&p.kind==='trade')scr=a.position>0?'#3ee08f':a.position<0?'#ff5d7a':'#6d8bff';
     if(a&&p.kind==='lab')scr=a.research.pick!=='bench'?'#3ee08f':'#ffb46b';
+    if(p.kind==='me'&&V&&V.me){const m=V.me.assets[KEYS[s]];scr=!m?'#6d8bff':m.pos>0?'#3ee08f':m.pos<0?'#ff5d7a':'#6d8bff'}
     const fl=0.75+0.25*Math.sin(now/300+ag.ph*3);
     const sw=p.kind==='lab'?1.2:0.75;
     box(mx,p.y+0.18,0.55,sw,0.07,0.42,'#3b2d78','#2a1f5a','#221a4c');
@@ -362,6 +411,7 @@ function label(p,pi){
   const a=V&&V.assets[KEYS[p.asset]];
   const [sx,sy]=P(p.x+p.w/2,p.y+0.4,1.75);let t1,t2='',col='#a99cd6';
   if(p.kind==='trade'){t1=a?a.short:KEYS[p.asset];if(a){t2=pct(a.live.ret);col=a.live.ret>=0?'#3ee08f':'#ff5d7a'}}
+  else if(p.kind==='me'){t1='TUA SALA';if(V&&V.me&&V.me.curve.length){const c=V.me.curve,rt=c[c.length-1][1]/(V.total.capital||30000)-1;t2=pct(rt);col=rt>=0?'#3ee08f':'#ff5d7a'}else{t2='IN ATTESA';col='#ff9a3c'}}
   else{t1='RICERCA';if(a){t2=a.research.pick!=='bench'?'TROVATA':'IN PROVA';col=a.research.pick!=='bench'?'#3ee08f':'#ff9a3c'}}
   const fs=Math.max(10,Math.min(14,K*0.62));
   ctx.font=`700 ${fs}px "Chakra Petch",sans-serif`;const w1=ctx.measureText(t1).width;ctx.font=`500 ${fs*0.8}px "IBM Plex Mono",monospace`;const w2=t2?ctx.measureText(t2).width:0;
@@ -370,7 +420,7 @@ function label(p,pi){
   ctx.fillStyle=on?'rgba(139,108,255,.95)':'rgba(30,20,70,.9)';rr(x,y,w,h,5);ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.stroke();ctx.lineWidth=1;
   ctx.textAlign='center';ctx.textBaseline='top';ctx.fillStyle='#fff';ctx.font=`700 ${fs}px "Chakra Petch",sans-serif`;ctx.fillText(t1,sx,y+3);
   if(t2){ctx.font=`500 ${fs*0.8}px "IBM Plex Mono",monospace`;ctx.fillStyle=on?'#fff':col;ctx.fillText(t2,sx,y+3+fs*1.05)}
-  ctx.textBaseline='alphabetic';hits.push({x,y,w,h,i:p.asset,tab:p.kind==='lab'?'research':null});
+  ctx.textBaseline='alphabetic';hits.push({x,y,w,h,i:p.asset,tab:p.kind==='lab'?'research':null,me:p.kind==='me'});
 }
 function wallScreen(){
   const x0=5.2,x1=13.9,z0=1.35,z1=3.05,y=YMIN+0.01,U=40,o=P(x0,y,z1);
@@ -393,7 +443,7 @@ cv.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;
   else if(pts.size===2){const [a,b]=[...pts.values()];const d0=Math.hypot(a.x-b.x,a.y-b.y);p.x=e.offsetX;p.y=e.offsetY;const d1=Math.hypot(a.x-b.x,a.y-b.y);if(d0>0)zoomAt(d1/d0,(a.x+b.x)/2,(a.y+b.y)/2);return}
   p.x=e.offsetX;p.y=e.offsetY});
 cv.addEventListener('pointerup',e=>{const p=pts.get(e.pointerId);pts.delete(e.pointerId);
-  if(p&&Math.hypot(p.x-p.x0,p.y-p.y0)<6&&performance.now()-p.t<400){for(let h=hits.length-1;h>=0;h--){const r=hits[h];if(e.offsetX>=r.x-6&&e.offsetX<=r.x+r.w+6&&e.offsetY>=r.y-6&&e.offsetY<=r.y+r.h+30){select(r.i);if(r.tab){document.querySelector('.tab[data-t="research"]').click()}break}}}});
+  if(p&&Math.hypot(p.x-p.x0,p.y-p.y0)<6&&performance.now()-p.t<400){for(let h=hits.length-1;h>=0;h--){const r=hits[h];if(e.offsetX>=r.x-6&&e.offsetX<=r.x+r.w+6&&e.offsetY>=r.y-6&&e.offsetY<=r.y+r.h+30){if(r.me){$('meCard').scrollIntoView({behavior:'smooth'});break}select(r.i);if(r.tab){document.querySelector('.tab[data-t="research"]').click()}break}}}});
 cv.addEventListener('pointercancel',e=>pts.delete(e.pointerId));
 cv.addEventListener('wheel',e=>{e.preventDefault();zoomAt(Math.exp(-e.deltaY*0.0015),e.offsetX,e.offsetY)},{passive:false});
 function zoomAt(f,mx,my){const nz=Math.min(4,Math.max(0.7,zoom*f));f=nz/zoom;zoom=nz;panX=mx-W/2-f*(mx-W/2-panX);panY=my-H/2-f*(my-H/2-panY)}
@@ -401,12 +451,82 @@ $('zin').onclick=()=>zoomAt(1.3,W/2,H/2);$('zout').onclick=()=>zoomAt(1/1.3,W/2,
 function frame(now){draw(now);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
 
+/* ---------- la tua sala ---------- */
+(function(){const owner=location.hostname.split('.')[0],repo=location.pathname.split('/').filter(Boolean)[0]||'desk-ia';
+  $('orderBtn').href=location.hostname.endsWith('github.io')?`https://github.com/${owner}/${repo}/actions/workflows/ordine.yml`:'https://github.com';})();
+function renderMe(){
+  const M=V.me;if(!M){$('meGrid').innerHTML='<div class="note">La tua sala si attiva al prossimo giro del desk.</div>';return}
+  const cap=V.total.capital||30000,c=M.curve,eq=c.length?c[c.length-1][1]:cap,r=eq/cap-1;
+  const vm=$('vsMe');vm.textContent=pct(r);vm.className='num '+cls(r);
+  const cell=(k)=>{const m=M.assets[k];if(!m)return'';const a=V.assets[k];return `<div><span>${esc(m.short)}</span><b class="${cls(m.ret)}">${pct(m.ret)}</b>${posChip(m.pos)}${m.pos&&Math.abs(m.pos)<1?` <small class="mu">${Math.round(Math.abs(m.pos)*100)}%</small>`:''}</div>`};
+  $('meGrid').innerHTML=`<div><span>Totale</span><b class="${cls(r)}">${usd(eq)}</b><small class="mu">${pct(r)} · desk ${pct((V.total.curve.length?V.total.curve[V.total.curve.length-1][1]:cap)/cap-1)}</small></div>`+KEYS.map(cell).join('');
+  $('meOrders').innerHTML=M.orders.length?M.orders.map(o=>`<div class="ev"><div class="top">${posChip(o.pos==='LONG'?1:o.pos==='SHORT'?-1:0)}<b>${esc((V.assets[o.asset]||{}).short||o.asset)}</b>${o.pos!=='FLAT'?`<span class="mu">${o.quota}%</span>`:''}<span class="chip ${o.status==='eseguito'?'champ':'demo'}">${o.status==='eseguito'?'ESEGUITO':'IN ATTESA'}</span><span class="t">${new Date(o.ts).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span></div><p>${o.status==='eseguito'?`Eseguito alla chiusura del ${dIt(o.d)} a ${price(o.price,o.asset)}.`:'Verrà eseguito alla prossima chiusura.'}${o.note?' · “'+esc(o.note)+'”':''}</p></div>`).join(''):'<div class="note">Nessun ordine ancora. Tocca <b>Dai un ordine</b> per il primo.</div>';
+}
+
+/* ---------- laboratorio ---------- */
+const RS=window.Research,LAB={cache:{}};
+const FAM={ma:{p1:['Media veloce (giorni)',20,2,150],p2:['Media lenta (giorni)',50,5,300],ls:true},don:{p1:['Giorni del massimo',55,5,250],p2:null,ls:true},mr:{p1:['Giorni della media',20,5,100],p2:['Soglia (deviazioni)',2,0.5,4],ls:false},t200:{p1:null,p2:null,ls:true}};
+(function(){const y=new Date().getUTCFullYear(),sel_=$('lFrom');for(let k=2013;k<=y-1;k++)sel_.insertAdjacentHTML('beforeend',`<option value="${k}">${k}</option>`);sel_.value='2016';})();
+let tries=0,seen=new Set();try{const t=JSON.parse(localStorage.getItem('labTries')||'[]');seen=new Set(t);tries=seen.size}catch(e){}
+function showTries(){$('labTries').textContent=`Combinazioni provate: ${tries}`}
+showTries();
+function famUI(){const f=FAM[$('lFam').value];
+  [['lP1',f.p1],['lP2',f.p2]].forEach(([id,p])=>{$(id+'w').hidden=!p;if(p){$(id+'n').textContent=p[0];$(id).value=p[1];$(id).min=p[2];$(id).max=p[3];$(id).step=id==='lP2'&&$('lFam').value==='mr'?0.1:1}});
+  $('lLsw').hidden=!f.ls;}
+$('lFam').onchange=famUI;famUI();
+async function getBars(k){if(LAB.cache[k])return LAB.cache[k];const r=await fetch('data/prices/'+k+'.json?t='+Math.floor(Date.now()/36e5),{cache:'no-store'});if(!r.ok)throw new Error('prezzi non disponibili');const j=await r.json();return LAB.cache[k]=j.bars}
+function labErr(m){const e=$('lErr');e.hidden=!m;e.textContent=m||''}
+$('lRun').onclick=async()=>{
+  labErr('');const k=$('lAsset').value,fam=$('lFam').value,F=FAM[fam],A=RS.ASSETS[k];
+  const p1=F.p1?+$('lP1').value:null,p2=F.p2?+$('lP2').value:null,ls=F.ls?$('lLs').value==='1':true;
+  if(F.p1&&!(p1>=F.p1[2]&&p1<=F.p1[3]))return labErr(`${F.p1[0]}: scegli un valore tra ${F.p1[2]} e ${F.p1[3]}.`);
+  if(F.p2&&!(p2>=F.p2[2]&&p2<=F.p2[3]))return labErr(`${F.p2[0]}: scegli un valore tra ${F.p2[2]} e ${F.p2[3]}.`);
+  if(fam==='ma'&&p1>=p2)return labErr('La media veloce deve essere più corta della media lenta.');
+  let bars;try{bars=await getBars(k)}catch(e){return labErr('Non riesco a caricare i prezzi: riprova tra poco.')}
+  const v=fam==='ma'?{fam,f:Math.round(p1),s:Math.round(p2),ls}:fam==='don'?{fam,n:Math.round(p1),ls}:fam==='mr'?{fam,w:Math.round(p1),z:p2,ls:true}:{fam:'t200',ls};
+  const name=fam==='ma'?`Medie ${v.f}/${v.s}`:fam==='don'?`Rottura ${v.n} giorni`:fam==='mr'?`Eccessi ${v.w} giorni oltre ${fmt(v.z,1)}σ`:'Filtro media 200';
+  const full=name+(fam!=='mr'?(ls?' long+short':' solo long'):'');
+  const dates=bars.map(b=>b[0]),c=bars.map(b=>b[4]);
+  let fi=dates.findIndex(d=>d>=$('lFrom').value+'-01-01');if(fi<1)fi=1;const end=dates.length-1;
+  if(end-fi<200)return labErr('Periodo troppo corto: scegli un anno di partenza precedente.');
+  const pos=RS.positions(v,c,A.bench),bpos=RS.positions(RS.BENCH,c,A.bench);
+  const rets=RS.returns(A,dates,c,t=>pos[t],fi,pos[fi-1]),brets=RS.returns(A,dates,c,t=>bpos[t],fi,bpos[fi-1]);
+  // la posizione al giorno di partenza viene presa al prezzo di quel giorno, con il suo costo
+  rets[fi]=0;brets[fi]=0;
+  const S=RS.stats(rets,dates,fi-1,end),B=RS.stats(brets,dates,fi-1,end),tr=RS.changes(pos,fi,end);
+  let costs=0;for(let t=fi+1;t<=end;t++)costs+=A.cost*A.lev*Math.abs(pos[t-1]-(t-2>=0?pos[t-2]:0));
+  const key=[k,full,p1,p2,$('lFrom').value].join('|');if(!seen.has(key)){seen.add(key);tries=seen.size;try{localStorage.setItem('labTries',JSON.stringify([...seen].slice(-500)))}catch(e){}}showTries();
+  const mid=Math.floor((fi+end)/2),S1=RS.stats(rets,dates,fi-1,mid),B1=RS.stats(brets,dates,fi-1,mid),S2=RS.stats(rets,dates,mid,end),B2=RS.stats(brets,dates,mid,end);
+  const cash=A.bench==='cash',beat=(s,b)=>cash?s.ret>0&&s.sharpe>0.3:s.ret>b.ret&&s.sharpe>b.sharpe;
+  const w=beat(S,B),w1=beat(S1,B1),w2=beat(S2,B2);
+  $('lVerdict').innerHTML=w&&w1&&w2?`<b>${esc(full)}</b> ha battuto ${esc(A.benchName)} su tutto il periodo e in entrambe le metà. Interessante: ma ricorda quante combinazioni hai provato.`
+    :w?`<b>${esc(full)}</b> ha battuto ${esc(A.benchName)} sul periodo intero, ma non in entrambe le metà: il risultato dipende da un periodo fortunato.`
+    :`<b>${esc(full)}</b> non ha battuto ${esc(A.benchName)} dal ${$('lFrom').value} a oggi.`;
+  if(tries>=10)$('lVerdict').innerHTML+=` <span class="mu">Con ${tries} combinazioni provate, è normale che qualcuna sembri ottima per caso.</span>`;
+  $('lLegS').textContent=`${full} ${pct(S.ret)}`;$('lLegB').textContent=`${A.benchName} ${pct(B.ret)}`;
+  const t2=(a,b,c_)=>`<div><span>${a}</span><b>${b}</b><small>${c_}</small></div>`;
+  $('lGrade').innerHTML=t2('Rendimento annuo',`<span class="${cls(S.cagr??0)}">${pct(S.cagr)}</span>`,'Benchmark '+pct(B.cagr))+t2('Sharpe',fmt(S.sharpe,2),'Benchmark '+fmt(B.sharpe,2))+t2('Perdita massima','-'+fmt(S.maxDD*100,1)+'%','Benchmark -'+fmt(B.maxDD*100,1)+'%')+t2('Cambi di posizione',String(tr),`circa ${fmt(tr/Math.max(1,(end-fi)/252),1)} all'anno`)+t2('Costi pagati','≈ '+fmt(costs*100,1)+'%','del capitale, sommati')+t2('Tempo nel mercato',fmt(100*pos.slice(fi,end+1).filter(x=>x!==0).length/(end-fi+1),0)+'%','il resto in liquidità');
+  $('lHalves').innerHTML=t2(`${dIt(dates[fi])} → ${dIt(dates[mid])}`,`<span class="${cls(S1.ret)}">${pct(S1.ret)}</span>`,`Benchmark ${pct(B1.ret)} · ${w1?'battuto':'non battuto'}`)+t2(`${dIt(dates[mid])} → ${dIt(dates[end])}`,`<span class="${cls(S2.ret)}">${pct(S2.ret)}</span>`,`Benchmark ${pct(B2.ret)} · ${w2?'battuto':'non battuto'}`);
+  $('lHalfNote').textContent=w1!==w2?'Una strategia vera dovrebbe funzionare in entrambe le metà. Se vince solo in una, probabilmente ha avuto fortuna in quel periodo.':'Stesso esito nelle due metà: il risultato è più solido, ma resta un test sul passato.';
+  $('lOut').hidden=false;
+  // grafico
+  const cvs=$('lChart'),rc=cvs.getBoundingClientRect(),dp=Math.min(2,devicePixelRatio||1);cvs.width=rc.width*dp;cvs.height=rc.height*dp;
+  const g=cvs.getContext('2d');g.setTransform(dp,0,0,dp,0,0);const W_=rc.width,H_=rc.height,pad=40;
+  const ser=[];let e1=1,e2=1;for(let t=fi;t<=end;t++){e1*=1+rets[t];e2*=1+brets[t];if((t-fi)%3===0||t===end)ser.push([dates[t],e1,e2])}
+  const all=ser.flatMap(x=>[x[1],x[2]]).map(Math.log);let mn=Math.min(...all),mx=Math.max(...all);const sp=(mx-mn)||0.1;mn-=sp*.05;mx+=sp*.05;
+  const X=i=>pad+(W_-pad-4)*i/Math.max(1,ser.length-1),Y=v_=>6+(H_-24)*(1-(Math.log(v_)-mn)/(mx-mn));
+  g.font='10px "IBM Plex Mono",monospace';g.fillStyle='#a99cd6';g.strokeStyle='rgba(160,140,255,.14)';g.lineWidth=1;
+  for(let i=0;i<=3;i++){const v_=Math.exp(mn+(mx-mn)*i/3),y=Y(v_);g.beginPath();g.moveTo(pad,y);g.lineTo(W_-4,y);g.stroke();g.fillText('×'+fmt(v_,v_>=10?0:2),2,y+3)}
+  g.fillText(ser[0][0].slice(0,4),pad,H_-4);g.textAlign='right';g.fillText(ser[ser.length-1][0].slice(0,4),W_-4,H_-4);g.textAlign='left';
+  [[2,'#6fa0ff'],[1,'#c9bbff']].forEach(([kk,col])=>{g.beginPath();ser.forEach((x,i)=>i?g.lineTo(X(i),Y(x[kk])):g.moveTo(X(i),Y(x[kk])));g.strokeStyle=col;g.lineWidth=1.6;g.stroke()});
+};
+
 /* ---------- dati ---------- */
 async function load(){
   try{
     const r=await fetch('data/view.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(r.status);
     V=await r.json();$('overlay').hidden=true;
-    renderHud();renderStrip();renderTicker();renderDetail();renderTab();
+    renderHud();renderStrip();renderTicker();renderDetail();renderTab();renderMe();
   }catch(e){$('overlay').hidden=false;$('news').textContent='Il desk non ha ancora fatto il primo giro.'}
 }
 load();setInterval(load,10*60*1000);setInterval(()=>{if(V)renderHud()},60000);

@@ -1,3 +1,4 @@
+(function () {
 'use strict';
 /*
  * Desk IA v2 — Reparto ricerca.
@@ -192,4 +193,8 @@ function A_valid(A, s, b) {
   return s.ret > b.ret && s.sharpe > b.sharpe;
 }
 
-module.exports = { ASSETS, VARIANTS, BENCH, BY_ID, RULES, buildLab, pick, walkForward, scheduleReturns, stats, changes, idxOnOrBefore, addDays, dms, returns, positions, r4 };
+const API = { ASSETS, VARIANTS, BENCH, BY_ID, RULES, buildLab, pick, walkForward, scheduleReturns, stats, changes, idxOnOrBefore, addDays, dms, returns, positions, r4 };
+if (typeof module !== 'undefined' && module.exports) module.exports = API;
+else if (typeof window !== 'undefined') window.Research = API;
+
+})();
