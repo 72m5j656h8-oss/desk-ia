@@ -144,6 +144,12 @@ canvas.wf{width:100%;height:150px;display:block;margin-top:6px}
 .labForm input{width:96px}
 .labForm select:focus-visible,.labForm input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .btVerdict{margin:10px 0 0;font-size:14px;max-width:75ch;border-left:3px solid var(--accent);padding-left:10px}
+.tm{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.tmBar{display:flex;height:26px;border-radius:8px;overflow:hidden;margin-top:12px;font-size:11.5px;font-family:var(--f-mono);font-weight:600}
+.tmBar span{display:flex;align-items:center;justify-content:center;min-width:0;white-space:nowrap;overflow:hidden;color:#120a2c}
+.luck{display:grid;gap:8px;margin-top:6px}
+.luckRow{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+canvas.hist{width:100%;height:110px;display:block}
 footer{font-size:11.5px;color:var(--mute);max-width:80ch}
 </style>
 </head>
@@ -215,6 +221,24 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
     <div class="note" id="meNote">Gli ordini vengono eseguiti alla <b>prima chiusura dopo l'ordine</b> (Bitcoin a mezzanotte UTC, Nasdaq alle 22 italiane, euro-dollaro alle 23), con le stesse commissioni delle altre sale. Su GitHub scegli mercato, LONG, SHORT o FLAT e la quota, poi premi il pulsante verde <b>Run workflow</b>. In un minuto l'ordine compare qui.</div>
     <div class="kick" style="margin-top:10px">I tuoi ordini</div>
     <div class="pane" id="meOrders" style="max-height:320px;margin-top:6px"></div>
+    <div class="tm" id="tmBox">
+      <div class="kick">Macchina del tempo · prima di dare un ordine</div>
+      <div class="labForm">
+        <label>Mercato<select id="tAsset"><option value="BTC">Bitcoin</option><option value="NDX">Nasdaq-100</option><option value="EURUSD">Euro/Dollaro (leva 3)</option></select></label>
+        <label>Direzione<select id="tDir"><option value="1">LONG</option><option value="-1">SHORT</option></select></label>
+        <label>Obiettivo %<input id="tTgt" type="number" inputmode="decimal" value="5" min="0.2" max="50" step="0.5"></label>
+        <label>Stop %<input id="tStop" type="number" inputmode="decimal" value="3" min="0.2" max="50" step="0.5"></label>
+        <label>Giorni<input id="tDays" type="number" inputmode="numeric" value="10" min="1" max="60" step="1"></label>
+        <label>Quota<select id="tQuota"><option>100</option><option>75</option><option>50</option><option>25</option></select></label>
+        <label>Tendenza<select id="tTrend"><option value="0">Neutra</option><option value="1">Ultimo anno</option></select></label>
+        <button class="btn go" id="tRun">Simula 10.000 volte</button>
+      </div>
+      <div id="tOut" hidden>
+        <div class="tmBar" id="tBar"></div>
+        <div class="grade" id="tGrade"></div>
+        <p class="note" id="tNote"></p>
+      </div>
+    </div>
   </section>
 
   <section class="card" id="labCard">
@@ -237,6 +261,8 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
       <div class="kick" style="margin-top:12px">Prova del nove: le due metà del periodo</div>
       <div class="grade" id="lHalves"></div>
       <div class="note" id="lHalfNote"></div>
+      <div class="kick" style="margin-top:12px">Test della fortuna</div>
+      <div class="luck" id="lLuck"><div class="note">Calcolo in corso…</div></div>
     </div>
   </section>
 
@@ -509,6 +535,8 @@ $('lRun').onclick=async()=>{
   $('lHalves').innerHTML=t2(`${dIt(dates[fi])} → ${dIt(dates[mid])}`,`<span class="${cls(S1.ret)}">${pct(S1.ret)}</span>`,`Benchmark ${pct(B1.ret)} · ${w1?'battuto':'non battuto'}`)+t2(`${dIt(dates[mid])} → ${dIt(dates[end])}`,`<span class="${cls(S2.ret)}">${pct(S2.ret)}</span>`,`Benchmark ${pct(B2.ret)} · ${w2?'battuto':'non battuto'}`);
   $('lHalfNote').textContent=w1!==w2?'Una strategia vera dovrebbe funzionare in entrambe le metà. Se vince solo in una, probabilmente ha avuto fortuna in quel periodo.':'Stesso esito nelle due metà: il risultato è più solido, ma resta un test sul passato.';
   $('lOut').hidden=false;
+  LAB.last={A,dates,c,fi,end,tr,ls:fam==='mr'?true:ls,pos,name:full,benchName:A.benchName};
+  $('lLuck').innerHTML='<div class="note">Calcolo in corso…</div>';setTimeout(luckTest,30);
   // grafico
   const cvs=$('lChart'),rc=cvs.getBoundingClientRect(),dp=Math.min(2,devicePixelRatio||1);cvs.width=rc.width*dp;cvs.height=rc.height*dp;
   const g=cvs.getContext('2d');g.setTransform(dp,0,0,dp,0,0);const W_=rc.width,H_=rc.height,pad=40;
@@ -519,6 +547,84 @@ $('lRun').onclick=async()=>{
   for(let i=0;i<=3;i++){const v_=Math.exp(mn+(mx-mn)*i/3),y=Y(v_);g.beginPath();g.moveTo(pad,y);g.lineTo(W_-4,y);g.stroke();g.fillText('×'+fmt(v_,v_>=10?0:2),2,y+3)}
   g.fillText(ser[0][0].slice(0,4),pad,H_-4);g.textAlign='right';g.fillText(ser[ser.length-1][0].slice(0,4),W_-4,H_-4);g.textAlign='left';
   [[2,'#6fa0ff'],[1,'#c9bbff']].forEach(([kk,col])=>{g.beginPath();ser.forEach((x,i)=>i?g.lineTo(X(i),Y(x[kk])):g.moveTo(X(i),Y(x[kk])));g.strokeStyle=col;g.lineWidth=1.6;g.stroke()});
+};
+
+/* ---------- test della fortuna ---------- */
+// 10.000 strategie a caso, con lo stesso numero di cambi di posizione e gli stessi costi:
+// quante fanno meglio della tua? Se tante, il tuo risultato è compatibile con la fortuna.
+function luckTest(){
+  const L_=LAB.last;if(!L_)return;const {A,c,fi,end,tr,ls,pos}=L_,N=10000;
+  const n=end-fi,PL=new Float64Array(n+1),PS=new Float64Array(n+1);
+  for(let i=1;i<=n;i++){const r=c[fi+i]/c[fi+i-1]-1;PL[i]=PL[i-1]+Math.log(Math.max(1e-9,1+A.lev*r));PS[i]=PS[i-1]+Math.log(Math.max(1e-9,1-A.lev*r))}
+  const segRet=(p,a,b)=>p>0?PL[b]-PL[a]:p<0?PS[b]-PS[a]:0;
+  const costLog=x=>Math.log(1-A.cost*A.lev*x);
+  // la tua strategia con lo stesso metodo semplificato (stessa misura per tutti)
+  let mine=0,prev=pos[fi];mine+=0;let segStart=0;
+  for(let i=1;i<=n;i++){const p=pos[fi+i];if(p!==prev){mine+=segRet(prev,segStart,i)+costLog(Math.abs(p-prev));segStart=i;prev=p}}
+  mine+=segRet(prev,segStart,n);
+  // i "blocchi" della tua strategia: stessa posizione per un certo numero di giorni
+  const segs=[];{let p0=pos[fi],a0=0;for(let i=1;i<=n;i++){const p=pos[fi+i];if(p!==p0){segs.push([p0,i-a0]);p0=p;a0=i}}segs.push([p0,n-a0])}
+  const k=Math.max(1,tr),res=new Float64Array(N);let better=0;
+  for(let s_=0;s_<N;s_++){
+    // stessi blocchi (stesso tempo long, short e fermo), mescolati in ordine casuale
+    const o=segs.slice();for(let i=o.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=o[i];o[i]=o[j];o[j]=t}
+    let a=0,acc=0,prevP=null;
+    for(const [p,len] of o){if(prevP!==null&&p!==prevP)acc+=costLog(Math.abs(p-prevP));acc+=segRet(p,a,a+len);a+=len;prevP=p}
+    res[s_]=acc;if(acc>=mine)better++;
+  }
+  const benchLog=A.bench==='long'?PL[n]:0;
+  const share=better/N,toR=x=>Math.exp(x)-1;
+  const sorted=Array.from(res).sort((a,b)=>a-b),q=pp=>toR(sorted[Math.floor(pp*(N-1))]);
+  const verdict=share<0.05?`<b>Solo il ${fmt(share*100,1)}%</b> delle strategie a caso ha fatto meglio: è difficile che sia solo fortuna. Resta da confermare in avanti.`
+    :share<0.2?`Il <b>${fmt(share*100,1)}%</b> delle strategie a caso ha fatto meglio: <b>potrebbe essere fortuna</b>.`
+    :`Il <b>${fmt(share*100,0)}%</b> delle strategie a caso ha fatto meglio o uguale: il risultato è <b>compatibile con il caso</b>.`;
+  const vsMkt=mine<benchLog?` <b>Attenzione:</b> battere il caso non vuol dire battere il mercato. ${esc(L_.benchName)} ha fatto ${pct(toR(benchLog))}, la tua ${pct(toR(mine))}.`:'';
+  $('lLuck').innerHTML=`<div class="note">${N.toLocaleString('it-IT')} strategie a caso con <b>gli stessi giorni long, short e fermi</b> della tua (${k} cambi di posizione), ma in momenti scelti a caso, con gli stessi costi. Così si misura se il <b>tempismo</b> vale qualcosa. ${verdict}${vsMkt}</div><canvas class="hist" id="lHist" aria-label="Distribuzione dei risultati delle strategie a caso"></canvas><div class="legend"><span><i class="dot" style="background:#5b4c9c"></i>strategie a caso (metà centrale da ${pct(q(.25))} a ${pct(q(.75))})</span><span><i class="dot" style="background:var(--warm)"></i>la tua ${pct(toR(mine))}</span></div>`;
+  const cv=$('lHist'),rc=cv.getBoundingClientRect(),dp=Math.min(2,devicePixelRatio||1);cv.width=rc.width*dp;cv.height=rc.height*dp;
+  const g=cv.getContext('2d');g.setTransform(dp,0,0,dp,0,0);const W_=rc.width,H_=rc.height,B=40;
+  const lo=Math.min(sorted[Math.floor(.005*N)],mine),hi=Math.max(sorted[Math.floor(.995*N)],mine),span=(hi-lo)||1,bins=new Array(B).fill(0);
+  for(const x of res){const b=Math.floor((x-lo)/span*(B-1));if(b>=0&&b<B)bins[b]++}
+  const mx=Math.max(...bins),bw=(W_-8)/B;
+  bins.forEach((v,i)=>{const h=(H_-22)*v/mx;g.fillStyle='#5b4c9c';g.fillRect(4+i*bw,H_-16-h,bw-1,h)});
+  const xm=4+(mine-lo)/span*(W_-8);g.fillStyle='#ff9a3c';g.fillRect(xm-1.5,4,3,H_-20);
+  g.font='10px "IBM Plex Mono",monospace';g.fillStyle='#a99cd6';g.fillText(pct(toR(lo)),4,H_-3);g.textAlign='right';g.fillText(pct(toR(hi)),W_-4,H_-3);
+}
+
+/* ---------- macchina del tempo ---------- */
+// rimescola le giornate dell'ultimo anno (massimo, minimo e chiusura rispetto al giorno prima)
+// e simula 10.000 volte i prossimi giorni: misura quanto si muove il prezzo, non dove andrà.
+$('tRun').onclick=async()=>{
+  const k=$('tAsset').value,A=RS.ASSETS[k],dir=+$('tDir').value,tg=+$('tTgt').value/100,st=+$('tStop').value/100,D=Math.round(+$('tDays').value),qt=+$('tQuota').value/100,trend=$('tTrend').value==='1';
+  if(!(tg>0&&tg<=0.5&&st>0&&st<=0.5&&D>=1&&D<=60)){$('tNote').textContent='Controlla i valori: obiettivo e stop tra 0,2% e 50%, giorni tra 1 e 60.';$('tOut').hidden=false;return}
+  let bars;try{bars=await getBars(k)}catch(e){$('tNote').textContent='Non riesco a caricare i prezzi.';$('tOut').hidden=false;return}
+  const last=bars.slice(-253),days=[];
+  for(let i=1;i<last.length;i++){const p=last[i-1][4];days.push([last[i][2]/p,last[i][3]/p,last[i][4]/p])}
+  if(!trend){const m=Math.exp(days.reduce((s_,d)=>s_+Math.log(d[2]),0)/days.length);days.forEach(d=>{d[0]/=m;d[1]/=m;d[2]/=m})}
+  // il movimento che serve sul prezzo: con la leva l'obiettivo e lo stop sono sul conto
+  const up=dir>0?1+tg/A.lev:1+st/A.lev,dn=dir>0?1-st/A.lev:1-tg/A.lev;
+  const N=10000;let hitT=0,hitS=0,none=0,sumOpen=0;const fin=(dir<0?A.finShort:0)+A.finAny;
+  for(let s_=0;s_<N;s_++){let x=1,res=null;
+    for(let d=0;d<D;d++){const r=days[Math.floor(Math.random()*days.length)],hi=x*r[0],lo=x*r[1];
+      const touchUp=hi>=up,touchDn=lo<=dn;
+      if(touchUp||touchDn){ // se tocca entrambi nello stesso giorno, conta lo stop (ipotesi prudente)
+        const stopHit=dir>0?touchDn:touchUp;res=stopHit?'S':'T';break}
+      x*=r[2]}
+    if(res==='T')hitT++;else if(res==='S')hitS++;else{none++;sumOpen+=dir*(x-1)*A.lev}}
+  const capital=A.capital*qt,cost=2*A.cost*A.lev,finC=fin*A.lev*D/365;
+  const pT=hitT/N,pS=hitS/N,pN=none/N,avgOpen=none?sumOpen/none:0;
+  const ev=(pT*tg-pS*st+pN*avgOpen-cost-finC)*capital;
+  const bar=(p,col,lab)=>p>0.001?`<span style="width:${p*100}%;background:${col}">${p>0.12?lab+' '+fmt(p*100,1)+'%':''}</span>`:'';
+  $('tBar').innerHTML=bar(pT,'#3ee08f','Obiettivo')+bar(pN,'#a99cd6','Nessuno')+bar(pS,'#ff5d7a','Stop');
+  const t2=(a,b,c_)=>`<div><span>${a}</span><b>${b}</b><small>${c_}</small></div>`;
+  $('tGrade').innerHTML=t2('Obiettivo prima',`<span class="up">${fmt(pT*100,1)}%</span>`,`+${usd(tg*capital)} se lo prende`)
+    +t2('Stop prima',`<span class="dn">${fmt(pS*100,1)}%</span>`,`−${usd(st*capital)}: il tuo rischio massimo`)
+    +t2('Nessuno dei due',fmt(pN*100,1)+'%',`dopo ${D} giorni, in media ${pct(avgOpen)}`)
+    +t2('Valore atteso',`<span class="${cls(ev)}">${ev>=0?'+':'−'}${usd(Math.abs(ev))}</span>`,'media di tutti gli esiti, costi inclusi')
+    +t2('Costi',usd((cost+finC)*capital),'commissioni andata e ritorno'+(finC>0?' e finanziamento':''))
+    +t2('Leva',A.lev>1?'×'+A.lev:'nessuna',A.lev>1?`obiettivo e stop sono sul conto: sul prezzo ${fmt(tg/A.lev*100,2)}% e ${fmt(st/A.lev*100,2)}%`:'obiettivo e stop sul prezzo');
+  const coin=Math.abs(pT-pS)<0.08;
+  $('tNote').innerHTML=`${coin?'<b>Quasi un lancio di moneta.</b> ':''}La simulazione rimescola le ${days.length} giornate dell'ultimo anno${trend?' con la loro tendenza':' togliendo la tendenza'}: misura <b>quanto</b> si muove ${esc(A.name)}, non <b>dove</b> andrà. Serve a scegliere stop, obiettivo e quota sapendo cosa rischi. Se tocca obiettivo e stop nello stesso giorno, conta lo stop. Notizie e salti di prezzo improvvisi possono fare peggio di così.`;
+  $('tOut').hidden=false;
 };
 
 /* ---------- dati ---------- */

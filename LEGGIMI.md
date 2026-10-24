@@ -37,7 +37,8 @@ Da qui in poi gira da solo, anche con telefono e computer spenti.
 ## La tua sala e il Laboratorio
 
 - **La tua sala**: nell'app tocca **Dai un ordine**. Si apre GitHub: premi **Run workflow**, scegli mercato, LONG, SHORT o FLAT e la quota, poi il pulsante verde **Run workflow**. L'ordine viene eseguito alla prima chiusura successiva, con le stesse commissioni delle altre sale.
-- **Laboratorio**: nell'app scegli mercato, strategia e impostazioni e premi **Prova**. Gira sul tuo dispositivo con i prezzi salvati, gratis e senza limiti. Guarda sempre la "prova del nove": una strategia seria deve funzionare in entrambe le metà del periodo.
+- **Macchina del tempo** (nella tua sala): prima di un ordine scegli direzione, obiettivo, stop e giorni. Rimescola le giornate dell'ultimo anno 10.000 volte e ti dice quante volte prenderesti l'obiettivo o lo stop, quanto rischi e il valore atteso con i costi. Misura quanto si muove il prezzo, non dove andrà.
+- **Laboratorio**: nell'app scegli mercato, strategia e impostazioni e premi **Prova**. Gira sul tuo dispositivo con i prezzi salvati, gratis e senza limiti. Guarda sempre la "prova del nove" (una strategia seria deve funzionare in entrambe le metà del periodo) e il **test della fortuna**: 10.000 strategie con la stessa esposizione ma con tempi casuali. Se molte fanno meglio della tua, il tuo risultato è fortuna.
 
 ## Se qualcosa non va
 
