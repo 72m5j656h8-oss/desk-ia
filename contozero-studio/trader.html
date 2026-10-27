@@ -1,0 +1,365 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: Pop; src: url(lib/Poppins-Bold.ttf); font-weight: 700; }
+html, body { margin: 0; overflow: hidden; background: #000; font-family: Pop, sans-serif; }
+#c { position: absolute; inset: 0; }
+#ov { position: absolute; inset: 0; pointer-events: none; }
+.brand { position: absolute; color: #fff; text-align: center; left: 0; right: 0; }
+.brand .name { font-size: var(--fs, 120px); line-height: .95; letter-spacing: -1px; -webkit-text-stroke: 4px #0b1020; paint-order: stroke fill; text-shadow: 0 8px 0 #0b1020; }
+.brand .name b { color: #F2A93B; }
+.brand .tag { margin-top: 18px; display: inline-block; background: #F2A93B; color: #0b1020; font-size: var(--ts, 40px); padding: 6px 22px 8px; border-radius: 14px; transform: rotate(-1.5deg); box-shadow: 0 6px 0 #8a5a12; }
+#cap { position: absolute; left: 60px; right: 60px; top: 300px; text-align: center; font-size: 80px; line-height: 1.12; color: #fff;
+  -webkit-text-stroke: 3px #0b1020; paint-order: stroke fill; text-shadow: 0 5px 0 #0b1020, 0 0 18px rgba(0,0,0,.8); }
+#cap .k { background: #F2A93B; color: #0b1020; -webkit-text-stroke: 0; text-shadow: none; padding: 0 14px 4px; border-radius: 14px; display: inline-block; transform: rotate(-2deg); box-shadow: 0 6px 0 #8a5a12; }
+#vig { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,.5) 100%); }
+</style></head>
+<body>
+<canvas id="c"></canvas>
+<div id="vig"></div>
+<div id="ov"></div>
+<div id="cap"></div>
+<script type="module">
+import * as THREE from './lib/three.module.js';
+const W = innerWidth, H = innerHeight;
+const SHOT = new URLSearchParams(location.search).get('shot') || 'hero';
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H, false);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.1;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b1020);
+scene.fog = new THREE.Fog(0x0b1020, 7, 16);
+const camera = new THREE.PerspectiveCamera(45, W / H, 0.05, 60);
+
+const mats = {};
+const mat = (c, o = {}) => { const k = c + JSON.stringify(o); return mats[k] ||= new THREE.MeshStandardMaterial({ color: c, roughness: .8, ...o }); };
+function box(w, h, d, m, x = 0, y = 0, z = 0, p = scene, sh = true) {
+  const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), typeof m === 'number' ? mat(m) : m);
+  b.position.set(x, y, z); b.castShadow = sh; b.receiveShadow = true; p.add(b); return b;
+}
+function ctex(w, h, draw, near = false) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.imageSmoothingEnabled = false; draw(x, w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; if (near) { t.magFilter = t.minFilter = THREE.NearestFilter; } t.anisotropy = 4; return t;
+}
+function rng(s) { return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+
+// ---------- room
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), new THREE.MeshStandardMaterial({ map: ctex(256, 256, (c) => {
+  const r = rng(3); for (let i = 0; i < 16; i++) { const v = 0.85 + r() * .2; c.fillStyle = `rgb(${58 * v | 0},${44 * v | 0},${36 * v | 0})`; c.fillRect(0, i * 16, 256, 15); c.fillStyle = 'rgba(0,0,0,.4)'; c.fillRect(0, i * 16 + 15, 256, 1); }
+}), roughness: .7 }));
+floor.material.map.wrapS = floor.material.map.wrapT = THREE.RepeatWrapping; floor.material.map.repeat.set(4, 4);
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const wallM = mat(0x1c2236);
+const back = new THREE.Mesh(new THREE.PlaneGeometry(16, 5), wallM); back.position.set(0, 2.5, -2.2); back.receiveShadow = true; scene.add(back);
+const leftW = new THREE.Mesh(new THREE.PlaneGeometry(10, 5), wallM); leftW.rotation.y = Math.PI / 2; leftW.position.set(-3.4, 2.5, 0); scene.add(leftW);
+const rightW = new THREE.Mesh(new THREE.PlaneGeometry(10, 5), wallM); rightW.rotation.y = -Math.PI / 2; rightW.position.set(3.4, 2.5, 0); scene.add(rightW);
+// acoustic panels
+for (let i = 0; i < 6; i++) box(0.5, 0.5, 0.05, i % 2 ? 0x252c45 : 0x2c344f, -2.6 + i * 0.55, 2.55 + (i % 2) * 0.55, -2.17, scene, false);
+// window with city at night (right)
+box(1.7, 1.6, 0.08, 0x111522, 1.95, 2.0, -2.17, scene, false);
+const city = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.4), new THREE.MeshBasicMaterial({ map: ctex(96, 90, (c) => {
+  const g = c.createLinearGradient(0, 0, 0, 90); g.addColorStop(0, '#0d1838'); g.addColorStop(1, '#3a2a55'); c.fillStyle = g; c.fillRect(0, 0, 96, 90);
+  const r = rng(7); let x = 0;
+  while (x < 96) { const w = 6 + (r() * 10 | 0), h = 25 + (r() * 50 | 0); c.fillStyle = '#0a0f22'; c.fillRect(x, 90 - h, w, h);
+    for (let yy = 90 - h + 3; yy < 88; yy += 4) for (let xx = x + 1; xx < x + w - 1; xx += 3) if (r() > .55) { c.fillStyle = r() > .3 ? '#ffd27a' : '#8fb4ff'; c.fillRect(xx, yy, 1, 2); }
+    x += w + 1; }
+  c.fillStyle = '#f4f0d8'; c.fillRect(78, 8, 5, 5);
+}, true) }));
+city.position.set(1.95, 2.0, -2.12); scene.add(city);
+box(0.05, 1.4, 0.04, 0x111522, 1.95, 2.0, -2.1, scene, false);
+
+// LED strip behind desk (amber)
+const ledM = new THREE.MeshStandardMaterial({ color: 0xffb347, emissive: 0xffa030, emissiveIntensity: 3 });
+const led = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.03, 0.03), ledM); led.position.set(-0.3, 0.95, -2.15); scene.add(led);
+const ledL = new THREE.PointLight(0xffa040, 6, 3.5, 1.6); ledL.position.set(-0.3, 1.1, -1.95); scene.add(ledL);
+
+// desk
+const desk = new THREE.Group(); desk.position.set(-0.3, 0, -1.55); scene.add(desk);
+box(2.4, 0.06, 0.8, 0x2a2420, 0, 0.75, 0, desk);
+for (const x of [-1.12, 1.12]) box(0.06, 0.75, 0.7, 0x111111, x, 0.375, 0, desk);
+box(0.9, 0.02, 0.3, 0x1a1a1a, 0, 0.79, 0.2, desk); // keyboard mat
+box(0.45, 0.03, 0.15, 0x2a2a2a, 0, 0.8, 0.18, desk); // keyboard
+box(0.07, 0.03, 0.11, 0x2a2a2a, 0.35, 0.8, 0.2, desk); // mouse
+const mug = box(0.09, 0.11, 0.09, 0xf2a93b, -0.85, 0.84, 0.15, desk);
+
+// charts on monitors
+function chartTex(kind) {
+  return ctex(320, 180, (c) => {
+    c.fillStyle = '#0f1424'; c.fillRect(0, 0, 320, 180);
+    c.strokeStyle = 'rgba(120,140,190,.12)'; for (let i = 0; i < 9; i++) { c.beginPath(); c.moveTo(0, i * 20); c.lineTo(320, i * 20); c.stroke(); }
+    const r = rng(kind === 'a' ? 11 : kind === 'b' ? 29 : 51);
+    let p = 100; const pts = [];
+    for (let i = 0; i < 52; i++) {
+      let drift = 0;
+      if (kind === 'a') drift = i < 22 ? 0 : i < 27 ? -2.6 : i < 30 ? 3 : 1.6; // sweep of highs then drop
+      if (kind === 'b') drift = Math.sin(i / 6) * 1.5 + 0.4;
+      if (kind === 'c') drift = -0.3 + Math.cos(i / 5);
+      const o = p, cl = p + (r() - .5) * 6 - drift; const hi = Math.min(o, cl) - r() * 5, lo = Math.max(o, cl) + r() * 5;
+      pts.push([o, cl, hi, lo]); p = cl;
+    }
+    const mn = Math.min(...pts.map(q => q[2])), mx = Math.max(...pts.map(q => q[3]));
+    const Y = v => 18 + (v - mn) / (mx - mn) * 144;
+    if (kind === 'a') { // asia range box
+      const a = pts.slice(2, 20); const top = Math.min(...a.map(q => q[2])), bot = Math.max(...a.map(q => q[3]));
+      c.fillStyle = 'rgba(242,169,59,.16)'; c.fillRect(2 * 6 + 6, Y(top), 18 * 6, Y(bot) - Y(top));
+      c.strokeStyle = '#F2A93B'; c.setLineDash([4, 3]); c.strokeRect(2 * 6 + 6, Y(top), 18 * 6, Y(bot) - Y(top)); c.setLineDash([]);
+      c.fillStyle = '#F2A93B'; c.font = 'bold 10px sans-serif'; c.fillText('ASIA', 20, Y(top) - 4);
+    }
+    pts.forEach(([o, cl, hi, lo], i) => {
+      const x = 6 + i * 6; const up = cl < o; c.fillStyle = c.strokeStyle = up ? '#2fd08a' : '#ff5a6a';
+      c.fillRect(x + 2, Y(hi), 1, Y(lo) - Y(hi)); c.fillRect(x, Y(Math.min(o, cl)), 5, Math.max(1, Math.abs(Y(cl) - Y(o))));
+    });
+    c.fillStyle = '#8fa0c8'; c.font = 'bold 11px sans-serif'; c.fillText(kind === 'a' ? 'NAS100 · M5' : kind === 'b' ? 'NAS100 · H1' : 'EURUSD · M15', 8, 13);
+    if (kind === 'b') { c.fillStyle = '#2fd08a'; c.font = 'bold 22px sans-serif'; c.fillText('+2R', 262, 30); }
+  });
+}
+const screens = [];
+function monitor(x, rotY, kind) {
+  const g = new THREE.Group(); g.position.set(x, 0, -1.78); g.rotation.y = rotY; scene.add(g);
+  box(0.82, 0.48, 0.04, 0x0c0c10, 0, 1.2, 0, g);
+  const sm = new THREE.MeshStandardMaterial({ map: chartTex(kind), emissive: 0xffffff, emissiveMap: null, emissiveIntensity: 0 });
+  sm.emissiveMap = sm.map; sm.emissiveIntensity = 1.15;
+  const s = new THREE.Mesh(new THREE.PlaneGeometry(0.78, 0.44), sm); s.position.set(0, 1.2, 0.022); g.add(s); screens.push(s);
+  box(0.05, 0.38, 0.05, 0x111111, 0, 0.95, -0.03, g); box(0.25, 0.02, 0.18, 0x111111, 0, 0.785, 0, g);
+  return g;
+}
+monitor(-1.15, 0.32, 'c'); monitor(-0.3, 0, 'a'); monitor(0.55, -0.32, 'b');
+const scrL = new THREE.PointLight(0x7da2ff, 4.5, 3, 1.6); scrL.position.set(-0.3, 1.25, -1.2); scene.add(scrL);
+
+// chair
+const chair = new THREE.Group(); scene.add(chair);
+box(0.55, 0.1, 0.55, 0x1b1f2e, 0, 0.5, 0, chair); box(0.55, 0.8, 0.1, 0x1b1f2e, 0, 0.95, -0.25, chair);
+box(0.4, 0.06, 0.1, 0xf2a93b, 0, 1.2, -0.3, chair); box(0.06, 0.4, 0.06, 0x111111, 0, 0.25, 0, chair);
+for (let i = 0; i < 5; i++) { const a = i * 1.2566; box(0.3, 0.04, 0.05, 0x111111, Math.cos(a) * 0.15, 0.04, Math.sin(a) * 0.15, chair).rotation.y = -a; }
+
+// plant + shelf
+box(0.3, 0.35, 0.3, 0xd9d4c7, -2.7, 0.175, -1.7);
+for (let i = 0; i < 8; i++) { const a = i * 0.8; box(0.16, 0.16, 0.16, 0x3f8a4a, -2.7 + Math.cos(a) * 0.13, 0.45 + (i % 3) * 0.15, -1.7 + Math.sin(a) * 0.13); }
+box(1.0, 0.04, 0.25, 0x2a2420, -2.0, 1.7, -2.08); box(0.2, 0.28, 0.16, 0xf2a93b, -2.3, 1.86, -2.08); box(0.14, 0.24, 0.16, 0x3a6fd8, -2.05, 1.84, -2.08); box(0.3, 0.06, 0.2, 0xeeeeee, -1.7, 1.75, -2.08);
+
+// ---------- face
+function makeFace(o) {
+  const c = document.createElement('canvas'); c.width = c.height = 32; const x = c.getContext('2d');
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.magFilter = t.minFilter = THREE.NearestFilter;
+  const r = rng(o.seed); const stub = []; for (let i = 0; i < 18; i++) stub.push([1 + (r() * 30 | 0), 22 + (r() * 10 | 0)]);
+  function draw(s) {
+    const P = (a, b, w, h, col) => { x.fillStyle = col; x.fillRect(a, b, w, h); };
+    P(0, 0, 32, 32, o.skin); P(4, 19, 4, 2, o.cheek); P(24, 19, 4, 2, o.cheek);
+    P(1, 25, 30, 7, o.beard); P(12, 25, 8, 1, o.skin);
+    for (const [a, b] of stub) if (b > 24) P(a, b, 1, 1, o.beardD);
+    P(15, 18, 2, 3, o.nose);
+    const lx = s.look || 0;
+    for (const ex of [8, 20]) {
+      if (s.eye < .25) { P(ex, 16, 4, 1, '#20160f'); continue; }
+      P(ex, 13, 4, 5, '#fbfbf8'); P(ex + 1 + lx, 14, 2, 4, '#20160f'); P(ex + 1 + lx, 14, 1, 1, '#fff');
+    }
+    if (s.brow === 'up') { P(7, 10, 2, 2, o.brow); P(9, 9, 4, 2, o.brow); P(23, 10, 2, 2, o.brow); P(19, 9, 4, 2, o.brow); }
+    else if (s.brow === 'sure') { P(7, 10, 6, 2, o.brow); P(19, 9, 6, 2, o.brow); }
+    else { P(7, 10, 6, 2, o.brow); P(19, 10, 6, 2, o.brow); }
+    const m = s.mouth || 0;
+    if (s.smirk) { P(13, 24, 5, 1, '#4a1a1a'); P(18, 23, 2, 1, '#4a1a1a'); }
+    else if (m < .15) { P(13, 24, 6, 1, '#4a1a1a'); P(12, 23, 1, 1, '#4a1a1a'); P(19, 23, 1, 1, '#4a1a1a'); }
+    else { const h = 1 + Math.round(m * 4), w = 6 + Math.round(m * 2), a = 16 - w / 2; P(a, 23, w, h + 1, '#5a1818'); P(a + 1, 23, w - 2, 1, '#f2efe8'); }
+    t.needsUpdate = true;
+  }
+  draw({ eye: 1 }); return { tex: t, draw };
+}
+
+// ---------- trader
+const T = {};
+const root = new THREE.Group(); scene.add(root); T.root = root;
+const SK = 0xe3ad86, HOOD = 0x1d2742, HOODL = 0x26325a, PANTS = 0x2b2f38, SHOE = 0xeeeeee, HAIR = 0x2a1a12;
+const pelvis = new THREE.Group(); pelvis.position.y = 0.9; root.add(pelvis); T.pelvis = pelvis;
+for (const s of [-1, 1]) {
+  const hip = new THREE.Group(); hip.position.x = s * 0.13; pelvis.add(hip);
+  box(0.22, 0.47, 0.24, PANTS, 0, -0.235, 0, hip);
+  const kn = new THREE.Group(); kn.position.y = -0.45; hip.add(kn);
+  box(0.21, 0.42, 0.23, PANTS, 0, -0.21, 0, kn);
+  box(0.24, 0.1, 0.34, SHOE, 0, -0.42, 0.04, kn); box(0.24, 0.03, 0.34, 0xf2a93b, 0, -0.475, 0.04, kn);
+  T[s < 0 ? 'hipL' : 'hipR'] = hip; T[s < 0 ? 'knL' : 'knR'] = kn;
+}
+const torso = new THREE.Group(); pelvis.add(torso); T.torso = torso;
+box(0.58, 0.68, 0.32, HOOD, 0, 0.34, 0, torso);
+box(0.36, 0.2, 0.02, HOODL, 0, 0.12, 0.165, torso); // pocket
+box(0.1, 0.1, 0.02, 0xf2a93b, -0.16, 0.5, 0.165, torso); // logo patch
+box(0.5, 0.14, 0.2, HOODL, 0, 0.66, -0.12, torso); // hood rolled
+for (const s of [-1, 1]) box(0.025, 0.18, 0.02, 0xdddddd, s * 0.07, 0.52, 0.165, torso); // strings
+for (const s of [-1, 1]) {
+  const sh = new THREE.Group(); sh.position.set(s * 0.38, 0.6, 0); torso.add(sh);
+  box(0.19, 0.34, 0.21, HOOD, 0, -0.16, 0, sh);
+  const el = new THREE.Group(); el.position.y = -0.32; sh.add(el);
+  box(0.18, 0.28, 0.2, HOOD, 0, -0.13, 0, el); box(0.19, 0.05, 0.21, HOODL, 0, -0.27, 0, el);
+  const hand = box(0.17, 0.13, 0.19, SK, 0, -0.36, 0, el);
+  T[s < 0 ? 'shL' : 'shR'] = sh; T[s < 0 ? 'elL' : 'elR'] = el;
+}
+// watch
+box(0.19, 0.05, 0.21, 0x111111, 0, -0.22, 0, T.elL);
+const neck = new THREE.Group(); neck.position.y = 0.68; torso.add(neck); T.neck = neck;
+box(0.18, 0.1, 0.18, SK, 0, 0.03, 0, neck);
+// headphones around neck
+box(0.5, 0.06, 0.06, 0x111111, 0, 0.03, -0.1, neck);
+for (const s of [-1, 1]) { box(0.08, 0.14, 0.14, 0x15151a, s * 0.24, 0.02, 0.02, neck); box(0.085, 0.04, 0.145, 0xf2a93b, s * 0.24, 0.07, 0.02, neck); }
+const face = makeFace({ skin: '#e3ad86', cheek: '#dc9878', nose: '#d2976f', brow: '#22140d', beard: '#d7a17c', beardD: '#c58f6c', seed: 5 });
+const skm = mat(SK), fm = new THREE.MeshStandardMaterial({ map: face.tex, roughness: .85 });
+const head = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.44, 0.42), [skm, skm, skm, skm, fm, skm]); head.position.y = 0.3; head.castShadow = true; neck.add(head);
+box(0.05, 0.12, 0.08, SK, -0.245, 0.29, 0, neck); box(0.05, 0.12, 0.08, SK, 0.245, 0.29, 0, neck);
+// hair: short sides, textured top with quiff
+box(0.47, 0.1, 0.45, HAIR, 0, 0.56, 0, neck); box(0.47, 0.32, 0.06, HAIR, 0, 0.4, -0.2, neck);
+box(0.05, 0.16, 0.42, HAIR, -0.225, 0.46, -0.01, neck); box(0.05, 0.16, 0.42, HAIR, 0.225, 0.46, -0.01, neck);
+box(0.34, 0.09, 0.16, HAIR, 0.04, 0.64, 0.1, neck); box(0.2, 0.07, 0.1, HAIR, -0.08, 0.68, 0.14, neck); box(0.16, 0.05, 0.08, HAIR, 0.12, 0.5, 0.2, neck);
+
+// ---------- lights
+scene.add(new THREE.HemisphereLight(0x8fa6ff, 0x1a120c, 0.45));
+const key = new THREE.SpotLight(0xffe1c0, 34, 9, 0.7, 0.55, 1.6);
+key.position.set(1.4, 3.1, 2.2); key.castShadow = true; key.shadow.mapSize.set(1024, 1024); key.shadow.bias = -0.0008;
+scene.add(key); scene.add(key.target);
+const rim = new THREE.PointLight(0xf2a93b, 5, 4, 1.6); rim.position.set(-1.6, 2.1, 0.3); scene.add(rim);
+const fillF = new THREE.PointLight(0xc8d4ff, 3.5, 6, 1.5); fillF.position.set(0.2, 1.9, 2.4); scene.add(fillF);
+const lampL = new THREE.PointLight(0xffd8a0, 2.5, 3, 1.8); lampL.position.set(-1.3, 1.3, -1.2); scene.add(lampL);
+
+// ---------- poses
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)); const ease = u => { u = clamp(u); return u * u * (3 - 2 * u); }; const lerp = (a, b, u) => a + (b - a) * u;
+function standCrossed() {
+  pelvis.position.y = 0.9; T.hipL.rotation.x = T.hipR.rotation.x = 0; T.knL.rotation.x = T.knR.rotation.x = 0;
+  T.shL.rotation.set(-0.25, 1.05, 0.05); T.elL.rotation.set(-1.5, 0, 0);
+  T.shR.rotation.set(-0.15, -1.05, -0.05); T.elR.rotation.set(-1.62, 0, 0);
+  T.elL.position.z = 0; T.elR.position.z = 0;
+}
+function sit() {
+  pelvis.position.y = 0.55; T.hipL.rotation.x = T.hipR.rotation.x = -Math.PI / 2; T.knL.rotation.x = T.knR.rotation.x = Math.PI / 2;
+}
+
+const ov = document.getElementById('ov');
+function brand(top, fs, ts, sub = 'Conto demo · tutti i risultati') {
+  ov.innerHTML = `<div class="brand" style="top:${top}px;--fs:${fs}px;--ts:${ts}px"><div class="name">CONTO <b>ZERO</b></div><div class="tag">${sub}</div></div>`;
+}
+
+window.renderAt = function (t) {
+  const blink = ((t + 0.4) % 3.4) < 0.12 ? 0 : 1;
+  scrL.intensity = 4.5 + Math.sin(t * 3) * 0.3;
+  if (SHOT === 'hero' || SHOT === 'avatar') {
+    standCrossed(); root.position.set(0.15, 0, 0.35); root.rotation.y = -0.18;
+    chair.position.set(-0.3, 0, -0.75); chair.rotation.y = 0.5;
+    T.neck.rotation.set(0.0, 0.12, 0.04);
+    face.draw({ eye: blink, smirk: 1, brow: 'sure', look: 0 });
+    if (SHOT === 'hero') { camera.fov = 40; camera.position.set(0.15, 1.45, 4.0); camera.lookAt(0.0, 1.2, -0.4); brand(110, 150, 44); }
+    else { camera.fov = 30; camera.position.set(0.42, 1.92, 2.55); camera.lookAt(0.12, 1.76, 0.3); ov.innerHTML = ''; }
+  } else if (SHOT === 'banner') {
+    standCrossed(); root.position.set(0.0, 0, 0.35); root.rotation.y = 0.12;
+    chair.position.set(-0.3, 0, -0.75); chair.rotation.y = 0.5;
+    T.neck.rotation.set(0.0, 0.05, 0.04);
+    face.draw({ eye: blink, smirk: 1, brow: 'sure' });
+    camera.fov = 28; camera.position.set(0.85, 1.75, 4.6); camera.lookAt(0.85, 1.6, -0.5);
+    brand(H * 0.36, 120, 40, 'Trading intraday · conto demo da zero');
+    const el = ov.firstChild; el.style.left = (W * 0.5) + 'px'; el.style.right = 'auto'; el.style.textAlign = 'left';
+  } else if (SHOT === 'pip') {
+    const TL = window.TALK, EV = TL.events;
+    const cur = EV.find(e => t >= e.start && t <= e.end);
+    const amp = cur ? (cur.env[Math.floor((t - cur.start) * TL.fps)] || 0) : 0;
+    chair.position.set(0.9, 0, -0.95); chair.rotation.y = 0.15;
+    pelvis.position.y = 0.9; T.hipL.rotation.x = T.hipR.rotation.x = 0; T.knL.rotation.x = T.knR.rotation.x = 0;
+    root.position.set(-0.3, 0, 0.2); root.rotation.y = 0.12;
+    const g = Math.sin(t * 5.5) * 0.18 * Math.min(1, amp * 2), g2 = Math.sin(t * 3.7 + 1) * 0.12 * Math.min(1, amp * 2);
+    const idx = cur ? EV.indexOf(cur) : -1;
+    if (idx === 6 || idx === 7 || t > EV[EV.length - 1].end) { T.shL.rotation.set(-0.25, 1.05, 0.05); T.elL.rotation.set(-1.5, 0, 0); T.shR.rotation.set(-0.15, -1.05, -0.05); T.elR.rotation.set(-1.62, 0, 0); }
+    else { T.shL.rotation.set(-0.15, 0, 0.06); T.elL.rotation.set(-0.25, 0, 0); T.shR.rotation.set(-0.75 + g, 0, -0.1); T.elR.rotation.set(-1.15 + g2, 0, 0); }
+    torso.position.y = Math.sin(t * 1.8) * 0.008;
+    T.neck.rotation.set(amp * 0.04 * Math.sin(t * 11), Math.sin(t * 0.8) * 0.04, Math.sin(t * 0.6) * 0.03);
+    const blink = ((t + 0.4) % 3.1) < 0.11 ? 0 : 1;
+    face.draw({ eye: blink, mouth: amp, smirk: !cur, brow: idx === 4 || idx === 5 ? 'up' : 'sure' });
+    camera.fov = 42; camera.updateProjectionMatrix(); camera.position.set(0.0, 1.85, 3.6); camera.lookAt(-0.3, 2.77, 0.0);
+    ov.innerHTML = '';
+  } else if (SHOT === 'talk') {
+    const TL = window.TALK, EV = TL.events;
+    const cur = EV.find(e => t >= e.start && t <= e.end);
+    let k = 0; for (let i = 0; i < EV.length; i++) if (EV[i].start - 0.3 <= t) k = i;
+    const e = EV[k];
+    const amp = cur ? (cur.env[Math.floor((t - cur.start) * TL.fps)] || 0) : 0;
+    const spin = ease((t - 0.9) / 0.9), stand = ease((t - 2.0) / 0.8);
+    const slide = ease((t - 2.8) / 0.6); chair.position.set(lerp(-0.3, 0.9, slide), 0, lerp(-0.75, -0.95, slide));
+    const endE = EV[EV.length - 1], cross = ease((t - (endE.end - 1.4)) / 0.6);
+    const cy = lerp(Math.PI, 0.15, spin);
+    chair.rotation.y = cy;
+    // body
+    if (stand < 1) {
+      sit(); pelvis.position.y = lerp(0.55, 0.9, stand);
+      T.hipL.rotation.x = T.hipR.rotation.x = lerp(-Math.PI / 2, 0, stand); T.knL.rotation.x = T.knR.rotation.x = lerp(Math.PI / 2, 0, stand);
+    } else { pelvis.position.y = 0.9; T.hipL.rotation.x = T.hipR.rotation.x = 0; T.knL.rotation.x = T.knR.rotation.x = 0; }
+    root.position.set(-0.3, 0, lerp(-0.75, 0.2, stand)); root.rotation.y = cy;
+    // arms: typing while seated, then talking gestures, then crossed
+    const g = Math.sin(t * 5.5) * 0.18 * Math.min(1, amp * 2), g2 = Math.sin(t * 3.7 + 1) * 0.12 * Math.min(1, amp * 2);
+    let aL = [-0.15, 0, 0.06, -0.25], aR = [-0.75 + g, 0, -0.1, -1.15 + g2];
+    if (stand < 1) { const u = stand; aL = [lerp(-1.0, aL[0], u), 0, lerp(0, aL[2], u), lerp(-0.6, aL[3], u)]; aR = [lerp(-1.0, aR[0], u), 0, lerp(0, aR[2], u), lerp(-0.6, aR[3], u)]; }
+    if (e.shot === 'screens') { aR = [-1.25, -0.35, -0.1, -0.25]; } // points to the monitors
+    const cr = [[-0.25, 1.05, 0.05, -1.5], [-0.15, -1.05, -0.05, -1.62]];
+    aL = aL.map((v, i) => lerp(v, cr[0][i], cross)); aR = aR.map((v, i) => lerp(v, cr[1][i], cross));
+    T.shL.rotation.set(aL[0], aL[1], aL[2]); T.elL.rotation.set(aL[3], 0, 0);
+    T.shR.rotation.set(aR[0], aR[1], aR[2]); T.elR.rotation.set(aR[3], 0, 0);
+    torso.position.y = Math.sin(t * 1.8) * 0.008;
+    let ny = 0, nx = lerp(0.15, 0, spin);
+    if (e.shot === 'screens') ny = 0.0;
+    T.neck.rotation.set(nx + amp * 0.04 * Math.sin(t * 11), ny + Math.sin(t * 0.8) * 0.04, Math.sin(t * 0.6) * 0.03);
+    const blink = ((t + 0.4) % 3.1) < 0.11 ? 0 : 1;
+    face.draw({ eye: blink, mouth: amp, smirk: !cur && t > 2.5, brow: e.key === 'male.' || e.key === 'promesse.' ? 'up' : 'sure' });
+    // cameras per line (pos, target)
+    const CAMS = {
+      spin: [[0.4, 1.75, 2.9], [-0.3, 1.3, -0.6]],
+      med: [[-0.1, 1.72, 3.4], [-0.3, 1.62, 0.2]],
+      close: [[-0.2, 1.9, 2.15], [-0.3, 1.86, 0.2]],
+      screens: [[-1.35, 1.75, 2.7], [-0.45, 1.35, -0.8]],
+      end: [[-0.1, 1.66, 3.9], [-0.3, 1.5, 0.0]],
+    };
+    let shot = e.shot; const s0 = e.start - 0.3, s1 = k + 1 < EV.length ? EV[k + 1].start - 0.3 : TL.total;
+    if (t < EV[0].start) shot = 'spin';
+    const [p0, tg] = CAMS[shot];
+    const u = clamp((t - s0) / (s1 - s0));
+    const P = new THREE.Vector3(...p0), G = new THREE.Vector3(...tg);
+    if (shot === 'spin') { P.set(lerp(0.4, 0.0, ease(t / 3.5)), lerp(1.75, 1.65, ease(t / 3.5)), lerp(3.4, 3.3, ease(t / 3.5))); G.y = lerp(1.25, 1.55, stand); }
+    else P.add(G.clone().sub(P).multiplyScalar(0.07 * ease(u)));
+    camera.fov = 42; camera.updateProjectionMatrix(); camera.position.copy(P); camera.lookAt(G);
+    // captions
+    const capEl = document.getElementById('cap'); let html = '';
+    if (cur) {
+      const words = cur.text.split(' '), chunks = []; let c = [];
+      for (const w of words) { c.push(w); if (c.join(' ').length > 14 || (/[.,!?]$/.test(w) && c.length > 1)) { chunks.push(c); c = []; } }
+      if (c.length) chunks.push(c);
+      const tot = cur.text.length; let acc = 0; const uu = (t - cur.start) / (cur.end - cur.start);
+      let pick = chunks[chunks.length - 1];
+      for (const ch of chunks) { acc += ch.join(' ').length + 1; if (uu < acc / tot) { pick = ch; break; } }
+      html = pick.map(w => w === cur.key ? `<span class="k">${w}</span>` : w).join(' ');
+    }
+    if (capEl.innerHTML !== html) capEl.innerHTML = html;
+    // logo
+    const a = clamp((t - endE.end - 0.05) / 0.35);
+    if (a > 0) { brand(260, 150, 44); ov.style.opacity = a; ov.style.transform = `scale(${lerp(1.25, 1, ease((t - endE.end) / 0.35))})`; capEl.innerHTML = ''; }
+    else { ov.innerHTML = ''; }
+    document.getElementById('c').style.filter = a > 0 ? `brightness(${1 - 0.35 * a})` : 'none';
+  } else if (SHOT === 'intro') {
+    // 0-2.5s: seated at desk from behind-side, 2.5-4s: spins chair to camera, stands; 4-6s: smirk + logo
+    chair.position.set(-0.3, 0, -0.75);
+    const spin = ease((t - 1.8) / 0.9), stand = ease((t - 2.9) / 0.8);
+    const cy = lerp(Math.PI, 0.15, spin);
+    chair.rotation.y = cy;
+    if (stand < 1) {
+      sit(); pelvis.position.y = lerp(0.55, 0.9, stand);
+      T.hipL.rotation.x = T.hipR.rotation.x = lerp(-Math.PI / 2, 0, stand); T.knL.rotation.x = T.knR.rotation.x = lerp(Math.PI / 2, 0, stand);
+      T.shL.rotation.set(lerp(-1.0, -0.25, stand), lerp(0, 1.05, stand), lerp(0, 0.05, stand)); T.elL.rotation.set(lerp(-0.6 + Math.sin(t * 14) * 0.05 * (1 - spin), -1.5, stand), 0, 0);
+      T.shR.rotation.set(lerp(-1.0, -0.15, stand), lerp(0, -1.05, stand), lerp(0, -0.05, stand)); T.elR.rotation.set(lerp(-0.6 + Math.cos(t * 13) * 0.05 * (1 - spin), -1.62, stand), 0, 0);
+    } else standCrossed();
+    root.position.set(-0.3, 0, lerp(-0.75, 0.2, stand)); root.rotation.y = cy;
+    T.neck.rotation.set(lerp(0.15, 0, spin), 0, 0);
+    face.draw({ eye: blink, smirk: t > 3.6 ? 1 : 0, brow: t > 3.6 ? 'sure' : 'normal' });
+    const push = ease((t - 0.0) / 6);
+    camera.fov = 42; camera.position.set(lerp(0.4, 0.0, push), lerp(1.75, 1.55, push), lerp(2.9, 2.35, push)); camera.lookAt(-0.3, lerp(1.25, 1.55, stand), -0.6);
+    const a = clamp((t - 4.0) / 0.35);
+    brand(170, 150, 44); ov.style.opacity = a; ov.style.transform = `scale(${lerp(1.25, 1, ease((t - 4) / 0.35))})`;
+  }
+  renderer.render(scene, camera);
+};
+if (SHOT === 'talk' || SHOT === 'pip') window.TALK = await (await fetch(new URLSearchParams(location.search).get('tl') || 'talk.json')).json();
+window.READY = true;
+</script>
+</body></html>

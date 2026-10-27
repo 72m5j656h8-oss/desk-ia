@@ -1,0 +1,497 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: Pop; src: url(lib/Poppins-Bold.ttf); font-weight: 700; }
+html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; font-family: Pop, sans-serif; }
+#c { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+#vig { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,.45) 100%); pointer-events: none; }
+#cap { position: absolute; left: 60px; right: 60px; top: 330px; text-align: center; font-size: 82px; line-height: 1.12; color: #fff;
+       text-shadow: 0 5px 0 #000, 0 0 18px rgba(0,0,0,.8); -webkit-text-stroke: 3px #111; paint-order: stroke fill; }
+#cap .k { background: #FFC93C; color: #1b1b1b; -webkit-text-stroke: 0; text-shadow: none; padding: 0 14px 4px; border-radius: 14px;
+          display: inline-block; transform: rotate(-2deg); box-shadow: 0 6px 0 #9a6a00; }
+#cap span.w { display: inline-block; }
+#badge { position: absolute; left: 44px; top: 70px; background: #141414; color: #FFC93C; font-size: 40px; padding: 10px 22px 12px; border-radius: 16px; letter-spacing: 1px; }
+#card { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; background: rgba(10,8,6,.72);
+        color: #fff; opacity: 0; }
+#card .big { font-size: 150px; line-height: 1; color: #FFC93C; -webkit-text-stroke: 4px #111; paint-order: stroke fill; text-shadow: 0 8px 0 #000; }
+#card .small { font-size: 90px; margin-top: 10px; -webkit-text-stroke: 3px #111; paint-order: stroke fill; text-shadow: 0 6px 0 #000; }
+</style></head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<div id="vig"></div>
+<div id="badge">SALA PIENA</div>
+<div id="cap"></div>
+<div id="card"><div class="big">20 MINUTI</div><div class="small">DOPO...</div></div>
+<script type="module">
+import * as THREE from './lib/three.module.js';
+
+const TL = await (await fetch('timeline.json')).json();
+const EV = TL.events;
+
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(1080, 1920, false);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a120d);
+scene.fog = new THREE.Fog(0x1a120d, 6, 14);
+const camera = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.05, 50);
+
+// ---------- helpers
+const matCache = {};
+function mat(color, opts = {}) {
+  const key = color + JSON.stringify(opts);
+  if (!matCache[key]) matCache[key] = new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0, ...opts });
+  return matCache[key];
+}
+function box(w, h, d, m, x = 0, y = 0, z = 0, parent = scene, shadow = true) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), typeof m === 'number' ? mat(m) : m);
+  mesh.position.set(x, y, z);
+  mesh.castShadow = shadow; mesh.receiveShadow = true;
+  parent.add(mesh);
+  return mesh;
+}
+function canvasTex(w, h, draw, nearest = false, repeat = null) {
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d'); ctx.imageSmoothingEnabled = false; draw(ctx, w, h);
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+  if (nearest) { t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; }
+  if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(...repeat); }
+  t.anisotropy = 4;
+  return t;
+}
+function rng(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+
+// ---------- room
+const floorTex = canvasTex(256, 256, (c, w, h) => {
+  const r = rng(5);
+  for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) {
+    const v = 0.85 + r() * 0.2;
+    c.fillStyle = `rgb(${Math.floor(150 * v)},${Math.floor(78 * v)},${Math.floor(52 * v)})`;
+    c.fillRect(x * 64, y * 64, 64, 64);
+    c.fillStyle = 'rgba(40,20,10,.5)'; c.fillRect(x * 64, y * 64, 64, 3); c.fillRect(x * 64, y * 64, 3, 64);
+  }
+}, false, [6, 6]);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.75 }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+
+const wallTex = canvasTex(256, 256, (c, w, h) => {
+  c.fillStyle = '#c9a27a'; c.fillRect(0, 0, w, h);
+  const r = rng(9);
+  for (let y = 0; y < 8; y++) for (let x = 0; x < 6; x++) {
+    const v = 0.82 + r() * 0.25, off = (y % 2) * 21;
+    c.fillStyle = `rgb(${Math.floor(196 * v)},${Math.floor(160 * v)},${Math.floor(120 * v)})`;
+    c.fillRect(x * 43 + off - 21, y * 32, 41, 30);
+  }
+}, false, [5, 2]);
+const wallMat = new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.95 });
+const back = new THREE.Mesh(new THREE.PlaneGeometry(14, 4.2), wallMat); back.position.set(0, 2.1, -2.4); back.receiveShadow = true; scene.add(back);
+const left = new THREE.Mesh(new THREE.PlaneGeometry(10, 4.2), wallMat); left.position.set(-3.2, 2.1, 0); left.rotation.y = Math.PI / 2; left.receiveShadow = true; scene.add(left);
+const right = new THREE.Mesh(new THREE.PlaneGeometry(10, 4.2), wallMat); right.position.set(3.6, 2.1, 0); right.rotation.y = -Math.PI / 2; right.receiveShadow = true; scene.add(right);
+// wainscot
+box(14, 0.9, 0.06, 0x5b3622, 0, 0.45, -2.37, scene, false);
+box(0.06, 0.9, 10, 0x5b3622, -3.17, 0.45, 0, scene, false);
+// ceiling + beams
+const ceil = new THREE.Mesh(new THREE.PlaneGeometry(14, 10), mat(0x2a1a10)); ceil.rotation.x = Math.PI / 2; ceil.position.y = 3.4; scene.add(ceil);
+for (let x = -3; x <= 3.5; x += 1.3) box(0.22, 0.22, 10, 0x4a2c18, x, 3.28, 0, scene, false);
+
+// window with night outside
+box(1.3, 1.5, 0.08, 0x3b2414, 1.6, 1.85, -2.36, scene, false);
+const night = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.3), new THREE.MeshBasicMaterial({ color: 0x1b2a55 }));
+night.position.set(1.6, 1.85, -2.31); scene.add(night);
+box(0.06, 1.3, 0.04, 0x3b2414, 1.6, 1.85, -2.3, scene, false); box(1.1, 0.06, 0.04, 0x3b2414, 1.6, 1.85, -2.3, scene, false);
+
+// shelf with bottles
+box(1.6, 0.06, 0.3, 0x5b3622, -1.6, 1.9, -2.25);
+box(1.6, 0.06, 0.3, 0x5b3622, -1.6, 1.4, -2.25);
+const bcol = [0x2f5a2a, 0x5a1622, 0x2f5a2a, 0x3c2a10, 0x5a1622, 0x2f5a2a];
+for (let i = 0; i < 6; i++) {
+  box(0.09, 0.32, 0.09, mat(bcol[i], { roughness: 0.3 }), -2.2 + i * 0.24, 2.09, -2.25);
+  box(0.04, 0.1, 0.04, mat(bcol[i], { roughness: 0.3 }), -2.2 + i * 0.24, 2.29, -2.25);
+  box(0.09, 0.32, 0.09, mat(bcol[(i + 2) % 6], { roughness: 0.3 }), -2.1 + i * 0.22, 1.59, -2.25);
+}
+// framed picture
+box(0.9, 0.65, 0.05, 0x3b2414, -0.2, 2.35, -2.36, scene, false);
+const pic = new THREE.Mesh(new THREE.PlaneGeometry(0.78, 0.53), new THREE.MeshStandardMaterial({ map: canvasTex(64, 44, (c) => {
+  c.fillStyle = '#e9b46a'; c.fillRect(0, 0, 64, 44); c.fillStyle = '#6f9a4a'; c.fillRect(0, 26, 64, 18);
+  c.fillStyle = '#3f6a2a'; for (let i = 0; i < 8; i++) c.fillRect(i * 8 + 2, 20 + (i % 2) * 3, 4, 10);
+  c.fillStyle = '#f6e7b8'; c.fillRect(46, 6, 8, 8);
+}, true) }));
+pic.position.set(-0.2, 2.35, -2.33); scene.add(pic);
+
+// plant
+box(0.35, 0.4, 0.35, 0x8a4a2a, 2.9, 0.2, -1.9);
+for (let i = 0; i < 7; i++) { const a = i * 0.9; box(0.18, 0.18, 0.18, 0x3f7a35, 2.9 + Math.cos(a) * 0.17, 0.55 + (i % 3) * 0.18, -1.9 + Math.sin(a) * 0.17); }
+
+// string lights along back wall
+const bulbMat = new THREE.MeshStandardMaterial({ color: 0xffe2a0, emissive: 0xffc870, emissiveIntensity: 2.2 });
+const bulbs = [];
+for (let i = 0; i < 16; i++) {
+  const x = -3 + i * 0.42, y = 3.0 - Math.sin((i % 8) / 8 * Math.PI) * 0.22;
+  const b = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), bulbMat); b.position.set(x, y, -2.25); scene.add(b); bulbs.push(b);
+}
+const wire = new THREE.Line(new THREE.BufferGeometry().setFromPoints(bulbs.map(b => b.position.clone().add(new THREE.Vector3(0, 0.04, 0)))), new THREE.LineBasicMaterial({ color: 0x222222 }));
+scene.add(wire);
+
+// ---------- tables & chairs
+const clothTex = canvasTex(64, 64, (c) => {
+  for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) { c.fillStyle = (x + y) % 2 ? '#f4efe6' : '#b8332c'; c.fillRect(x * 8, y * 8, 8, 8); }
+}, true);
+const clothMat = new THREE.MeshStandardMaterial({ map: clothTex, roughness: 0.9 });
+function table(x, z) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); scene.add(g);
+  box(1.05, 0.06, 0.85, clothMat, 0, 0.76, 0, g);
+  box(1.09, 0.2, 0.89, clothMat, 0, 0.66, 0, g).castShadow = false;
+  box(0.08, 0.7, 0.08, 0x3b2414, 0, 0.35, 0, g);
+  box(0.5, 0.04, 0.5, 0x3b2414, 0, 0.02, 0, g);
+  return g;
+}
+function chair(x, z, ry) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g);
+  box(0.46, 0.06, 0.44, 0x7a4a2a, 0, 0.45, 0, g);
+  for (const [a, b] of [[-0.19, -0.18], [0.19, -0.18], [-0.19, 0.18], [0.19, 0.18]]) box(0.05, 0.45, 0.05, 0x5b3622, a, 0.225, b, g);
+  box(0.46, 0.5, 0.05, 0x7a4a2a, 0, 0.75, -0.2, g);
+  return g;
+}
+const T = table(0, -0.25);
+chair(-0.05, -0.85, 0.3);
+// props on main table
+const glassMat = new THREE.MeshStandardMaterial({ color: 0xcfe8ff, roughness: 0.1, transparent: true, opacity: 0.45 });
+box(0.08, 0.12, 0.08, glassMat, 0.25, 0.85, -0.1, T, false);
+box(0.09, 0.3, 0.09, mat(0x5a1622, { roughness: 0.3 }), -0.32, 0.94, -0.25, T);
+box(0.04, 0.1, 0.04, mat(0x5a1622, { roughness: 0.3 }), -0.32, 1.14, -0.25, T);
+box(0.3, 0.02, 0.3, 0xf4f4f0, 0.0, 0.8, 0.05, T); // plate
+box(0.04, 0.02, 0.24, 0xbfbfbf, 0.2, 0.8, 0.05, T); // cutlery
+box(0.04, 0.02, 0.24, 0xbfbfbf, -0.2, 0.8, 0.05, T);
+const candle = box(0.06, 0.12, 0.06, 0xf6edd6, 0.05, 0.85, -0.25, T, false);
+const flameMat = new THREE.MeshStandardMaterial({ color: 0xffd27a, emissive: 0xffa640, emissiveIntensity: 3 });
+const flame = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.05, 0.03), flameMat); flame.position.set(0.05, 0.94, -0.25); T.add(flame);
+// background tables
+table(-1.9, -1.3); chair(-1.9, -1.9, 0); chair(-1.9, -0.7, Math.PI);
+table(1.9, -1.4); chair(1.9, -2.0, 0);
+table(-2.2, 1.3);
+
+// ---------- faces
+function makeFace(opts) {
+  const cv = document.createElement('canvas'); cv.width = 32; cv.height = 32;
+  const ctx = cv.getContext('2d'); ctx.imageSmoothingEnabled = false;
+  const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+  tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter;
+  const r = rng(opts.seed || 3);
+  const stub = []; for (let i = 0; i < 45; i++) stub.push([1 + Math.floor(r() * 30), 22 + Math.floor(r() * 10)]);
+  function draw(s) {
+    const P = (x, y, w, h, col) => { ctx.fillStyle = col; ctx.fillRect(x, y, w, h); };
+    P(0, 0, 32, 32, opts.skin);
+    // cheeks shading
+    P(4, 19, 4, 2, opts.cheek); P(24, 19, 4, 2, opts.cheek);
+    // beard
+    if (opts.beard) {
+      for (const [x, y] of stub) if (!(x > 11 && x < 20 && y > 21 && y < 26)) P(x, y, 1, 1, opts.beard);
+      P(0, 25, 2, 7, opts.beard); P(30, 25, 2, 7, opts.beard); P(2, 29, 28, 3, opts.beard);
+    }
+    // nose
+    P(15, 18, 2, 3, opts.noseCol);
+    // eyes
+    const lx = Math.round(s.look || 0);
+    for (const ex of [8, 20]) {
+      if (s.eye < 0.25) { P(ex, 16, 4, 1, '#2a1d18'); continue; }
+      const top = s.eye < 0.7 ? 15 : 13;
+      P(ex, top, 4, 18 - top, '#fbfbf8');
+      P(ex + 1 + lx, top + (s.eye < 0.7 ? 0 : 1), 2, 18 - top - (s.eye < 0.7 ? 0 : 1), '#2a1d18');
+      if (s.eye >= 0.7) P(ex + 1 + lx, top + 1, 1, 1, '#ffffff');
+      if (s.eye < 0.7) P(ex, top, 4, 1, opts.lid);
+    }
+    // brows
+    const by = { normal: 10, up: 8, flat: 12, angry: 11 }[s.brow || 'normal'];
+    const bc = opts.brow;
+    if (s.brow === 'angry') { P(7, by - 1, 3, 2, bc); P(10, by, 3, 2, bc); P(22, by - 1, 3, 2, bc); P(19, by, 3, 2, bc); }
+    else if (s.brow === 'up') { P(7, by + 1, 2, 2, bc); P(9, by, 4, 2, bc); P(23, by + 1, 2, 2, bc); P(19, by, 4, 2, bc); }
+    else { P(7, by, 6, 2, bc); P(19, by, 6, 2, bc); }
+    // glasses
+    if (opts.glasses) {
+      const g = opts.glasses;
+      for (const ex of [7, 19]) { P(ex - 1, 12, 8, 1, g); P(ex - 1, 19, 8, 1, g); P(ex - 1, 12, 1, 8, g); P(ex + 6, 12, 1, 8, g); }
+      P(14, 14, 5, 1, g); P(0, 14, 6, 1, g); P(26, 14, 6, 1, g);
+    }
+    // mustache
+    if (opts.mustache) { P(11, 21, 10, 2, opts.mustache); P(10, 22, 2, 1, opts.mustache); P(20, 22, 2, 1, opts.mustache); }
+    // mouth
+    const mo = s.mouth || 0;
+    if (s.smirk) { P(13, 24, 5, 1, '#5a2020'); P(18, 23, 2, 1, '#5a2020'); }
+    else if (mo < 0.15) { P(13, 24, 6, 1, '#5a2020'); if (s.smile) { P(12, 23, 1, 1, '#5a2020'); P(19, 23, 1, 1, '#5a2020'); } }
+    else {
+      const h = 1 + Math.round(mo * 4), w = 6 + Math.round(mo * 2);
+      const x0 = 16 - w / 2;
+      P(x0, 23, w, h + 1, '#5a1818');
+      P(x0 + 1, 23, w - 2, 1, '#f2efe8');
+      if (h > 2) P(x0 + 2, 23 + h - 1, w - 4, 1, '#c95a5a');
+    }
+    tex.needsUpdate = true;
+  }
+  draw({ eye: 1, mouth: 0 });
+  return { tex, draw };
+}
+
+// ---------- people
+function person(o) {
+  const root = new THREE.Group(); scene.add(root);
+  const P = {};
+  const pelvis = new THREE.Group(); pelvis.position.y = 0.9; root.add(pelvis);
+  P.pelvis = pelvis;
+  // legs
+  for (const side of [-1, 1]) {
+    const hip = new THREE.Group(); hip.position.set(side * 0.13, 0, 0); pelvis.add(hip);
+    box(0.22, 0.47, 0.24, o.pants, 0, -0.235, 0, hip);
+    const knee = new THREE.Group(); knee.position.y = -0.45; hip.add(knee);
+    box(0.21, 0.42, 0.23, o.pants, 0, -0.21, 0, knee);
+    box(0.23, 0.08, 0.32, o.shoes, 0, -0.42, 0.04, knee);
+    P[side < 0 ? 'hipL' : 'hipR'] = hip; P[side < 0 ? 'kneeL' : 'kneeR'] = knee;
+  }
+  const torso = new THREE.Group(); pelvis.add(torso); P.torso = torso;
+  box(0.56, 0.66, 0.3, o.shirt, 0, 0.33, 0, torso);
+  if (o.vest) { box(0.58, 0.5, 0.32, o.vest, 0, 0.3, 0, torso); box(0.16, 0.5, 0.01, o.shirt, 0, 0.36, 0.165, torso); }
+  if (o.apron) box(0.6, 0.6, 0.04, o.apron, 0, -0.18, 0.17, torso);
+  if (o.collar) box(0.3, 0.06, 0.32, o.collar, 0, 0.67, 0, torso);
+  // arms
+  for (const side of [-1, 1]) {
+    const sh = new THREE.Group(); sh.position.set(side * 0.37, 0.6, 0); torso.add(sh);
+    box(0.18, 0.34, 0.2, o.sleeve || o.shirt, 0, -0.16, 0, sh);
+    const el = new THREE.Group(); el.position.y = -0.32; sh.add(el);
+    box(0.17, 0.3, 0.19, o.forearm || o.shirt, 0, -0.14, 0, el);
+    const hand = box(0.17, 0.13, 0.19, o.skin, 0, -0.35, 0, el);
+    P[side < 0 ? 'shL' : 'shR'] = sh; P[side < 0 ? 'elL' : 'elR'] = el; P[side < 0 ? 'handL' : 'handR'] = hand;
+  }
+  // head
+  const neck = new THREE.Group(); neck.position.y = 0.68; torso.add(neck); P.neck = neck;
+  box(0.18, 0.1, 0.18, o.skin, 0, 0.03, 0, neck);
+  const face = makeFace(o.face);
+  const skinM = mat(o.skin);
+  const faceM = new THREE.MeshStandardMaterial({ map: face.tex, roughness: 0.85 });
+  const head = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.44, 0.42), [skinM, skinM, skinM, skinM, faceM, skinM]);
+  head.position.y = 0.3; head.castShadow = true; neck.add(head);
+  // ears
+  box(0.05, 0.12, 0.08, o.skin, -0.245, 0.29, 0, neck); box(0.05, 0.12, 0.08, o.skin, 0.245, 0.29, 0, neck);
+  o.hair(neck);
+  P.face = face; P.root = root; P.head = head;
+  return P;
+}
+
+const waiter = person({
+  skin: 0xe8b48c, pants: 0x1c1c22, shoes: 0x0f0f0f, shirt: 0xf5f5f2, vest: 0x22222a, apron: 0x16161a, collar: 0xf5f5f2,
+  face: { skin: '#e8b48c', cheek: '#e19e7e', noseCol: '#d79f78', lid: '#c98f6a', brow: '#2b1a12', beard: 'rgba(90,55,35,.32)', seed: 11 },
+  hair: (n) => {
+    const H = 0x2b1a12;
+    box(0.46, 0.12, 0.44, H, 0, 0.56, 0, n); box(0.46, 0.3, 0.06, H, 0, 0.4, -0.2, n);
+    box(0.06, 0.2, 0.44, H, -0.22, 0.43, 0, n); box(0.06, 0.2, 0.44, H, 0.22, 0.43, 0, n);
+    box(0.3, 0.08, 0.14, H, 0.05, 0.64, 0.12, n); box(0.18, 0.06, 0.1, H, -0.1, 0.48, 0.2, n);
+  },
+});
+// notepad + pen
+const pad = box(0.14, 0.2, 0.03, 0xf8f6ee, 0, -0.4, 0.12, waiter.elL);
+const pen = box(0.025, 0.16, 0.025, 0x1f3fa0, 0, -0.42, 0.12, waiter.elR);
+
+const cust = person({
+  skin: 0xd99d78, pants: 0x3a3f52, shoes: 0x4a2e1c, shirt: 0x3f7a55, sleeve: 0x3f7a55, forearm: 0xd99d78, collar: 0x356b49,
+  face: { skin: '#d99d78', cheek: '#d48a70', noseCol: '#c98e6a', lid: '#b9805e', brow: '#8a8a8a', mustache: '#7d7d7d', glasses: '#2a2a2a', seed: 4 },
+  hair: (n) => {
+    const H = 0x9a9a9a;
+    box(0.06, 0.18, 0.4, H, -0.22, 0.36, -0.02, n); box(0.06, 0.18, 0.4, H, 0.22, 0.36, -0.02, n);
+    box(0.46, 0.2, 0.06, H, 0, 0.35, -0.2, n);
+  },
+});
+// menu
+const menu = new THREE.Group(); scene.add(menu);
+box(0.32, 0.44, 0.02, 0x7a1f1f, 0, 0, 0, menu);
+const menuPage = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 0.4), new THREE.MeshStandardMaterial({ map: canvasTex(32, 44, (c) => {
+  c.fillStyle = '#f3ead4'; c.fillRect(0, 0, 32, 44); c.fillStyle = '#7a1f1f'; c.fillRect(8, 3, 16, 3);
+  c.fillStyle = '#6a5a4a'; for (let i = 0; i < 9; i++) c.fillRect(4, 10 + i * 3.6, 14 + (i * 7) % 10, 1);
+}, true) }));
+menuPage.position.z = -0.012; menuPage.rotation.y = Math.PI; menu.add(menuPage);
+
+// background diners (static)
+function diner(x, z, ry, shirt, hairC, skin) {
+  const p = person({ skin, pants: 0x30303a, shoes: 0x222222, shirt, collar: shirt,
+    face: { skin: '#' + skin.toString(16).padStart(6, '0'), cheek: 'rgba(0,0,0,.05)', noseCol: 'rgba(0,0,0,.08)', lid: 'rgba(0,0,0,.15)', brow: '#2b1a12', seed: x * 10 | 0 },
+    hair: (n) => { box(0.46, 0.14, 0.44, hairC, 0, 0.55, 0, n); box(0.46, 0.36, 0.06, hairC, 0, 0.38, -0.2, n); } });
+  sit(p); p.root.position.set(x, 0, z); p.root.rotation.y = ry;
+  p.shL.rotation.x = -0.9; p.shR.rotation.x = -0.9; p.elL.rotation.x = -0.5; p.elR.rotation.x = -0.5;
+  return p;
+}
+function sit(p) {
+  p.pelvis.position.y = 0.5;
+  p.hipL.rotation.x = p.hipR.rotation.x = -Math.PI / 2;
+  p.kneeL.rotation.x = p.kneeR.rotation.x = Math.PI / 2;
+}
+const d1 = diner(-1.9, -1.8, 0, 0x8a3a5a, 0x3b2a1a, 0xf0c4a4);
+const d2 = diner(-1.9, -0.8, Math.PI, 0x2f4a7a, 0x111111, 0xc08a64);
+const d3 = diner(1.9, -1.9, 0, 0xd4a640, 0x6a4020, 0xe8b48c);
+
+// ---------- placement
+sit(cust);
+cust.root.position.set(-0.05, 0, -0.78);
+cust.root.rotation.y = 0.3;
+waiter.root.position.set(0.85, 0, 0.12);
+
+// ---------- lights
+scene.add(new THREE.HemisphereLight(0xffd9a8, 0x3a2416, 0.55));
+const key = new THREE.SpotLight(0xffd8a8, 38, 9, 0.75, 0.6, 1.6);
+key.position.set(0.6, 3.2, 1.2); key.target.position.set(0.2, 0.9, -0.4); key.castShadow = true;
+key.shadow.mapSize.set(1024, 1024); key.shadow.bias = -0.0008; key.shadow.radius = 4;
+scene.add(key); scene.add(key.target);
+const fill = new THREE.PointLight(0xffa860, 4, 6, 1.8); fill.position.set(-1.5, 2.6, -1.6); scene.add(fill);
+const fill2 = new THREE.PointLight(0xffb870, 3, 6, 1.8); fill2.position.set(2.0, 2.6, -1.6); scene.add(fill2);
+const candleL = new THREE.PointLight(0xffa040, 1.2, 1.6, 2); candleL.position.set(0.05, 1.0, -0.5); scene.add(candleL);
+const rim = new THREE.DirectionalLight(0x8fa8ff, 0.35); rim.position.set(-2, 2, -3); scene.add(rim);
+
+// ---------- timing helpers
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = u => { u = clamp(u); return u * u * (3 - 2 * u); };
+const lerp = (a, b, u) => a + (b - a) * u;
+function curIdx(t) { let k = 0; for (let i = 0; i < EV.length; i++) if (EV[i].start - (EV[i].pre || 0) - 0.05 <= t) k = i; return k; }
+function talkAmp(e, t) { if (!e || t < e.start || t > e.end) return 0; const k = Math.floor((t - e.start) * TL.fps); return e.env[k] || 0; }
+function speaking(who, t) { for (const e of EV) if (e.who === who && t >= e.start && t <= e.end) return e; return null; }
+function blink(t, off) { const p = (t + off) % 3.3; return p < 0.12 ? 0 : 1; }
+
+const SHOTS = {
+  wide: [[0.45, 1.65, 4.3], [0.35, 1.2, -0.35]],
+  cust: [[0.62, 1.5, 1.75], [-0.05, 1.4, -0.78]],
+  waiter: [[-0.65, 1.85, 2.12], [0.85, 1.72, 0.12]],
+  waiter_close: [[-0.11, 1.8, 1.4], [0.85, 1.78, 0.12]],
+  two: [[0.3, 1.6, 3.6], [0.4, 1.3, -0.3]],
+  cam: [[0.85, 1.72, 2.07], [0.85, 1.65, 0.12]],
+  card: [[0.45, 1.65, 4.3], [0.35, 1.2, -0.35]],
+};
+
+// ---------- captions
+const capEl = document.getElementById('cap');
+function chunks(e) {
+  const words = e.text.split(' ');
+  const out = []; let cur = [];
+  for (const w of words) { cur.push(w); if (cur.join(' ').length > 13 || /[.,!?:]$/.test(w) && cur.length > 1) { out.push(cur); cur = []; } }
+  if (cur.length) out.push(cur);
+  const total = e.text.length; let acc = 0;
+  return out.map(ws => { const s = acc / total; acc += ws.join(' ').length + 1; return { ws, s, e: acc / total }; });
+}
+const CH = EV.map(chunks);
+let lastCap = '';
+function setCaption(t) {
+  let html = '';
+  for (let i = 0; i < EV.length; i++) {
+    const e = EV[i];
+    if (e.shot === 'card') continue;
+    if (t >= e.start - 0.05 && t <= e.end + 0.25) {
+      const u = (t - e.start) / (e.end - e.start);
+      const c = CH[i].find(c => u < c.e) || CH[i][CH[i].length - 1];
+      html = c.ws.map(w => w === e.key || w.replace(/[.,!?:]/g, '') === e.key.replace(/[.,!?:]/g, '') ? `<span class="k">${w}</span>` : `<span class="w">${w}</span>`).join(' ');
+    }
+  }
+  if (html !== lastCap) { capEl.innerHTML = html; lastCap = html; }
+}
+const cardEl = document.getElementById('card');
+
+// ---------- per-frame
+window.renderAt = function (t) {
+  const i = curIdx(t), e = EV[i];
+  const ws = speaking('w', t), cs = speaking('c', t);
+  const wa = talkAmp(ws, t), ca = talkAmp(cs, t);
+  const idx = name => EV.findIndex(x => x.act === name);
+  const menuStart = EV[idx('menu')].start + 0.2, menuEnd = EV[idx('menu_close')].start + 0.9;
+
+  // ---- customer
+  const breath = Math.sin(t * 2.1) * 0.012;
+  cust.torso.position.y = breath;
+  let shL = -0.25, shR = -0.25, elL = -0.5, elR = -0.5, shLz = 0, shRz = 0, headX = 0, headY = -0.25;
+  const holding = t > menuStart && t < menuEnd;
+  if (holding) {
+    const u = ease((t - menuStart) / 0.5);
+    shL = lerp(-0.25, -1.0, u); shR = lerp(-0.25, -1.0, u); elL = lerp(-0.5, -0.9, u); elR = elL; shLz = -0.25 * u; shRz = 0.25 * u;
+    headX = 0.28 * u; headY = -0.05;
+  } else if (t >= menuEnd) {
+    const u = ease((t - menuEnd) / 0.4);
+    headX = lerp(0.28, 0, u); headY = lerp(-0.05, -0.32, u);
+  }
+  if (e.act === 'gesture' && cs) {
+    const g = Math.sin(t * 7) * 0.35 * clamp(ca * 2);
+    shR = -1.1 + g; elR = -1.0; shRz = 0.2; shL = -0.6 - g * 0.6; elL = -0.8;
+  }
+  if (e.act === 'thumb' && t > e.start - 0.1) { const u = ease((t - e.start + 0.1) / 0.25); shR = lerp(-0.25, -2.2, u); elR = lerp(-0.5, -0.3, u); shRz = 0.15; }
+  if (cs && !holding) headY = -0.35;
+  if (e.act === 'menu' && cs) { headX = 0.05; headY = -0.3; } // looks up from menu to ask
+  cust.shL.rotation.set(shL, 0, shLz); cust.shR.rotation.set(shR, 0, shRz);
+  cust.elL.rotation.x = elL; cust.elR.rotation.x = elR;
+  cust.neck.rotation.set(headX + ca * 0.05 * Math.sin(t * 13), headY + Math.sin(t * 0.7) * 0.03, 0);
+  const cBrow = (e.act === 'gesture' || e.act === 'menu') && cs ? 'up' : 'normal';
+  cust.face.draw({ eye: blink(t, 1.1) * (holding && !cs ? 0.85 : 1), mouth: ca, brow: cBrow, look: holding ? 0 : 1, smile: e.act === 'thumb' });
+  // menu placement
+  if (holding) {
+    menu.visible = true;
+    const hp = new THREE.Vector3(); cust.handL.getWorldPosition(hp); const hp2 = new THREE.Vector3(); cust.handR.getWorldPosition(hp2);
+    menu.position.copy(hp.add(hp2).multiplyScalar(0.5)).add(new THREE.Vector3(0, 0.16, 0));
+    menu.rotation.set(-0.35, cust.root.rotation.y + Math.PI, 0);
+  } else if (t >= menuEnd) {
+    menu.visible = true; menu.position.set(-0.3, 0.8, -0.1); menu.rotation.set(-Math.PI / 2, 0, 0.3);
+  } else { menu.visible = false; }
+
+  // ---- waiter
+  waiter.torso.position.y = Math.sin(t * 1.9 + 1) * 0.01;
+  let faceCam = 0;
+  const camE = EV[EV.length - 1];
+  if (t > camE.start - 0.35) faceCam = ease((t - camE.start + 0.35) / 0.4);
+  waiter.root.rotation.y = lerp(-1.25, 0, faceCam);
+  // notepad arm
+  let wL = -0.35, wLz = 0.15, wR = -0.1, wRz = -0.08, wElL = -1.35, wElR = -0.25;
+  const writing = e.act === 'write';
+  if (writing) { wR = -0.45 + Math.sin(t * 9) * 0.04; wElR = -1.25 + Math.sin(t * 13) * 0.06; wRz = -0.42 + Math.sin(t * 7) * 0.04; }
+  if (faceCam > 0) { wL = lerp(wL, -0.2, faceCam); wElL = lerp(wElL, -0.2, faceCam); wR = lerp(wR, -0.3, faceCam); wElR = lerp(wElR, -1.9, faceCam); wRz = lerp(wRz, -0.15, faceCam); }
+  waiter.shL.rotation.set(wL, 0, wLz); waiter.elL.rotation.x = wElL;
+  waiter.shR.rotation.set(wR, 0, wRz); waiter.elR.rotation.x = wElR;
+  const stare = i >= idx('stare');
+  let wHeadX = writing ? 0.28 : 0.06, wHeadY = 0.15;
+  if (stare && faceCam === 0) { wHeadX = 0.03; wHeadY = 0.05; }
+  waiter.neck.rotation.set(wHeadX + wa * 0.04 * Math.sin(t * 12), wHeadY * (1 - faceCam), 0);
+  waiter.face.draw({
+    eye: blink(t, 0.3) * (stare ? 0.5 : 1), mouth: wa, look: faceCam > 0.5 ? 0 : -1,
+    brow: stare ? 'flat' : 'normal', smirk: faceCam > 0.9 && !ws ? 1 : 0,
+  });
+
+  // background diners breathing / talking
+  d1.neck.rotation.y = Math.sin(t * 0.8) * 0.15; d2.neck.rotation.x = Math.sin(t * 1.3) * 0.08; d3.neck.rotation.y = Math.sin(t * 0.6 + 2) * 0.2;
+  d1.face.draw({ eye: blink(t, 2), mouth: Math.max(0, Math.sin(t * 9)) * 0.5 * (Math.sin(t * 0.9) > 0) });
+  d2.face.draw({ eye: blink(t, 0.7), mouth: 0, smile: true });
+
+  // flicker
+  const fl = 1 + Math.sin(t * 23) * 0.08 + Math.sin(t * 7.1) * 0.06;
+  candleL.intensity = 1.2 * fl; flame.scale.y = fl;
+
+  // camera
+  const [p0, tg] = SHOTS[e.shot];
+  const shotStart = e.start - (e.pre || 0);
+  const nextStart = i + 1 < EV.length ? EV[i + 1].start - (EV[i + 1].pre || 0) : TL.total;
+  const u = clamp((t - shotStart) / (nextStart - shotStart));
+  const P = new THREE.Vector3(...p0), G = new THREE.Vector3(...tg);
+  const dir = G.clone().sub(P);
+  P.add(dir.multiplyScalar(0.08 * ease(u)));
+  P.x += Math.sin(t * 0.5) * 0.02; P.y += Math.sin(t * 0.7) * 0.01;
+  camera.position.copy(P); camera.lookAt(G);
+  // punch-in on deadpan lines
+  camera.fov = (e.shot === 'waiter_close') ? lerp(50, 42, ease(u * 3)) : 50;
+  camera.updateProjectionMatrix();
+
+  // card overlay
+  const ce = EV.find(x => x.shot === 'card');
+  const cs0 = ce.start - ce.pre, ce1 = ce.end + 0.35;
+  const ca2 = clamp(Math.min((t - cs0) / 0.25, (ce1 - t) / 0.25));
+  cardEl.style.opacity = ca2;
+  cardEl.style.transform = `scale(${lerp(1.15, 1, ease((t - cs0) / 0.3))})`;
+  document.getElementById('c').style.filter = ca2 > 0 ? `blur(${ca2 * 10}px)` : 'none';
+
+  setCaption(t);
+  renderer.render(scene, camera);
+};
+window.READY = true;
+</script>
+</body></html>

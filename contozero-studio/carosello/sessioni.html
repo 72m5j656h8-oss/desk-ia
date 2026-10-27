@@ -1,0 +1,133 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: Pop; src: url(../lib/Poppins-Bold.ttf); font-weight: 700; }
+@font-face { font-family: PopR; src: url(Poppins-Regular.ttf); font-weight: 400; }
+:root { --navy: #0b1020; --panel: #141b31; --line: #26304f; --amber: #F2A93B; --amberD: #8a5a12; --txt: #eef1f8; --mut: #9aa4c2;
+  --asia: #F2A93B; --lon: #5b8cff; --ny: #2fd08a; --red: #ff5a6a; }
+* { box-sizing: border-box; margin: 0; }
+body { background: #000; }
+.s { width: 1080px; height: 1350px; position: relative; overflow: hidden; background: var(--navy); color: var(--txt); font-family: PopR, sans-serif;
+  padding: 110px 90px 120px; display: flex; flex-direction: column; gap: 40px; }
+.s::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 85% 10%, rgba(91,140,255,.16), transparent 45%), radial-gradient(circle at 10% 95%, rgba(242,169,59,.12), transparent 40%); }
+.s > * { position: relative; }
+.top { position: absolute; top: 46px; left: 90px; right: 90px; display: flex; justify-content: space-between; font: 700 28px Pop; color: var(--mut); }
+.top b { color: var(--amber); }
+.foot { position: absolute; bottom: 44px; left: 90px; right: 90px; display: flex; justify-content: space-between; align-items: center; font: 400 22px PopR; color: var(--mut); }
+.foot .swipe { font: 700 26px Pop; color: var(--amber); }
+h1 { font: 700 96px/1.02 Pop; letter-spacing: -2px; }
+h2 { font: 700 72px/1.05 Pop; letter-spacing: -1.5px; }
+h1 em, h2 em { font-style: normal; color: var(--amber); }
+p { font-size: 40px; line-height: 1.38; color: #d5dbec; }
+p b { font-family: Pop; color: var(--txt); }
+.hl { background: var(--amber); color: var(--navy); font-family: Pop; padding: 0 12px 2px; border-radius: 10px; box-shadow: 0 5px 0 var(--amberD); }
+.kicker { font: 700 30px Pop; letter-spacing: 3px; text-transform: uppercase; color: var(--amber); }
+.card { background: var(--panel); border: 2px solid var(--line); border-radius: 26px; padding: 36px 40px; display: grid; gap: 14px; }
+.card .t { font: 700 34px Pop; display: flex; align-items: center; gap: 16px; }
+.dot { width: 22px; height: 22px; border-radius: 6px; display: inline-block; }
+.card p { font-size: 34px; }
+.big { font: 700 150px/1 Pop; letter-spacing: -4px; }
+/* timeline */
+.tl { position: relative; height: 470px; margin-top: 10px; }
+.tl .row { position: absolute; left: 0; right: 0; height: 92px; }
+.tl .bar { position: absolute; top: 0; height: 92px; border-radius: 18px; display: flex; align-items: center; padding: 0 24px; font: 700 34px Pop; color: var(--navy); white-space: nowrap; }
+.tl .hrs { position: absolute; top: 400px; left: 0; right: 0; height: 60px; border-top: 3px solid var(--line); }
+.tl .hrs span { position: absolute; top: 12px; transform: translateX(-50%); font: 700 26px Pop; color: var(--mut); }
+.tl .ov { position: absolute; top: -10px; bottom: 60px; border: 3px dashed var(--txt); border-radius: 18px; opacity: .55; }
+.cover-img { position: absolute; right: -40px; bottom: 0; width: 760px; height: 760px; object-fit: cover; object-position: 50% 30%;
+  -webkit-mask-image: linear-gradient(to top, #000 70%, transparent), linear-gradient(to left, #000 80%, transparent); -webkit-mask-composite: source-in; }
+.badge { display: inline-block; font: 700 32px Pop; background: var(--panel); border: 2px solid var(--line); border-radius: 999px; padding: 10px 26px; color: var(--mut); }
+</style></head><body>
+
+<!-- 1 cover -->
+<section class="s" id="s1">
+  <div class="top"><span>@contozero<b>.trading</b></span><span>1/7</span></div>
+  <span class="kicker" style="margin-top:60px">Le basi · parte 1</span>
+  <h1>Le <em>3 sessioni</em><br>del mercato</h1>
+  <p style="max-width:560px">Asia, Londra, New York.<br><b>A che ora</b> si muove davvero il prezzo, in ora italiana.</p>
+  <img class="cover-img" src="../brand/foto_profilo.png" alt="">
+  <div class="foot"><span>Non è consulenza finanziaria</span><span class="swipe">Scorri →</span></div>
+</section>
+
+<!-- 2 -->
+<section class="s" id="s2">
+  <div class="top"><span>@contozero<b>.trading</b></span><span>2/7</span></div>
+  <span class="kicker">Il punto di partenza</span>
+  <h2>Il mercato è aperto<br><em>24 ore</em> su 24…</h2>
+  <p>Forex e indici come il Nasdaq si scambiano dalla domenica sera al venerdì sera, senza pause.</p>
+  <p>Ma non si muovono sempre allo stesso modo. Il mondo lavora a <b>turni</b>: quando Tokyo va a dormire si sveglia Londra, poi arriva New York.</p>
+  <p><span class="hl">Ogni turno ha un carattere diverso.</span></p>
+  <div class="foot"><span>Non è consulenza finanziaria</span><span class="swipe">→</span></div>
+</section>
+
+<!-- 3 timeline -->
+<section class="s" id="s3">
+  <div class="top"><span>@contozero<b>.trading</b></span><span>3/7</span></div>
+  <span class="kicker">Ora italiana · inverno</span>
+  <h2>La giornata in<br>una riga</h2>
+  <div class="tl" id="tl"></div>
+  <p style="font-size:32px;color:var(--mut)">Dal 26 ottobre al 1° novembre gli Stati Uniti sono ancora in ora legale: per questa settimana <b>New York inizia un'ora prima</b>.</p>
+  <div class="foot"><span>Orari indicativi, variano con l'ora legale</span><span class="swipe">→</span></div>
+</section>
+
+<!-- 4 asia -->
+<section class="s" id="s4">
+  <div class="top"><span>@contozero<b>.trading</b></span><span>4/7</span></div>
+  <span class="kicker" style="color:var(--asia)">01:00 – 10:00</span>
+  <h2>Asia:<br>la sessione <em>calma</em></h2>
+  <div class="card"><div class="t"><span class="dot" style="background:var(--asia)"></span>Cosa succede</div>
+    <p>Volumi bassi, movimenti piccoli. Il prezzo spesso resta chiuso in una <b>forbice</b>, il famoso range asiatico.</p></div>
+  <div class="card"><div class="t"><span class="dot" style="background:var(--asia)"></span>Perché ti interessa</div>
+    <p>Il <b>massimo</b> e il <b>minimo</b> di questa notte li guardano tutti. Sopra e sotto si accumulano gli stop. E dove ci sono stop, c'è <span class="hl">liquidità</span>.</p></div>
+  <div class="foot"><span>Non è consulenza finanziaria</span><span class="swipe">→</span></div>
+</section>
+
+<!-- 5 london -->
+<section class="s" id="s5">
+  <div class="top"><span>@contozero<b>.trading</b></span><span>5/7</span></div>
+  <span class="kicker" style="color:var(--lon)">09:00 – 18:00</span>
+  <h2>Londra:<br>arrivano i <em>volumi</em></h2>
+  <div class="card"><div class="t"><span class="dot" style="background:var(--lon)"></span>Cosa succede</div>
+    <p>Londra è la piazza più grande del mondo per le valute. All'apertura entrano banche e istituzionali e il prezzo <b>si sveglia</b>.</p></div>
+  <div class="card"><div class="t"><span class="dot" style="background:var(--lon)"></span>Il movimento tipico</div>
+    <p>Spesso il primo movimento va a prendersi la liquidità lasciata dalla notte asiatica… <span class="hl">e poi cambia idea</span>.</p></div>
+  <div class="foot"><span>Non è consulenza finanziaria</span><span class="swipe">→</span></div>
+</section>
+
+<!-- 6 new york -->
+<section class="s" id="s6">
+  <div class="top"><span>@contozero<b>.trading</b></span><span>6/7</span></div>
+  <span class="kicker" style="color:var(--ny)">14:00 – 23:00</span>
+  <h2>New York:<br>il momento <em>caldo</em></h2>
+  <div class="card"><div class="t"><span class="dot" style="background:var(--ny)"></span>Cosa succede</div>
+    <p>Alle <b>15:30</b> apre la borsa americana: per il Nasdaq è il momento più movimentato della giornata. Escono anche molti dati macro.</p></div>
+  <div class="card"><div class="t"><span class="dot" style="background:var(--ny)"></span>La sovrapposizione</div>
+    <p>Tra le <b>14:00 e le 18:00</b> Londra e New York sono aperte insieme: più volumi, più volatilità, <span class="hl">più rischio</span>.</p></div>
+  <div class="foot"><span>Non è consulenza finanziaria</span><span class="swipe">→</span></div>
+</section>
+
+<!-- 7 close -->
+<section class="s" id="s7">
+  <div class="top"><span>@contozero<b>.trading</b></span><span>7/7</span></div>
+  <span class="kicker">Quindi?</span>
+  <h2>Non serve stare<br>al grafico <em>tutto il giorno</em></h2>
+  <p>Io lavoro <b>solo in una finestra precisa</b>, dopo l'apertura di Londra. Il resto della giornata, per me, è rumore.</p>
+  <p>Ogni trade di quella finestra lo pubblico qui, vinto o perso. Domenica esce il <span class="hl">primo report</span>.</p>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px"><span class="badge">💾 Salva il post</span><span class="badge">🔔 Segui il conto</span></div>
+  <div class="foot"><span>Contenuto educativo · Non è consulenza finanziaria · Il trading comporta rischi elevati</span></div>
+</section>
+
+<script>
+// timeline 24h, 00:00 -> 24:00
+const tl = document.getElementById('tl'); const W = 900;
+const x = h => h / 24 * W;
+const rows = [['Asia', 1, 10, 'var(--asia)', 0], ['Londra', 9, 18, 'var(--lon)', 120], ['New York', 14, 23, 'var(--ny)', 240]];
+let html = '';
+for (const [n, a, b, c, top] of rows) html += `<div class="row" style="top:${top}px"><div class="bar" style="left:${x(a)}px;width:${x(b) - x(a)}px;background:${c}">${n}</div></div>`;
+html += `<div class="ov" style="left:${x(14) - 6}px;width:${x(18) - x(14) + 12}px;top:110px;height:250px"></div>`;
+html += `<div style="position:absolute;top:365px;left:${x(14)}px;font:700 24px Pop;color:var(--txt)">sovrapposizione</div>`;
+html += '<div class="hrs">' + [0, 3, 6, 9, 12, 15, 18, 21, 24].map(h => `<span style="left:${x(h)}px">${String(h).padStart(2, '0')}</span>`).join('') + '</div>';
+tl.innerHTML = html;
+window.READY = true;
+</script>
+</body></html>

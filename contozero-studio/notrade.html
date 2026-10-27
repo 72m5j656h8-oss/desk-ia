@@ -1,0 +1,94 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: Pop; src: url(lib/Poppins-Bold.ttf); font-weight: 700; }
+@font-face { font-family: PopR; src: url(carosello/Poppins-Regular.ttf); font-weight: 400; }
+html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0b1020; font-family: Pop, sans-serif; }
+iframe { position: absolute; inset: 0; width: 1080px; height: 1920px; border: 0; }
+#head { position: absolute; top: 70px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: center; }
+#head .b { background: #F2A93B; color: #0b1020; font-size: 34px; padding: 8px 20px 10px; border-radius: 12px; box-shadow: 0 5px 0 #8a5a12; }
+#head .m { color: #cfd6ea; font: 400 28px PopR; background: rgba(11,16,32,.75); padding: 8px 16px; border-radius: 10px; }
+#panel { position: absolute; left: 40px; top: 170px; width: 1000px; height: 974px; border-radius: 26px; overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0,0,0,.55), 0 0 0 3px #26304f; background: #9a9a9a; }
+#panel svg { width: 1000px; height: 974px; display: block; }
+#cap { position: absolute; left: 50px; right: 50px; top: 1185px; text-align: center; font-size: 72px; line-height: 1.12; color: #fff;
+  -webkit-text-stroke: 3px #0b1020; paint-order: stroke fill; text-shadow: 0 5px 0 #0b1020, 0 0 18px rgba(0,0,0,.8); }
+#cap .k { background: #F2A93B; color: #0b1020; -webkit-text-stroke: 0; text-shadow: none; padding: 0 14px 4px; border-radius: 14px; display: inline-block; transform: rotate(-2deg); box-shadow: 0 6px 0 #8a5a12; }
+.lbl { font: 700 34px Pop; }
+#check { position: absolute; left: 150px; right: 150px; top: 470px; background: rgba(11,16,32,.93); border: 3px solid #26304f; border-radius: 24px;
+  padding: 28px 34px; color: #eef1f8; font: 700 38px Pop; display: grid; gap: 16px; opacity: 0; }
+#check div { display: flex; gap: 18px; align-items: center; }
+#check .ok { color: #2fd08a; } #check .no { color: #ff5a6a; }
+#check small { font: 400 26px PopR; color: #9aa4c2; }
+</style></head><body>
+<iframe id="tr" src="trader.html?shot=pip&tl=notrade/notrade.json"></iframe>
+<div id="head"><span class="b">TRADE DEL GIORNO</span><span class="m">NAS100 · 5m · 26 ott</span></div>
+<div id="panel">
+  <svg viewBox="0 0 1170 1140">
+    <image href="notrade/crop.png" x="0" y="0" width="1170" height="1140"/>
+    <rect id="cover" x="490" y="0" width="470" height="1140" fill="#8c8c8c"/>
+    <g id="asia" opacity="0"><rect x="40" y="210" width="450" height="764" fill="none" stroke="#F2A93B" stroke-width="7" stroke-dasharray="18 10" rx="6"/>
+      <rect x="52" y="222" width="170" height="54" rx="10" fill="#F2A93B"/><text x="137" y="261" text-anchor="middle" class="lbl" fill="#0b1020">ASIA</text></g>
+    <g id="lowline" opacity="0"><line x1="40" x2="960" y1="976" y2="976" stroke="#F2A93B" stroke-width="5"/>
+      <text x="60" y="1040" class="lbl" fill="#0b1020">MINIMI ASIA</text></g>
+    <g id="highline" opacity="0"><line x1="40" x2="960" y1="210" y2="210" stroke="#F2A93B" stroke-width="5"/>
+      <text x="60" y="190" class="lbl" fill="#0b1020">MASSIMI ASIA</text></g>
+    <g id="spikeL" opacity="0"><circle cx="544" cy="976" r="62" fill="none" stroke="#ff5a6a" stroke-width="9"/>
+      <rect x="600" y="1010" width="300" height="60" rx="12" fill="#ff5a6a"/><text x="750" y="1052" text-anchor="middle" class="lbl" fill="#fff">solo spike</text></g>
+    <g id="spikeH" opacity="0"><circle cx="760" cy="195" r="62" fill="none" stroke="#ff5a6a" stroke-width="9"/>
+      <rect x="470" y="70" width="300" height="60" rx="12" fill="#ff5a6a"/><text x="620" y="112" text-anchor="middle" class="lbl" fill="#fff">solo spike</text></g>
+    <g id="stamp" opacity="0" transform="translate(585 600) rotate(-12)">
+      <rect x="-420" y="-95" width="840" height="190" rx="22" fill="rgba(255,90,106,.12)" stroke="#ff5a6a" stroke-width="14"/>
+      <text x="0" y="40" text-anchor="middle" style="font:700 104px Pop;letter-spacing:3px" fill="#ff5a6a">NESSUN TRADE</text></g>
+  </svg>
+</div>
+<div id="check">
+  <div><span class="ok">✓</span> Liquidità asiatica presa</div>
+  <div><span class="no">✗</span> Conferma del mio setup</div>
+  <small>Senza tutte le condizioni, non si entra.</small>
+</div>
+<div id="cap"></div>
+<script>
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), ease = u => { u = clamp(u); return u * u * (3 - 2 * u); };
+let TL;
+const $ = id => document.getElementById(id);
+function fade(id, t0, t1 = 99) { const a = Math.min(clamp((T - t0) / 0.35), clamp((t1 - T) / 0.3)); $(id).setAttribute('opacity', a); return a; }
+let T = 0;
+window.renderAt = function (t) {
+  T = t; const E = TL.events, s = i => E[i].start, e = i => E[i].end;
+  $('tr').contentWindow.renderAt(t);
+  // reveal
+  let rx = 0;
+  if (t < s(1)) rx = 490 * ease((t - 0.2) / 2.5);
+  else if (t < s(3)) rx = 490 + 70 * ease((t - s(1) - 1.0) / 1.5);
+  else rx = 560 + 270 * ease((t - s(3)) / 2.2);
+  $('cover').setAttribute('x', Math.max(40, rx)); $('cover').setAttribute('width', Math.max(0, 960 - Math.max(40, rx)));
+  fade('asia', 1.0, s(4));
+  fade('lowline', s(1) + 0.6, s(4));
+  fade('spikeL', s(2) + 0.3, s(4));
+  fade('highline', s(3) + 1.0, s(4));
+  fade('spikeH', s(3) + 2.0, s(4));
+  const ca = Math.min(clamp((t - s(4)) / 0.3), clamp((s(6) - 0.3 - t) / 0.3)); $('check').style.opacity = ca;
+  $('check').style.transform = `scale(${0.94 + 0.06 * ease((t - s(4)) / 0.3)})`;
+  const st = clamp((t - (s(6) - 0.25)) / 0.18); $('stamp').setAttribute('opacity', st);
+  $('stamp').setAttribute('transform', `translate(585 600) rotate(-12) scale(${1.6 - 0.6 * ease(st)})`);
+  // captions
+  const cur = E.find(x => t >= x.start && t <= x.end + 0.15); let html = '';
+  if (cur) {
+    const words = cur.text.split(' '), chunks = []; let c = [];
+    for (const w of words) { c.push(w); if (c.join(' ').length > 16 || (/[.,!?…:]$/.test(w) && c.length > 1)) { chunks.push(c); c = []; } }
+    if (c.length) chunks.push(c);
+    const tot = cur.text.length; let acc = 0; const u = (t - cur.start) / (cur.end - cur.start); let pick = chunks[chunks.length - 1];
+    for (const ch of chunks) { acc += ch.join(' ').length + 1; if (u < acc / tot) { pick = ch; break; } }
+    html = pick.map(w => w.replace(/[.,!?…:]/g, '') === cur.key.replace(/[.,!?…:]/g, '') ? `<span class="k">${w}</span>` : w).join(' ');
+  }
+  if ($('cap').innerHTML !== html) $('cap').innerHTML = html;
+};
+(async () => {
+  TL = await (await fetch('notrade/notrade.json')).json();
+  await new Promise(r => { const f = $('tr'); const chk = () => (f.contentWindow && f.contentWindow.READY) ? r() : setTimeout(chk, 100); chk(); });
+  await document.fonts.ready;
+  window.READY = true;
+})();
+</script>
+</body></html>

@@ -1,0 +1,358 @@
+<title>Diario Trade Demo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one column journal — summary strip, equity curve, entry form, weekly table, trade log */
+:root {
+  --bg: #f3f1ec;
+  --surface: #fffdf8;
+  --ink: #1d2433;
+  --muted: #6b7183;
+  --line: #ddd8cc;
+  --accent: #2c4bd1;
+  --asia: #c9822b;
+  --win: #1d8a55;
+  --loss: #c23b3b;
+  --be: #8a8f9c;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151d; --surface: #1a1e29; --ink: #e8e9ee; --muted: #9298a8; --line: #2c3242;
+    --accent: #7d95ff; --asia: #e0a050; --win: #3fbf80; --loss: #f06a6a; --be: #8a8f9c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151d; --surface: #1a1e29; --ink: #e8e9ee; --muted: #9298a8; --line: #2c3242;
+  --accent: #7d95ff; --asia: #e0a050; --win: #3fbf80; --loss: #f06a6a; --be: #8a8f9c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); }
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 28px; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+h1 { font: 800 clamp(30px, 6vw, 44px)/1 var(--display); margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+.sub { color: var(--muted); margin: 6px 0 0; }
+.tag { font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--asia); border: 1px solid var(--asia); padding: 6px 9px; border-radius: 4px; }
+h2 { font: 600 20px/1.2 var(--display); margin: 0; }
+.label { font: 500 12px/1.2 var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+.periods { display: flex; gap: 6px; flex-wrap: wrap; }
+.periods button { font: 500 14px var(--body); color: var(--ink); background: transparent; border: 1px solid var(--line); padding: 7px 12px; border-radius: 999px; cursor: pointer; }
+.periods button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.periods button:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.stat { background: var(--surface); padding: 14px 16px; display: grid; gap: 4px; min-width: 0; }
+.stat .v { font: 600 26px/1.1 var(--mono); font-variant-numeric: tabular-nums; }
+.stat .n { font-size: 12.5px; color: var(--muted); }
+.pos { color: var(--win); } .neg { color: var(--loss); } .zero { color: var(--be); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+#curve { width: 100%; height: 220px; display: block; }
+#curve text { font: 11px var(--mono); fill: var(--muted); }
+
+form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px 14px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field.wide { grid-column: 1 / -1; }
+input, select, textarea { font: 15px var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 9px 10px; width: 100%; }
+textarea { resize: vertical; min-height: 60px; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg label { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; cursor: pointer; font-size: 14px; }
+.seg input { width: auto; accent-color: var(--accent); }
+.actions { grid-column: 1 / -1; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.btn { font: 600 15px var(--body); background: var(--accent); color: #fff; border: 0; border-radius: 6px; padding: 10px 18px; cursor: pointer; }
+.btn:disabled { opacity: .5; cursor: default; }
+.msg { font-size: 14px; color: var(--muted); }
+
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 560px; }
+th { text-align: left; font: 500 12px var(--body); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line); }
+td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.num { font-family: var(--mono); text-align: right; }
+th.num { text-align: right; }
+.pill { font: 600 12px/1 var(--mono); padding: 4px 7px; border-radius: 4px; display: inline-block; }
+.pill.pos { background: color-mix(in srgb, var(--win) 14%, transparent); }
+.pill.neg { background: color-mix(in srgb, var(--loss) 14%, transparent); }
+.pill.zero { background: color-mix(in srgb, var(--be) 18%, transparent); }
+.rule-no { color: var(--loss); font-size: 13px; }
+.note { color: var(--muted); font-size: 13.5px; }
+.del { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 13px; text-decoration: underline; padding: 0; }
+.empty { border: 1px dashed var(--line); border-radius: 10px; padding: 28px 20px; text-align: center; color: var(--muted); }
+.empty strong { color: var(--ink); display: block; font: 600 18px var(--display); margin-bottom: 6px; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.legend i { display: inline-block; width: 18px; height: 2px; vertical-align: middle; margin-right: 6px; background: var(--accent); }
+.legend i.th { background: none; border-top: 2px dashed var(--muted); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Diario Trade Demo</h1>
+      <p class="sub">Ogni operazione del conto demo, dal primo giorno. Rischio fisso, obiettivo 1:2.</p>
+    </div>
+    <span class="tag" id="since">Conto demo</span>
+  </header>
+
+  <section aria-label="Periodo" class="periods" id="periods">
+    <button type="button" data-p="week" aria-pressed="false">Questa settimana</button>
+    <button type="button" data-p="month" aria-pressed="false">Questo mese</button>
+    <button type="button" data-p="all" aria-pressed="true">Dall'inizio</button>
+  </section>
+
+  <section class="stats" id="stats" aria-label="Riepilogo"></section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Curva in R</h2>
+      <div class="legend"><span><i></i>R cumulati</span><span><i class="th"></i>pareggio</span></div>
+    </div>
+    <svg id="curve" viewBox="0 0 900 220" preserveAspectRatio="none" role="img" aria-label="Curva dei risultati in R"></svg>
+  </section>
+
+  <section class="panel" id="entry">
+    <div class="panel-head"><h2>Nuova operazione</h2><span class="label" id="writeState"></span></div>
+    <form id="f" novalidate>
+      <div class="field"><label class="label" for="d">Data</label><input id="d" type="date" required></div>
+      <div class="field"><label class="label" for="tm">Ora ingresso</label><input id="tm" type="time" value="09:30"></div>
+      <div class="field"><label class="label" for="asset">Strumento</label>
+        <select id="asset"><option>NAS100</option><option>US30</option><option>SPX500</option><option>GER40</option><option>EURUSD</option><option>GBPUSD</option><option>XAUUSD</option><option>BTCUSD</option></select></div>
+      <div class="field"><span class="label" id="swl">Liquidità presa</span>
+        <div class="seg" role="radiogroup" aria-labelledby="swl">
+          <label><input type="radio" name="sweep" id="sw-h" value="high" checked>Massimi Asia</label>
+          <label><input type="radio" name="sweep" id="sw-l" value="low">Minimi Asia</label>
+        </div></div>
+      <div class="field wide"><span class="label" id="esl">Esito</span>
+        <div class="seg" role="radiogroup" aria-labelledby="esl">
+          <label><input type="radio" name="out" id="o-tp" value="2" checked>Target +2R</label>
+          <label><input type="radio" name="out" id="o-sl" value="-1">Stop −1R</label>
+          <label><input type="radio" name="out" id="o-be" value="0">Pareggio 0R</label>
+          <label><input type="radio" name="out" id="o-man" value="man">Chiuso a mano</label>
+          <label><input type="radio" name="out" id="o-none" value="none">Nessun setup oggi</label>
+          <input id="rman" type="number" step="0.1" placeholder="R, es. 0.8" aria-label="R ottenuti chiudendo a mano" style="max-width:130px" hidden>
+        </div></div>
+      <div class="field"><span class="label" id="rl">Regole rispettate?</span>
+        <div class="seg" role="radiogroup" aria-labelledby="rl">
+          <label><input type="radio" name="rules" id="r-y" value="1" checked>Sì</label>
+          <label><input type="radio" name="rules" id="r-n" value="0">No</label>
+        </div></div>
+      <div class="field wide"><label class="label" for="note">Nota (cosa hai visto, cosa hai sbagliato)</label><textarea id="note" maxlength="500"></textarea></div>
+      <div class="actions"><button class="btn" id="save" type="submit">Salva operazione</button><span class="msg" id="msg" role="status"></span></div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Settimane</h2><span class="label">da usare per il report</span></div>
+    <div class="tablewrap" id="weeks"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Tutte le operazioni</h2><span class="label" id="count"></span></div>
+    <div class="tablewrap" id="log"></div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  let trades = [];
+  let period = "all";
+  let db = null, canWrite = false;
+
+  function todayRome() {
+    try { return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome" }).format(new Date()); }
+    catch (e) { return new Date().toISOString().slice(0, 10); }
+  }
+  $("d").value = todayRome();
+
+  // ---- dates
+  function parse(d) { const [y, m, dd] = d.split("-").map(Number); return new Date(Date.UTC(y, m - 1, dd)); }
+  function weekStart(d) { const t = parse(d); const wd = (t.getUTCDay() + 6) % 7; t.setUTCDate(t.getUTCDate() - wd); return t.toISOString().slice(0, 10); }
+  function fmtDay(d) { const t = parse(d); return t.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" }); }
+  function fmtR(r) { const s = (Math.round(r * 100) / 100).toFixed(2).replace(/\.?0+$/, ""); return (r > 0 ? "+" : r < 0 ? "−" : "") + s.replace("-", "") + "R"; }
+  function cls(r) { return r > 0 ? "pos" : r < 0 ? "neg" : "zero"; }
+
+  function inPeriod(t) {
+    const today = todayRome();
+    if (period === "week") return weekStart(t.date) === weekStart(today);
+    if (period === "month") return t.date.slice(0, 7) === today.slice(0, 7);
+    return true;
+  }
+
+  function stats(list) {
+    const n = list.length;
+    const wins = list.filter(t => t.r > 0).length, losses = list.filter(t => t.r < 0).length, be = n - wins - losses;
+    const total = list.reduce((a, t) => a + t.r, 0);
+    let peak = 0, cum = 0, dd = 0;
+    for (const t of list) { cum += t.r; peak = Math.max(peak, cum); dd = Math.min(dd, cum - peak); }
+    const ok = list.filter(t => t.rules).length;
+    const okR = list.filter(t => t.rules).reduce((a, t) => a + t.r, 0);
+    const badR = list.filter(t => !t.rules).reduce((a, t) => a + t.r, 0);
+    return { n, wins, losses, be, total, exp: n ? total / n : 0, wr: n ? wins / n : 0, dd, rules: n ? ok / n : 0, okR, badR };
+  }
+
+  function sorted() { return trades.slice().sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")) || (a.created || 0) - (b.created || 0)); }
+
+  function renderStats(s, skipped = 0) {
+    const wrNote = s.n ? (s.wr >= 1 / 3 ? "sopra la soglia del 33,3%" : "sotto la soglia del 33,3%") : "con 1:2 serve almeno 33,3%";
+    const items = [
+      ["Operazioni", String(s.n), `${s.wins} vinte · ${s.losses} perse · ${s.be} pari` + (skipped ? ` · ${skipped} ${skipped === 1 ? "giorno" : "giorni"} senza setup` : ""), ""],
+      ["Trade vincenti", s.n ? (s.wr * 100).toFixed(1).replace(".", ",") + "%" : "—", wrNote, s.n ? (s.wr >= 1 / 3 ? "pos" : "neg") : ""],
+      ["Risultato", s.n ? fmtR(s.total) : "—", "somma dei R", s.n ? cls(s.total) : ""],
+      ["Media per trade", s.n ? fmtR(s.exp) : "—", "aspettativa", s.n ? cls(s.exp) : ""],
+      ["Calo massimo", s.n ? fmtR(s.dd) : "—", "dal picco al punto più basso", s.dd < 0 ? "neg" : ""],
+      ["Regole rispettate", s.n ? Math.round(s.rules * 100) + "%" : "—", s.n ? `con regole ${fmtR(s.okR)} · senza ${fmtR(s.badR)}` : "il dato più importante", s.n ? (s.rules >= 0.9 ? "pos" : "neg") : ""],
+    ];
+    $("stats").innerHTML = items.map(([l, v, n, c]) => `<div class="stat"><span class="label">${l}</span><span class="v ${c}">${v}</span><span class="n">${n}</span></div>`).join("");
+  }
+
+  function renderCurve(list) {
+    const svg = $("curve"); const W = 900, H = 220, L = 44, R = 12, T = 14, B = 26;
+    const pts = [0]; let c = 0; for (const t of list) { c += t.r; pts.push(c); }
+    let lo = Math.min(0, ...pts), hi = Math.max(0, ...pts);
+    if (hi - lo < 4) { const m = (hi + lo) / 2; lo = Math.min(lo, m - 2); hi = Math.max(hi, m + 2); }
+    lo = Math.floor(lo); hi = Math.ceil(hi);
+    const y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+    const x = i => L + (pts.length > 1 ? i / (pts.length - 1) : 0) * (W - L - R);
+    const step = Math.max(1, Math.ceil((hi - lo) / 5));
+    let g = "";
+    for (let v = lo; v <= hi; v += step) {
+      g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1" ${v === 0 ? 'stroke-dasharray="5 4" stroke="var(--muted)"' : ""}/>`;
+      g += `<text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${v > 0 ? "+" : ""}${v}R</text>`;
+    }
+    if (list.length === 0) {
+      g += `<text x="${W / 2}" y="${H / 2}" text-anchor="middle">La curva parte dalla prima operazione salvata</text>`;
+      svg.innerHTML = g; return;
+    }
+    const d = pts.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+    const area = d + `L${x(pts.length - 1)},${y(0)}L${x(0)},${y(0)}Z`;
+    g += `<path d="${area}" fill="var(--accent)" fill-opacity=".10"/>`;
+    g += `<path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>`;
+    list.forEach((t, i) => { g += `<circle cx="${x(i + 1)}" cy="${y(pts[i + 1])}" r="3.2" fill="var(--${t.r > 0 ? "win" : t.r < 0 ? "loss" : "be"})"/>`; });
+    const last = pts.length - 1;
+    g += `<text x="${Math.min(x(last), W - R - 4)}" y="${y(pts[last]) - 9}" text-anchor="end" style="fill:var(--ink);font-weight:600">${fmtR(pts[last])}</text>`;
+    g += `<text x="${L}" y="${H - 6}">${fmtDay(list[0].date)}</text><text x="${W - R}" y="${H - 6}" text-anchor="end">${fmtDay(list[list.length - 1].date)}</text>`;
+    svg.innerHTML = g;
+  }
+
+  function renderWeeks(all, skips = []) {
+    if (!all.length && !skips.length) { $("weeks").innerHTML = `<div class="empty">Le settimane compaiono qui, una riga ciascuna, appena salvi la prima operazione.</div>`; return; }
+    const by = {};
+    for (const t of all) (by[weekStart(t.date)] ||= []).push(t);
+    const sk = {};
+    for (const t of skips) { const k = weekStart(t.date); by[k] ||= []; sk[k] = (sk[k] || 0) + 1; }
+    const rows = Object.keys(by).sort().reverse().map(k => {
+      const s = stats(by[k]);
+      return `<tr><td>${fmtDay(k)}</td><td class="num">${s.n}</td><td class="num">${sk[k] || 0}</td><td class="num">${(s.wr * 100).toFixed(0)}%</td><td class="num"><span class="pill ${cls(s.total)}">${fmtR(s.total)}</span></td><td class="num">${fmtR(s.dd)}</td><td class="num">${Math.round(s.rules * 100)}%</td></tr>`;
+    }).join("");
+    $("weeks").innerHTML = `<table><thead><tr><th>Settimana dal</th><th class="num">Trade</th><th class="num">Senza setup</th><th class="num">Vincenti</th><th class="num">Risultato</th><th class="num">Calo max</th><th class="num">Regole</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  function esc(s) { return String(s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+  function renderLog(list) {
+    $("count").textContent = list.length ? `${list.length} nel periodo` : "";
+    if (!list.length) {
+      $("log").innerHTML = `<div class="empty"><strong>Nessuna operazione ${period === "all" ? "ancora" : "in questo periodo"}</strong>Compila "Nuova operazione" dopo ogni trade: data, liquidità presa, esito e se hai rispettato le regole. Le statistiche e la curva si aggiornano da sole.</div>`;
+      return;
+    }
+    const rows = list.slice().reverse().map(t => `<tr>
+      <td>${fmtDay(t.date)}<br><span class="note">${esc(t.time || "")}</span></td>
+      <td>${esc(t.asset)}</td>
+      <td>${t.noTrade ? "Nessun setup" : t.sweep === "high" ? "Massimi Asia → short" : "Minimi Asia → long"}</td>
+      <td class="num">${t.noTrade ? '<span class="pill zero">—</span>' : `<span class="pill ${cls(t.r)}">${fmtR(t.r)}</span>`}</td>
+      <td>${t.rules ? "Sì" : '<span class="rule-no">No</span>'}</td>
+      <td class="note">${esc(t.note)}</td>
+      <td>${canWrite ? `<button class="del" type="button" data-id="${esc(t.id)}">Elimina</button>` : ""}</td></tr>`).join("");
+    $("log").innerHTML = `<table><thead><tr><th>Data</th><th>Strumento</th><th>Setup</th><th class="num">Esito</th><th>Regole</th><th>Nota</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  function render() {
+    const everything = sorted();
+    const all = everything.filter(t => !t.noTrade);
+    const list = all.filter(inPeriod);
+    const skipped = everything.filter(t => t.noTrade && inPeriod(t)).length;
+    renderStats(stats(list), skipped);
+    renderCurve(list);
+    renderWeeks(all, everything.filter(t => t.noTrade));
+    renderLog(everything.filter(inPeriod));
+    $("since").textContent = all.length ? `Conto demo · dal ${fmtDay(all[0].date)}` : "Conto demo · giorno zero";
+  }
+
+  // ---- period buttons
+  try { const p = localStorage.getItem("diario-period"); if (p) period = p; } catch (e) {}
+  function syncPeriods() { document.querySelectorAll("#periods button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.p === period))); }
+  syncPeriods();
+  $("periods").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    period = b.dataset.p; syncPeriods(); try { localStorage.setItem("diario-period", period); } catch (er) {}
+    render();
+  });
+
+  // ---- form
+  document.querySelectorAll('input[name="out"]').forEach(r => r.addEventListener("change", () => { $("rman").hidden = !$("o-man").checked; }));
+  function setWritable(on, why) {
+    canWrite = on;
+    $("save").disabled = !on;
+    $("writeState").textContent = on ? "" : why;
+  }
+  setWritable(false, "Collegamento al diario…");
+
+  $("f").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (!db || !canWrite) return;
+    const out = document.querySelector('input[name="out"]:checked').value;
+    const none = out === "none";
+    let r = none ? 0 : out === "man" ? parseFloat($("rman").value) : parseFloat(out);
+    if (!$("d").value) { $("msg").textContent = "Inserisci la data dell'operazione."; return; }
+    if (!isFinite(r)) { $("msg").textContent = "Scrivi quanti R hai preso chiudendo a mano, per esempio 0.8 o -0.5."; return; }
+    const t = {
+      date: $("d").value, time: $("tm").value, asset: $("asset").value,
+      sweep: document.querySelector('input[name="sweep"]:checked').value,
+      r, rules: document.querySelector('input[name="rules"]:checked').value === "1",
+      note: $("note").value.trim(), created: Date.now(),
+    };
+    if (none) t.noTrade = true;
+    $("save").disabled = true; $("msg").textContent = "Salvataggio…";
+    try {
+      await db.collection("trades").add(t);
+      $("msg").textContent = none ? `Segnato: nessun setup il ${fmtDay(t.date)}.` : `Salvata: ${fmtR(r)} il ${fmtDay(t.date)}.`;
+      $("note").value = ""; $("rman").value = "";
+    } catch (er) {
+      $("msg").textContent = er && er.code === "quota_exceeded" ? "Il diario è pieno: elimina le operazioni più vecchie per aggiungerne altre." : "Non sono riuscito a salvare. Riprova tra qualche secondo.";
+    }
+    $("save").disabled = !canWrite;
+  });
+
+  $("log").addEventListener("click", async e => {
+    const b = e.target.closest(".del"); if (!b || !db) return;
+    if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Conferma"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "Elimina"; }, 3000); return; }
+    try { await db.collection("trades").doc(b.dataset.id).delete(); } catch (er) { $("msg").textContent = "Non sono riuscito a eliminarla. Riprova."; }
+  });
+
+  render();
+
+  // ---- store
+  (async () => {
+    const C = window.claude;
+    if (!C || !C.use) { setWritable(false, "Diario non disponibile qui"); return; }
+    const [dbNs, user] = await Promise.all([C.use("db"), C.use("user")]);
+    if (!dbNs) { setWritable(false, "Accedi per vedere e salvare le operazioni"); return; }
+    db = dbNs;
+    const owner = user ? await user.isOwner() : false;
+    setWritable(!!owner, owner ? "" : "Solo lettura");
+    if (!owner) $("entry").hidden = true;
+    db.collection("trades").onSnapshot(snap => {
+      trades = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(t => t && t.date && typeof t.r === "number");
+      render();
+    }, () => { setWritable(false, "Collegamento interrotto: ricarica la pagina"); });
+  })();
+})();
+</script>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: Pop; src: url(../lib/Poppins-Bold.ttf); font-weight: 700; }
+@font-face { font-family: PopR; src: url(Poppins-Regular.ttf); font-weight: 400; }
+:root { --navy: #0b1020; --panel: #141b31; --line: #26304f; --amber: #F2A93B; --amberD: #8a5a12; --txt: #eef1f8; --mut: #9aa4c2;
+  --asia: #F2A93B; --lon: #5b8cff; --ny: #2fd08a; --red: #ff5a6a; }
+* { box-sizing: border-box; margin: 0; }
+body { background: #000; }
+.s { width: 1080px; height: 1350px; position: relative; overflow: hidden; background: var(--navy); color: var(--txt); font-family: PopR, sans-serif;
+  padding: 110px 90px 120px; display: flex; flex-direction: column; gap: 40px; }
+.s::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 85% 10%, rgba(91,140,255,.16), transparent 45%), radial-gradient(circle at 10% 95%, rgba(242,169,59,.12), transparent 40%); }
+.s > * { position: relative; }
+.top { position: absolute; top: 46px; left: 90px; right: 90px; display: flex; justify-content: space-between; font: 700 28px Pop; color: var(--mut); }
+.top b { color: var(--amber); }
+.foot { position: absolute; bottom: 44px; left: 90px; right: 90px; display: flex; justify-content: space-between; align-items: center; font: 400 22px PopR; color: var(--mut); }
+.foot .swipe { font: 700 26px Pop; color: var(--amber); }
+h1 { font: 700 96px/1.02 Pop; letter-spacing: -2px; }
+h2 { font: 700 72px/1.05 Pop; letter-spacing: -1.5px; }
+h1 em, h2 em { font-style: normal; color: var(--amber); }
+p { font-size: 40px; line-height: 1.38; color: #d5dbec; }
+p b { font-family: Pop; color: var(--txt); }
+.hl { background: var(--amber); color: var(--navy); font-family: Pop; padding: 0 12px 2px; border-radius: 10px; box-shadow: 0 5px 0 var(--amberD); }
+.kicker { font: 700 30px Pop; letter-spacing: 3px; text-transform: uppercase; color: var(--amber); }
+.card { background: var(--panel); border: 2px solid var(--line); border-radius: 26px; padding: 36px 40px; display: grid; gap: 14px; }
+.card .t { font: 700 34px Pop; display: flex; align-items: center; gap: 16px; }
+.dot { width: 22px; height: 22px; border-radius: 6px; display: inline-block; }
+.card p { font-size: 34px; }
+.big { font: 700 150px/1 Pop; letter-spacing: -4px; }
+/* timeline */
+.tl { position: relative; height: 470px; margin-top: 10px; }
+.tl .row { position: absolute; left: 0; right: 0; height: 92px; }
+.tl .bar { position: absolute; top: 0; height: 92px; border-radius: 18px; display: flex; align-items: center; padding: 0 24px; font: 700 34px Pop; color: var(--navy); white-space: nowrap; }
+.tl .hrs { position: absolute; top: 400px; left: 0; right: 0; height: 60px; border-top: 3px solid var(--line); }
+.tl .hrs span { position: absolute; top: 12px; transform: translateX(-50%); font: 700 26px Pop; color: var(--mut); }
+.tl .ov { position: absolute; top: -10px; bottom: 60px; border: 3px dashed var(--txt); border-radius: 18px; opacity: .55; }
+.cover-img { position: absolute; right: -40px; bottom: 0; width: 760px; height: 760px; object-fit: cover; object-position: 50% 30%;
+  -webkit-mask-image: linear-gradient(to top, #000 70%, transparent), linear-gradient(to left, #000 80%, transparent); -webkit-mask-composite: source-in; }
+.badge { display: inline-block; font: 700 32px Pop; background: var(--panel); border: 2px solid var(--line); border-radius: 999px; padding: 10px 26px; color: var(--mut); }
+</style></head><body>
+
+
+<section class="s" id="s1">
+  <div class="top"><span>@contozero<b>.trading</b></span><span>1/4</span></div>
+  <span class="kicker" style="margin-top:60px">Prima di seguirmi</span>
+  <h1>Le regole di<br><em>Conto Zero</em></h1>
+  <p style="max-width:560px">Come funziona questa pagina, in 4 slide. <b>Valgono per sempre.</b></p>
+  <img class="cover-img" src="../brand/foto_profilo.png" alt="">
+  <div class="foot"><span>Non è consulenza finanziaria</span><span class="swipe">Scorri →</span></div>
+</section>
+<section class="s" id="s2">
+  <div class="top"><span>@contozero<b>.trading</b></span><span>2/4</span></div>
+  <span class="kicker">Regola 1</span>
+  <h2>Un conto demo<br>che parte da <em>zero</em></h2>
+  <p>Niente conto già in profitto da mostrare. Si parte oggi, davanti a tutti, e si vede dove si arriva.</p>
+  <div class="card"><div class="t"><span class="dot" style="background:var(--amber)"></span>Perché demo</div>
+    <p>Prima di rischiare soldi veri, il metodo deve <b>dimostrare</b> di funzionare. Con i numeri, non con le parole.</p></div>
+  <div class="foot"><span>Non è consulenza finanziaria</span><span class="swipe">→</span></div>
+</section>
+<section class="s" id="s3">
+  <div class="top"><span>@contozero<b>.trading</b></span><span>3/4</span></div>
+  <span class="kicker">Regola 2</span>
+  <h2>Sempre la stessa<br><em>strategia</em></h2>
+  <div class="card"><div class="t"><span class="dot" style="background:var(--lon)"></span>Rischio sempre uguale</div>
+    <p>Ogni trade rischia la stessa cifra. Niente raddoppi per recuperare, niente "questa volta ci credo di più".</p></div>
+  <div class="card"><div class="t"><span class="dot" style="background:var(--ny)"></span>Obiettivo 1:2</div>
+    <p>Per ogni euro rischiato ne cerco due. Così, costi a parte, posso sbagliare <b>2 trade su 3</b> e restare in pari.</p></div>
+  <div class="foot"><span>Non è consulenza finanziaria</span><span class="swipe">→</span></div>
+</section>
+<section class="s" id="s4">
+  <div class="top"><span>@contozero<b>.trading</b></span><span>4/4</span></div>
+  <span class="kicker">Regola 3</span>
+  <h2>Pubblico <em>tutto</em></h2>
+  <div class="card" style="gap:18px">
+    <p>✅ &nbsp;I trade vinti</p><p>❌ &nbsp;I trade persi</p><p>⏸️ &nbsp;I giorni senza setup</p>
+    <p>📊 &nbsp;<b>Ogni domenica</b> il report con i numeri veri</p></div>
+  <p>Sempre <b>dopo</b> la chiusura: è un diario, non un segnale.</p>
+  <div style="display:flex;gap:16px;flex-wrap:wrap"><span class="badge">📌 Seguimi dal giorno zero</span></div>
+  <div class="foot"><span>Contenuto educativo · Non è consulenza finanziaria · Il trading comporta rischi elevati</span></div>
+</section>
+<script>window.READY = true;</script>
+</body></html>

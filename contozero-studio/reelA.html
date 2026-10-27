@@ -1,0 +1,130 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: Pop; src: url(lib/Poppins-Bold.ttf); font-weight: 700; }
+@font-face { font-family: PopR; src: url(carosello/Poppins-Regular.ttf); font-weight: 400; }
+html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0b1020; font-family: Pop, sans-serif; }
+iframe { position: absolute; inset: 0; width: 1080px; height: 1920px; border: 0; }
+#head { position: absolute; top: 70px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: center; }
+#head .b { background: #F2A93B; color: #0b1020; font-size: 34px; padding: 8px 20px 10px; border-radius: 12px; box-shadow: 0 5px 0 #8a5a12; }
+#head .m { color: #cfd6ea; font: 400 28px PopR; background: rgba(11,16,32,.75); padding: 8px 16px; border-radius: 10px; }
+#panel { position: absolute; left: 40px; top: 170px; width: 1000px; height: 974px; border-radius: 26px; overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0,0,0,.55), 0 0 0 3px #26304f; background: #0f1424; }
+#panel svg { width: 1000px; height: 974px; display: block; }
+#panel text { font-family: Pop; }
+#cap { position: absolute; left: 50px; right: 50px; top: 1185px; text-align: center; font-size: 72px; line-height: 1.12; color: #fff;
+  -webkit-text-stroke: 3px #0b1020; paint-order: stroke fill; text-shadow: 0 5px 0 #0b1020, 0 0 18px rgba(0,0,0,.8); }
+#cap .k { background: #F2A93B; color: #0b1020; -webkit-text-stroke: 0; text-shadow: none; padding: 0 14px 4px; border-radius: 14px; display: inline-block; transform: rotate(-2deg); box-shadow: 0 6px 0 #8a5a12; }
+</style></head><body>
+<iframe id="tr" src="trader.html?shot=pip&tl=reelA/tl.json"></iframe>
+<div id="head"><span class="b">LE BASI</span><span class="m">NAS100 · esempio</span></div>
+<div id="panel"><svg id="sv" viewBox="0 0 1000 974"></svg></div>
+<div id="cap"></div>
+<script>
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), ease = u => { u = clamp(u); return u * u * (3 - 2 * u); };
+const $ = id => document.getElementById(id);
+let TL;
+// synthetic NAS100-like path: 0..39 asia range, 40..44 london chop, 45..47 sweep low, 48..69 rally
+function rng(s) { return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+const r = rng(21), C = []; let p = 500;
+for (let i = 0; i < 70; i++) {
+  let o = p, c;
+  if (i < 40) { c = 500 + Math.sin(i / 3.2) * 70 + (r() - .5) * 60; c = Math.max(410, Math.min(590, c)); }
+  else if (i < 45) c = o + (r() - .5) * 90 - 10;
+  else if (i < 48) c = [470, 400, 455][i - 45];
+  else c = o - 14 - r() * 22 + (r() < .25 ? 30 : 0);
+  let hi = Math.min(o, c) - 8 - r() * 22, lo = Math.max(o, c) + 8 + r() * 22;
+  if (i === 46) lo = 760; // stop hunt below
+  if (i < 40) { hi = Math.max(hi, 390); lo = Math.min(lo, 610); }
+  C.push({ o, c, hi, lo }); p = c;
+}
+const ASIA_HI = 390, ASIA_LO = 610;
+const X = i => 70 + i * 12.4, W = 8;
+function candles(n) {
+  let s = '';
+  for (let i = 0; i < Math.min(n, C.length); i++) {
+    const k = C[i], up = k.c < k.o, col = up ? '#2fd08a' : '#ff5a6a';
+    s += `<rect x="${X(i) + W / 2 - 1}" y="${k.hi}" width="2" height="${k.lo - k.hi}" fill="${col}"/>`;
+    s += `<rect x="${X(i)}" y="${Math.min(k.o, k.c)}" width="${W}" height="${Math.max(2, Math.abs(k.c - k.o))}" fill="${col}" rx="1"/>`;
+  }
+  return s;
+}
+function tag(x, y, txt, col, a = 1) { return `<g opacity="${a}"><rect x="${x}" y="${y}" width="${txt.length * 19 + 28}" height="46" rx="10" fill="${col}"/><text x="${x + 14}" y="${y + 33}" font-size="28" fill="#0b1020">${txt}</text></g>`; }
+window.renderAt = function (t) {
+  $('tr').contentWindow.renderAt(t);
+  const E = TL.events, s = i => E[i].start, e = i => E[i].end;
+  let k = 0; for (let i = 0; i < E.length; i++) if (E[i].start - 0.2 <= t) k = i;
+  let g = '';
+  // grid
+  for (let y = 100; y < 974; y += 100) g += `<line x1="0" x2="1000" y1="${y}" y2="${y}" stroke="rgba(120,140,190,.10)"/>`;
+  // candles count by phase
+  let n;
+  if (k === 0) n = 70 * ease((t - 0.3) / 3.5);
+  else if (k < 4) n = 40 * ease((t - s(1)) / 3);
+  else if (k === 4) n = 40 + 5 * ease((t - s(4) - 0.6) / 2);
+  else if (k === 5) n = 45 + 3 * ease((t - s(5) - 0.5) / 2);
+  else n = 48 + 22 * ease((t - s(6)) / 4);
+  if (k === 0) n = Math.max(n, 1);
+  // asia box
+  const asiaA = k >= 1 ? ease((t - s(1) - 0.8) / 0.6) : 0;
+  if (asiaA > 0) {
+    g += `<rect x="${X(0) - 8}" y="${ASIA_HI}" width="${X(39) - X(0) + 24}" height="${ASIA_LO - ASIA_HI}" fill="rgba(242,169,59,${0.1 * asiaA})" stroke="#F2A93B" stroke-width="4" stroke-dasharray="14 8" opacity="${asiaA}" rx="6"/>`;
+    g += tag(X(0), ASIA_HI - 150, 'SESSIONE ASIATICA', '#F2A93B', asiaA);
+    g += `<text x="${X(26)}" y="${ASIA_HI - 112}" font-size="40" opacity="${asiaA}">🌙</text>`;
+  }
+  // stop clusters
+  const stA = k >= 2 ? ease((t - s(2) - 0.3) / 0.5) : 0;
+  if (stA > 0) {
+    g += `<line x1="0" x2="1000" y1="${ASIA_HI}" y2="${ASIA_HI}" stroke="#F2A93B" stroke-width="3" opacity="${stA}"/>`;
+    g += `<line x1="0" x2="1000" y1="${ASIA_LO}" y2="${ASIA_LO}" stroke="#F2A93B" stroke-width="3" opacity="${stA}"/>`;
+    const lbl = k >= 3 ? 'ORDINI' : 'STOP';
+    const swept = k >= 5 ? ease((t - s(5) - 1.2) / 0.4) : 0;
+    for (let j = 0; j < 4; j++) {
+      const pulse = k === 3 ? 1 + 0.08 * Math.sin(t * 8 + j) : 1;
+      g += `<g transform="translate(${X(2) + j * 120} ${ASIA_HI - 66}) scale(${pulse})" opacity="${stA}">${tag(0, 0, lbl, '#ff8a96')}</g>`;
+      g += `<g transform="translate(${X(2) + j * 120} ${ASIA_LO + 20}) scale(${pulse})" opacity="${stA * (1 - swept * 0.85)}">${tag(0, 0, lbl, '#6fe0aa')}</g>`;
+    }
+  }
+  // london line
+  const lnA = k >= 4 ? ease((t - s(4)) / 0.5) : 0;
+  if (lnA > 0) {
+    const lx = X(40) - 4;
+    g += `<line x1="${lx}" x2="${lx}" y1="0" y2="974" stroke="#5b8cff" stroke-width="4" opacity="${lnA}"/>`;
+    g += tag(lx + 10, 30, '09:00 LONDRA', '#5b8cff', lnA);
+  }
+  g += candles(Math.floor(n) + (n % 1 > 0.5 ? 1 : 0));
+  // sweep circle
+  const swA = k >= 5 ? ease((t - s(5) - 1.0) / 0.4) : 0;
+  if (swA > 0) { g += `<circle cx="${X(46) + 4}" cy="740" r="${60 + 30 * (1 - swA)}" fill="none" stroke="#ff5a6a" stroke-width="8" opacity="${swA}"/>`; g += tag(X(46) + 70, 770, 'STOP PRESI', '#ff5a6a', swA); }
+  // reversal arrow
+  const rvA = k >= 6 ? ease((t - s(6) - 2.2) / 0.5) : 0;
+  if (rvA > 0) { g += `<path d="M ${X(50)} 560 Q ${X(56)} 420 ${X(66)} 260" fill="none" stroke="#2fd08a" stroke-width="9" stroke-linecap="round" opacity="${rvA}" marker-end="url(#ar)"/>`; g += tag(X(52), 180, 'CAMBIA IDEA', '#2fd08a', rvA); }
+  // window
+  const wA = k >= 7 ? ease((t - s(7)) / 0.5) : 0;
+  if (wA > 0) {
+    g = `<rect x="0" y="0" width="${X(40) - 6}" height="974" fill="rgba(11,16,32,${0.6 * wA})"/>` + g;
+    g += `<rect x="0" y="0" width="${X(40) - 6}" height="974" fill="rgba(11,16,32,${0.55 * wA})"/><rect x="${X(55)}" y="0" width="${1000 - X(55)}" height="974" fill="rgba(11,16,32,${0.55 * wA})"/>`;
+    g += `<rect x="${X(40) - 6}" y="0" width="${X(55) - X(40) + 6}" height="974" fill="none" stroke="#F2A93B" stroke-width="6" opacity="${wA}"/>`;
+    g += tag(X(40) + 4, 820, 'LA MIA FINESTRA', '#F2A93B', wA);
+    g += `<text x="150" y="930" font-size="34" fill="#9aa4c2" opacity="${wA}">rumore</text><text x="${X(60)}" y="930" font-size="34" fill="#9aa4c2" opacity="${wA}">rumore</text>`;
+  }
+  $('sv').innerHTML = `<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2fd08a"/></marker></defs>` + g;
+  // captions
+  const cur = E.find(x => t >= x.start && t <= x.end + 0.15); let html = '';
+  if (cur) {
+    const words = cur.text.split(' '), chunks = []; let c = [];
+    for (const w of words) { c.push(w); if (c.join(' ').length > 16 || (/[.,!?…:]$/.test(w) && c.length > 1)) { chunks.push(c); c = []; } }
+    if (c.length) chunks.push(c);
+    const tot = cur.text.length; let acc = 0; const u = (t - cur.start) / (cur.end - cur.start); let pick = chunks[chunks.length - 1];
+    for (const ch of chunks) { acc += ch.join(' ').length + 1; if (u < acc / tot) { pick = ch; break; } }
+    html = pick.map(w => w.replace(/[.,!?…:]/g, '') === cur.key.replace(/[.,!?…:]/g, '') ? `<span class="k">${w}</span>` : w).join(' ');
+  }
+  if ($('cap').innerHTML !== html) $('cap').innerHTML = html;
+};
+(async () => {
+  TL = await (await fetch('reelA/tl.json')).json();
+  await new Promise(res => { const f = $('tr'); const chk = () => (f.contentWindow && f.contentWindow.READY) ? res() : setTimeout(chk, 100); chk(); });
+  await document.fonts.ready; window.READY = true;
+})();
+</script>
+</body></html>
