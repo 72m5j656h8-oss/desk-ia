@@ -1,0 +1,90 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: Pop; src: url(lib/Poppins-Bold.ttf); font-weight: 700; }
+@font-face { font-family: PopR; src: url(carosello/Poppins-Regular.ttf); font-weight: 400; }
+html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0b1020; font-family: Pop, sans-serif; }
+iframe { position: absolute; inset: 0; width: 1080px; height: 1920px; border: 0; }
+#head { position: absolute; top: 70px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: center; }
+#head .b { background: #F2A93B; color: #0b1020; font-size: 34px; padding: 8px 20px 10px; border-radius: 12px; box-shadow: 0 5px 0 #8a5a12; }
+#head .m { color: #cfd6ea; font: 400 28px PopR; background: rgba(11,16,32,.75); padding: 8px 16px; border-radius: 10px; }
+#panel { position: absolute; left: 40px; top: 170px; width: 1000px; height: 974px; border-radius: 26px; overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0,0,0,.55), 0 0 0 3px #26304f; background: #9a9a9a; }
+#panel svg { width: 1000px; height: 974px; display: block; }
+#cap { position: absolute; left: 50px; right: 50px; top: 1185px; text-align: center; font-size: 72px; line-height: 1.12; color: #fff;
+  -webkit-text-stroke: 3px #0b1020; paint-order: stroke fill; text-shadow: 0 5px 0 #0b1020, 0 0 18px rgba(0,0,0,.8); }
+#cap .k { background: #F2A93B; color: #0b1020; -webkit-text-stroke: 0; text-shadow: none; padding: 0 14px 4px; border-radius: 14px; display: inline-block; transform: rotate(-2deg); box-shadow: 0 6px 0 #8a5a12; }
+.lbl { font: 700 34px Pop; }
+#check { position: absolute; left: 150px; right: 150px; top: 470px; background: rgba(11,16,32,.93); border: 3px solid #26304f; border-radius: 24px;
+  padding: 28px 34px; color: #eef1f8; font: 700 38px Pop; display: grid; gap: 16px; opacity: 0; }
+#check div { display: flex; gap: 18px; align-items: center; }
+#check .ok { color: #2fd08a; } #check .no { color: #ff5a6a; }
+#check small { font: 400 26px PopR; color: #9aa4c2; }
+</style></head><body>
+<iframe id="tr" src="trader.html?shot=pip&tl=reelNT2/tl.json"></iframe>
+<div id="head"><span class="b">TRADE DEL GIORNO</span><span class="m">NAS100 · 5m · 27 ott</span></div>
+<div id="panel">
+  <svg viewBox="0 80 1170 1140" preserveAspectRatio="xMidYMid slice">
+    <image href="reelNT2/crop.png" x="0" y="0" width="1170" height="1367"/>
+    <rect id="cover" x="0" y="0" width="956" height="1367" fill="#8c8c8c"/>
+    <g id="asia" opacity="0"><rect x="4" y="187" width="291" height="535" fill="none" stroke="#F2A93B" stroke-width="7" stroke-dasharray="18 10" rx="6"/>
+      <rect x="14" y="198" width="170" height="54" rx="10" fill="#F2A93B"/><text x="99" y="237" text-anchor="middle" class="lbl" fill="#0b1020">ASIA</text></g>
+    <g id="london" opacity="0"><line x1="367" x2="367" y1="80" y2="1220" stroke="#5b8cff" stroke-width="6"/>
+      <rect x="377" y="1110" width="250" height="56" rx="10" fill="#5b8cff"/><text x="502" y="1150" text-anchor="middle" class="lbl" fill="#fff">09:00 LONDRA</text></g>
+    <g id="sweep" opacity="0"><circle cx="300" cy="770" r="62" fill="none" stroke="#ff5a6a" stroke-width="9"/>
+      <rect x="40" y="860" width="330" height="60" rx="12" fill="#ff5a6a"/><text x="205" y="902" text-anchor="middle" class="lbl" fill="#fff">PRIMA DELLE 9</text>
+      <text x="205" y="960" text-anchor="middle" style="font:700 30px Pop" fill="#0b1020">Francoforte</text></g>
+    <g id="nolow" opacity="0"><line x1="300" x2="956" y1="722" y2="722" stroke="#F2A93B" stroke-width="6" stroke-dasharray="16 10"/>
+      <rect x="560" y="740" width="380" height="56" rx="10" fill="#0b1020"/><text x="750" y="780" text-anchor="middle" class="lbl" fill="#fff">nessun nuovo minimo</text></g>
+    <g id="rally" opacity="0"><path d="M 560 700 Q 700 420 880 180" fill="none" stroke="#2fd08a" stroke-width="11" stroke-linecap="round"/>
+      <rect x="560" y="140" width="330" height="56" rx="10" fill="#2fd08a"/><text x="725" y="180" text-anchor="middle" class="lbl" fill="#0b1020">col senno di poi…</text></g>
+    <g id="stamp" opacity="0" transform="translate(585 600) rotate(-12)">
+      <rect x="-420" y="-95" width="840" height="190" rx="22" fill="rgba(255,90,106,.12)" stroke="#ff5a6a" stroke-width="14"/>
+      <text x="0" y="36" text-anchor="middle" style="font:700 104px Pop;letter-spacing:3px" fill="#ff5a6a">NESSUN TRADE</text></g>
+  </svg>
+</div>
+
+<div id="cap"></div>
+<script>
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), ease = u => { u = clamp(u); return u * u * (3 - 2 * u); };
+let TL;
+const $ = id => document.getElementById(id);
+function fade(id, t0, t1 = 99) { const a = Math.min(clamp((T - t0) / 0.35), clamp((t1 - T) / 0.3)); $(id).setAttribute('opacity', a); return a; }
+let T = 0;
+window.renderAt = function (t) {
+  T = t; const E = TL.events, s = i => E[i].start, e = i => E[i].end;
+  $('tr').contentWindow.renderAt(t);
+  // reveal: asia -> to london -> after london -> full
+  let rx;
+  if (t < s(1)) rx = 300 * ease((t - 0.2) / 3);
+  else if (t < s(3)) rx = 300 + 70 * ease((t - s(1)) / 1.5);
+  else if (t < s(4)) rx = 370 + 170 * ease((t - s(3)) / 2);
+  else rx = 540 + 416 * ease((t - s(4)) / 2.5);
+  $('cover').setAttribute('x', rx); $('cover').setAttribute('width', Math.max(0, 956 - rx));
+  fade('asia', 0.8, s(5));
+  fade('sweep', s(1) + 1.8, s(5));
+  fade('london', s(2) + 1.0, s(6));
+  fade('nolow', s(3) + 1.0, s(5));
+  fade('rally', s(4) + 2.4, s(6));
+  const st = clamp((t - (s(6) - 0.2)) / 0.18); $('stamp').setAttribute('opacity', st);
+  $('stamp').setAttribute('transform', `translate(585 600) rotate(-12) scale(${1.6 - 0.6 * ease(st)})`);
+  // captions
+  const cur = E.find(x => t >= x.start && t <= x.end + 0.15); let html = '';
+  if (cur) {
+    const words = cur.text.split(' '), chunks = []; let c = [];
+    for (const w of words) { c.push(w); if (c.join(' ').length > 16 || (/[.,!?…:]$/.test(w) && c.length > 1)) { chunks.push(c); c = []; } }
+    if (c.length) chunks.push(c);
+    const tot = cur.text.length; let acc = 0; const u = (t - cur.start) / (cur.end - cur.start); let pick = chunks[chunks.length - 1];
+    for (const ch of chunks) { acc += ch.join(' ').length + 1; if (u < acc / tot) { pick = ch; break; } }
+    html = pick.map(w => w.replace(/[.,!?…:]/g, '') === cur.key.replace(/[.,!?…:]/g, '') ? `<span class="k">${w}</span>` : w).join(' ');
+  }
+  if ($('cap').innerHTML !== html) $('cap').innerHTML = html;
+};
+(async () => {
+  TL = await (await fetch('reelNT2/tl.json')).json();
+  await new Promise(r => { const f = $('tr'); const chk = () => (f.contentWindow && f.contentWindow.READY) ? r() : setTimeout(chk, 100); chk(); });
+  await document.fonts.ready;
+  window.READY = true;
+})();
+</script>
+</body></html>
