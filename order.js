@@ -11,6 +11,12 @@ const path = require('path');
 const FILE = path.join(__dirname, 'docs', 'data', 'orders.json');
 const ASSETS = { BTC: 'BTC', BITCOIN: 'BTC', NDX: 'NDX', NASDAQ: 'NDX', 'NASDAQ-100': 'NDX', EURUSD: 'EURUSD', 'EUR/USD': 'EURUSD' };
 const POS = { LONG: 1, SHORT: -1, FLAT: 0 };
+// dall'app: un'issue con titolo tipo "ORDINE BTC LONG 100" (TITOLO) e la nota nel testo (NOTA)
+if (process.env.TITOLO) {
+  const w = String(process.env.TITOLO).trim().toUpperCase().split(/\s+/);
+  if (w[0] !== 'ORDINE') { console.error('ERRORE: il titolo deve iniziare con ORDINE'); process.exit(1); }
+  process.env.ASSET = w[1] || ''; process.env.POSIZIONE = w[2] || ''; process.env.QUOTA = w[3] || '100';
+}
 const asset = ASSETS[String(process.env.ASSET || '').trim().toUpperCase()];
 const pos = String(process.env.POSIZIONE || '').trim().toUpperCase();
 const quota = parseInt(String(process.env.QUOTA || '100').replace('%', ''), 10);

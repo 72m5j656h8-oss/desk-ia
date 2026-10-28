@@ -162,6 +162,21 @@ canvas.wf{width:100%;height:150px;display:block;margin-top:6px}
 .chip.att{background:rgba(62,224,143,.15);color:var(--gain)}
 .chip.pan{background:rgba(169,156,214,.12);color:var(--mute)}
 .chip.ml{background:rgba(255,154,60,.18);color:var(--warm)}
+.chip.auto{background:rgba(62,200,224,.16);color:#7fe3f2}
+.hq{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font:700 12px/1 var(--f-disp);cursor:pointer;vertical-align:middle;margin-left:6px;padding:0;flex:none}
+.hq:hover{border-color:var(--accent)}
+.hq:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.brief{display:grid;gap:4px;margin:0;padding:0;list-style:none}
+.brief li{font-size:14px;line-height:1.45;padding-left:14px;position:relative}
+.brief li::before{content:'';position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.helpBody p{margin:0 0 8px;font-size:14px;line-height:1.5}
+.helpBody ul{margin:0 0 8px;padding-left:18px;font-size:14px;line-height:1.5}
+.helpBody b{color:#fff}
+.steps{counter-reset:s;list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.steps li{counter-increment:s;position:relative;padding-left:28px;font-size:13px;color:var(--mute);line-height:1.45}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;font:700 11px/1 var(--f-disp);color:var(--fg)}
+.whyNot{border-left:3px solid var(--warm);background:rgba(255,154,60,.06);border-radius:8px;padding:8px 10px;margin:8px 0;font-size:13px;line-height:1.5}
+.adh{font-size:12px;color:var(--mute)}
 .lim{display:grid;gap:3px;font-size:12.5px}
 .lim .bar{height:8px;border-radius:4px;background:var(--panel2);position:relative;overflow:hidden}
 .lim .bar i{position:absolute;inset:0 auto 0 0;border-radius:4px}
@@ -233,6 +248,11 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
 
   <div class="ticker"><span class="tag" id="tagT">DESK</span><span id="news">Collegamento al desk…</span></div>
 
+  <section class="card" id="briefCard" style="margin-bottom:12px">
+    <div class="dhead" style="align-items:center"><div><div class="kick">In parole semplici</div><h3>Oggi in breve <button class="hq" data-h="brief" aria-label="Spiegazione">?</button></h3></div><button class="btn" data-h="tour">Come si legge l'app</button></div>
+    <ul class="brief" id="brief"><li>Collegamento al desk…</li></ul>
+  </section>
+
   <div class="main">
     <div class="stage">
       <canvas id="c" aria-label="Sala con tre desk di trading e tre reparti ricerca"></canvas>
@@ -244,7 +264,7 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
     <div class="side">
       <section class="card">
         <div class="dhead">
-          <div style="min-width:0"><div class="kick" id="dkick">Sala</div><h3 id="dname">–</h3><div class="tags" id="dtags"></div></div>
+          <div style="min-width:0"><div class="kick" id="dkick">Sala</div><h3><span id="dname">–</span> <button class="hq" data-h="detail" aria-label="Spiegazione">?</button></h3><div class="tags" id="dtags"></div></div>
           <div style="text-align:right"><div class="kick" id="ddate">Prezzo</div><div class="num" id="dprice" style="font-size:16px">–</div><div class="num" id="dchg" style="font-size:12px">–</div></div>
         </div>
         <canvas class="spark" id="spark" aria-label="Ultimi 90 giorni di prezzo"></canvas>
@@ -262,6 +282,7 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
           <button class="btn tab" data-t="verify" aria-pressed="false">Verifica</button>
           <button class="btn tab" data-t="trades" aria-pressed="false">Operazioni</button>
           <button class="btn tab" data-t="log" aria-pressed="false">Decisioni</button>
+          <button class="hq" id="tabHelp" aria-label="Spiegazione della scheda">?</button>
         </div>
         <div class="pane" id="p-research"></div>
         <div class="pane" id="p-verify" hidden></div>
@@ -272,13 +293,14 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
   </div>
 
   <section class="card" id="fundCard">
-    <div class="dhead" style="flex-wrap:wrap;align-items:baseline"><div><div class="kick">Organizzazione · rischio · report</div><h3>Il fondo</h3></div><span class="kick" id="fundAsOf">–</span></div>
+    <div class="dhead" style="flex-wrap:wrap;align-items:baseline"><div><div class="kick">Organizzazione · rischio · report</div><h3>Il fondo <button class="hq" data-h="fund" aria-label="Spiegazione">?</button></h3></div><span class="kick" id="fundAsOf">–</span></div>
     <div class="tabs" role="tablist" style="margin-top:10px">
       <button class="btn ftab" data-f="sala" aria-pressed="true">Sala</button>
       <button class="btn ftab" data-f="org" aria-pressed="false">Organigramma</button>
       <button class="btn ftab" data-f="rank" aria-pressed="false">Classifica</button>
       <button class="btn ftab" data-f="risk" aria-pressed="false">Rischio</button>
       <button class="btn ftab" data-f="rep" aria-pressed="false">Report</button>
+      <button class="hq" id="ftabHelp" aria-label="Spiegazione della scheda">?</button>
     </div>
     <div class="fpane" id="f-sala"></div>
     <div class="fpane" id="f-org" hidden></div>
@@ -300,14 +322,38 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
     </div>
   </div>
 
+  <div class="modal" id="helpModal" hidden role="dialog" aria-modal="true" aria-labelledby="hTitle">
+    <div class="mbox">
+      <button class="btn mclose" id="hClose" aria-label="Chiudi">✕</button>
+      <div class="kick">Spiegazione</div><h3 id="hTitle" style="margin:2px 0 10px">–</h3>
+      <div class="helpBody" id="hBody"></div>
+    </div>
+  </div>
+
   <section class="card" id="meCard">
-    <div class="dhead" style="flex-wrap:wrap;align-items:center"><div><div class="kick">$10.000 finti per mercato · comandi tu</div><h3>La tua sala</h3></div><a class="btn go" id="orderBtn" href="#" target="_blank" rel="noopener">Dai un ordine ↗</a></div>
+    <div class="dhead" style="flex-wrap:wrap;align-items:center"><div><div class="kick">$10.000 finti per mercato · comandi tu</div><h3>La tua sala <button class="hq" data-h="me" aria-label="Spiegazione">?</button></h3></div></div>
     <div class="meGrid" id="meGrid"></div>
-    <div class="note" id="meNote">Gli ordini vengono eseguiti alla <b>prima chiusura dopo l'ordine</b> (Bitcoin a mezzanotte UTC, Nasdaq alle 22 italiane, euro-dollaro alle 23), con le stesse commissioni delle altre sale. Su GitHub scegli mercato, LONG, SHORT o FLAT e la quota, poi premi il pulsante verde <b>Run workflow</b>. In un minuto l'ordine compare qui.</div>
+    <div class="note" style="padding:6px 0 0">Qui hai <b>$10.000 finti per mercato</b>, separati da quelli del desk. Decidi tu: il desk non tocca questi soldi. Così vedi se le tue idee battono i trader.</div>
+    <div class="kick" style="margin-top:12px">Dai un ordine</div>
+    <div class="labForm" style="margin-top:6px">
+      <label>Mercato<select id="oAsset"><option value="BTC">Bitcoin</option><option value="NDX">Nasdaq-100</option><option value="EURUSD">Euro/Dollaro (leva 3)</option></select></label>
+      <label>Cosa vuoi fare<select id="oPos"><option value="LONG">LONG · guadagno se sale</option><option value="SHORT">SHORT · guadagno se scende</option><option value="FLAT">FLAT · chiudo tutto</option></select></label>
+      <label id="oQw">Quanto<select id="oQuota"><option value="100">100% ($10.000)</option><option value="75">75% ($7.500)</option><option value="50">50% ($5.000)</option><option value="25">25% ($2.500)</option></select></label>
+      <label>Perché (facoltativo)<input id="oNote" type="text" maxlength="140" style="width:200px" placeholder="es. credo nel rialzo dopo la Fed"></label>
+      <a class="btn go" id="orderBtn" href="#" target="_blank" rel="noopener">Invia ordine ↗</a>
+    </div>
+    <div class="note" id="oPreview" style="padding:6px 0 0"></div>
+    <ol class="steps">
+      <li>Scegli mercato, direzione e quanto, poi tocca <b>Invia ordine</b>.</li>
+      <li>Si apre GitHub con l'ordine <b>già scritto</b> (titolo tipo <span class="num">ORDINE BTC LONG 100</span>). Non cambiare nulla: tocca il pulsante verde <b>Create</b> (o <b>Submit new issue</b>).</li>
+      <li>Torna qui: in circa 2 minuti l'ordine compare sotto come <b>IN ATTESA</b>. GitHub chiude da solo la richiesta e ti scrive l'esito.</li>
+      <li>Diventa <b>ESEGUITO</b> alla prima chiusura del mercato dopo l'ordine (Bitcoin a mezzanotte UTC, Nasdaq alle 22 italiane, euro-dollaro alle 23), con le stesse commissioni del desk.</li>
+    </ol>
+    <div class="note" id="meNote" style="padding:6px 0 0">Per cambiare idea basta un nuovo ordine: vale sempre l'ultimo. Per uscire usa <b>FLAT</b>. In alternativa puoi usare <a href="#" id="orderAlt" target="_blank" rel="noopener" style="color:var(--fg)">Run workflow</a> su GitHub.</div>
     <div class="kick" style="margin-top:10px">I tuoi ordini</div>
     <div class="pane" id="meOrders" style="max-height:320px;margin-top:6px"></div>
     <div class="tm" id="tmBox">
-      <div class="kick">Macchina del tempo · prima di dare un ordine</div>
+      <div class="kick">Macchina del tempo · prima di dare un ordine <button class="hq" data-h="tm" aria-label="Spiegazione">?</button></div>
       <div class="labForm">
         <label>Mercato<select id="tAsset"><option value="BTC">Bitcoin</option><option value="NDX">Nasdaq-100</option><option value="EURUSD">Euro/Dollaro (leva 3)</option></select></label>
         <label>Direzione<select id="tDir"><option value="1">LONG</option><option value="-1">SHORT</option></select></label>
@@ -327,7 +373,7 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
   </section>
 
   <section class="card" id="labCard">
-    <div class="dhead" style="flex-wrap:wrap;align-items:baseline"><div><div class="kick">14 anni di prezzi veri · gira sul tuo dispositivo</div><h3>Laboratorio</h3></div><span class="kick" id="labTries">–</span></div>
+    <div class="dhead" style="flex-wrap:wrap;align-items:baseline"><div><div class="kick">14 anni di prezzi veri · gira sul tuo dispositivo</div><h3>Laboratorio <button class="hq" data-h="lab" aria-label="Spiegazione">?</button></h3></div><span class="kick" id="labTries">–</span></div>
     <div class="labForm">
       <label>Mercato<select id="lAsset"><option value="BTC">Bitcoin</option><option value="NDX">Nasdaq-100</option><option value="EURUSD">Euro/Dollaro (leva 3)</option></select></label>
       <label>Strategia<select id="lFam"><option value="ma">Incrocio di medie</option><option value="don">Rottura dei massimi/minimi</option><option value="mr">Contro gli eccessi</option><option value="t200">Filtro media 200</option><option value="ml">Machine learning</option></select></label>
@@ -353,7 +399,7 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
 
   <section class="card how">
     <div><h4>Sale trading</h4><p>Bitcoin, Nasdaq-100 ed Euro/Dollaro, $10.000 finti ciascuna. Tutti i trader di una sala usano la strategia campione. Si decide con la chiusura di ogni giorno, con commissioni, slippage e costo dello short. L'euro-dollaro usa leva 3, come un conto forex prudente.</p></div>
-    <div><h4>Reparto ricerca</h4><p>Ogni sala ha 21 strategie candidate, tra cui 3 modelli di machine learning riaddestrati ogni mese solo sul passato, provate su tutto lo storico e seguite ogni giorno in avanti. Una strategia diventa candidata solo se negli ultimi 2 anni ha battuto il benchmark sia nel rendimento sia nel rapporto rischio/rendimento, con margine.</p></div>
+    <div><h4>Reparto ricerca</h4><p>Ogni sala ha 26 strategie candidate: 18 a regole fisse, 3 modelli di machine learning riaddestrati ogni mese e 5 trader automatici che ogni mese provano a migliorare i propri parametri, sempre usando solo il passato. Una strategia diventa candidata solo se negli ultimi 2 anni ha battuto il benchmark sia nel rendimento sia nel rapporto rischio/rendimento, con margine.</p></div>
     <div><h4>Revisioni e retrocessioni</h4><p>Ogni 3 mesi si sceglie il campione, ma solo se il metodo di scelta ha battuto il benchmark fuori campione su tutto lo storico. Altrimenti la sala resta sul benchmark. Se il campione fa peggio del benchmark di oltre 5 punti dopo 20 giorni, viene retrocesso.</p></div>
   </section>
 
@@ -435,7 +481,7 @@ function renderTab(){
     const bench=R.bench||{ret:0,sharpe:0};
     const rows=R.board.slice(0,10).map((x,i)=>`<div class="lrow ${x.id===a.champion.id?'cur':x.ok?'ok':''}"><span class="mu num" style="font-size:11px">${i+1}</span><span class="nm">${esc(x.name)}<small>${x.trades} cambi in 2 anni · perdita max -${fmt(x.maxDD*100,1)}%</small></span><span class="v ${cls(x.ret)}">${pct(x.ret)}<small>Sharpe ${fmt(x.sharpe,2)}</small></span><span class="v ${cls(x.fwd)}">${pct(x.fwd)}<small>dal vivo</small></span></div>`).join('');
     $('p-research').innerHTML=`<div class="note">Le ${R.tested} strategie candidate per ${esc(a.name)}, giudicate sugli <b>ultimi 2 anni</b> (storico dal ${dIt(R.history)}). Colonna destra: come vanno in avanti dall'avvio del desk. Bordo verde = batte il benchmark con margine, viola = campione in uso.</div>`
-      +rows+`<div class="lrow ref"><span>–</span><span class="nm">${esc(a.benchName)}<small>riferimento</small></span><span class="v ${cls(bench.ret)}">${pct(bench.ret)}<small>Sharpe ${fmt(bench.sharpe,2)}</small></span><span class="v ${cls(R.fwdBench)}">${pct(R.fwdBench)}<small>dal vivo</small></span></div>`
+      +whyNot(a)+rows+`<div class="lrow ref"><span>–</span><span class="nm">${esc(a.benchName)}<small>riferimento</small></span><span class="v ${cls(bench.ret)}">${pct(bench.ret)}<small>Sharpe ${fmt(bench.sharpe,2)}</small></span><span class="v ${cls(R.fwdBench)}">${pct(R.fwdBench)}<small>dal vivo</small></span></div>`
       +`<div class="note">Scelta di oggi del reparto: <b>${esc(R.pickName)}</b>. ${esc(R.pickWhy.charAt(0).toUpperCase()+R.pickWhy.slice(1))}. Diventa campione solo alla revisione del ${dIt(a.nextReview)}, e solo se il metodo di scelta resta valido fuori campione.</div>`;
   } else if(tab==='verify'){
     const W=R.wf;if(!W){$('p-verify').innerHTML='<div class="note">Storico ancora insufficiente per la verifica.</div>';return}
@@ -458,6 +504,10 @@ function renderTab(){
     $('p-log').innerHTML=a.log.map(l=>`<div class="ev"><div class="top"><span class="chip ${l.kind==='retrocessione'?'demo':l.id==='bench'?'bench':'champ'}">${l.kind.toUpperCase()}</span><b>${esc(l.id==='bench'?a.benchName:(V.names&&V.names[l.id])||l.id)}</b><span class="t">${dIt(l.d)}</span></div><p>${esc(l.why)}</p></div>`).join('');
   }
 }
+
+function whyNot(a){const R=a.research,W=R.wf,g=R.board.filter(x=>x.ok).length;if(!W)return'';
+  if(W.valid)return `<div class="whyNot"><b>Verifica superata.</b> Il metodo di scelta ha battuto il benchmark anche sul passato che non conosceva (${pct(W.ret)} contro ${pct(W.bench.ret)}), quindi la sala può usare la strategia migliore alla revisione.</div>`;
+  return `<div class="whyNot"><b>Perché ${g?'le '+g+' strategie verdi':'le strategie migliori'} non vengono usate?</b> Guardando indietro, tra ${R.tested} strategie qualcuna sembra sempre vincente: è come scegliere il cavallo dopo la corsa. La prova vera è la scheda <b>Verifica</b>: ogni 3 mesi, dal ${dIt(W.from)}, il reparto ha preso la strategia verde del momento senza sapere il futuro. Risultato: <b>${pct(W.ret)}</b> contro <b>${pct(W.bench.ret)}</b> del ${esc(a.benchName.toLowerCase())}, ${W.beaten} trimestri vinti su ${W.quarters}. Le verdi di oggi sono quasi sempre le fortunate degli ultimi 2 anni e poi smettono. Per questo i soldi restano sul benchmark finché la verifica non diventa <b>VALIDA</b>.</div>`}
 
 /* ---------- sala isometrica ---------- */
 const XMAX=14.4,YMIN=-3.4,YMAX=8.2,WH=3.2;
@@ -608,10 +658,10 @@ function renderFund(){
       +`<div class="kick" style="margin-top:4px">Trader</div><div class="note" style="padding:0">${F.traders.length} trader: ogni strategia del reparto ricerca su ogni mercato ha il suo trader. Li trovi nella <b>Classifica</b>.</div>`;
     $('f-org').querySelectorAll('.agent').forEach(b=>b.onclick=()=>openAgent(b.dataset.a));
   } else if(FT==='rank'){
-    const fs=['Tutti','BTC','NDX','EURUSD','ML'];const lab_={Tutti:'Tutti',BTC:'BTC',NDX:'NASDAQ',EURUSD:'EUR/USD',ML:'Solo ML'};
-    const list=F.traders.filter(t=>RANKF==='Tutti'||(RANKF==='ML'?t.ml:t.asset===RANKF));
+    const fs=['Tutti','BTC','NDX','EURUSD','ML','AUTO'];const lab_={Tutti:'Tutti',BTC:'BTC',NDX:'NASDAQ',EURUSD:'EUR/USD',ML:'Solo ML',AUTO:'Si migliorano'};
+    const list=F.traders.filter(t=>RANKF==='Tutti'||(RANKF==='ML'?t.ml:RANKF==='AUTO'?t.auto:t.asset===RANKF));
     $('f-rank').innerHTML=`<div class="filters">${fs.map(d=>`<button data-r="${d}" aria-pressed="${d===RANKF}">${lab_[d]}</button>`).join('')}</div><div class="note" style="padding:0 2px 4px">Ordinati per risultato dal vivo dall'avvio. <b>In campo</b> = strategia campione della sala, <b>attivo</b> = batte il benchmark negli ultimi 2 anni, <b>panchina</b> = no.</div>`
-      +list.map((t,i)=>`<button class="rk" data-t="${esc(t.id)}"><span class="mu num" style="font-size:11px">${i+1}</span><span class="nm"><b>${esc(t.name)}</b> <span class="chip ${t.status==='in campo'?'camp':t.status==='attivo'?'att':'pan'}">${t.status.toUpperCase()}</span>${t.ml?' <span class="chip ml">ML</span>':''}<small>${esc(t.strat)} · ${esc(t.short)} · ${t.pos>0?'LONG':t.pos<0?'SHORT':'FLAT'}</small></span><span class="v ${cls(t.fwd)}">${pct(t.fwd)}<small>dal vivo</small></span><span class="v ${cls(t.ret2y)}">${pct(t.ret2y)}<small>2 anni · S ${fmt(t.sharpe,2)}</small></span></button>`).join('');
+      +list.map((t,i)=>`<button class="rk" data-t="${esc(t.id)}"><span class="mu num" style="font-size:11px">${i+1}</span><span class="nm"><b>${esc(t.name)}</b> <span class="chip ${t.status==='in campo'?'camp':t.status==='attivo'?'att':'pan'}">${t.status.toUpperCase()}</span>${t.ml?' <span class="chip ml">ML</span>':''}${t.auto?' <span class="chip auto">AUTO</span>':''}<small>${esc(t.strat)}${t.adapt?' '+esc(t.adapt.cur):''} · ${esc(t.short)} · ${t.pos>0?'LONG':t.pos<0?'SHORT':'FLAT'}</small></span><span class="v ${cls(t.fwd)}">${pct(t.fwd)}<small>dal vivo</small></span><span class="v ${cls(t.ret2y)}">${pct(t.ret2y)}<small>2 anni · S ${fmt(t.sharpe,2)}</small></span></button>`).join('');
     $('f-rank').querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{RANKF=b.dataset.r;renderFund()});
     $('f-rank').querySelectorAll('.rk').forEach(b=>b.onclick=()=>openTrader(b.dataset.t));
   } else if(FT==='risk'){
@@ -639,7 +689,9 @@ function openAgent(id){const F=V&&V.fund;if(!F)return;const a=F.agents.find(x=>x
 function openTrader(tid){const F=V&&V.fund;if(!F)return;const t=F.traders.find(x=>x.id===tid);if(!t)return;const a=V.assets[t.asset];
   const st={energia:Math.max(20,Math.min(100,Math.round(50+50*Math.tanh(t.fwd*20)))),stress:Math.max(0,Math.min(100,Math.round(t.maxDD*150))),fiducia:Math.max(0,Math.min(100,Math.round(50+40*Math.tanh(t.sharpe)))),focus:t.status==='panchina'?40:85};
   const rep=`Opero "${t.strat}" su ${a.name}. Negli ultimi 2 anni ${pct(t.ret2y)} con Sharpe ${fmt(t.sharpe,2)} e perdita massima ${fmt(t.maxDD*100,1)}%, contro ${pct((a.research.bench||{ret:0}).ret)} del benchmark. Dall'avvio del desk ${pct(t.fwd)}. Oggi sono ${t.pos>0?'LONG':t.pos<0?'SHORT':'senza posizione'}. ${t.status==='in campo'?'Sono la strategia campione: le mie decisioni sono quelle della sala.':t.status==='attivo'?'Sto battendo il benchmark negli ultimi 2 anni: alla revisione posso diventare campione, se il metodo di scelta resta valido fuori campione.':'Sono in panchina: negli ultimi 2 anni non ho battuto il benchmark con margine.'}`;
-  showModal({name:t.name,role:'Trader · '+a.short+(t.ml?' · machine learning':''),col:t.ml?'#ffb46b':'#e7defd',tags:`<span class="chip ${t.status==='in campo'?'camp':t.status==='attivo'?'att':'pan'}">${t.status.toUpperCase()}</span> ${posChip(t.pos)}`,stats:st,report:rep,how:howAnswer(st,t.status),who:t.name});}
+  const ad=t.adapt,rep2=ad?rep+` Mi miglioro da solo: ogni mese provo piccole modifiche ai miei numeri e le tengo solo se passano anche la prova sugli ultimi 3 mesi. Oggi uso ${ad.cur}; ho fatto ${ad.tests} prove nella storia e cambiato ${ad.changes} volte.`:rep;
+  showModal({name:t.name,role:'Trader · '+a.short+(t.ml?' · machine learning':'')+(ad?' · si migliora da solo':''),col:t.ml?'#ffb46b':ad?'#7fe3f2':'#e7defd',tags:`<span class="chip ${t.status==='in campo'?'camp':t.status==='attivo'?'att':'pan'}">${t.status.toUpperCase()}</span> ${posChip(t.pos)}${ad?' <span class="chip auto">AUTO</span>':''}`,stats:st,report:rep2,how:howAnswer(st,t.status),who:t.name});
+  if(ad)$('amList').innerHTML=`<div class="kick" style="margin:2px 0 4px">Storia dei miglioramenti</div>`+ad.hist.map(h=>`<div class="ev"><div class="top"><b>${h.from?esc(h.from)+' → ':''}${esc(h.p)}</b><span class="t">${dIt(h.d)}</span></div><p class="adh">${esc(h.why)}</p></div>`).join('');}
 function howAnswer(st,status){
   if(st.stress>70)return 'Giornata tesa: i numeri che seguo si muovono più del solito. Tengo le regole e non improvviso.';
   if(st.fiducia<35)return 'Onestamente? Non vedo un vantaggio chiaro. Finché i dati non dicono altro, meglio seguire il benchmark che inventare.';
@@ -660,15 +712,23 @@ $('amClose').onclick=closeModal;$('agentModal').addEventListener('click',e=>{if(
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('agentModal').hidden)closeModal()});
 
 /* ---------- la tua sala ---------- */
-(function(){const owner=location.hostname.split('.')[0],repo=location.pathname.split('/').filter(Boolean)[0]||'desk-ia';
-  $('orderBtn').href=location.hostname.endsWith('github.io')?`https://github.com/${owner}/${repo}/actions/workflows/ordine.yml`:'https://github.com';})();
+const GH=(()=>{const gh=location.hostname.endsWith('github.io');return {owner:gh?location.hostname.split('.')[0]:'72m5j656h8-oss',repo:gh?(location.pathname.split('/').filter(Boolean)[0]||'desk-ia'):'desk-ia'}})();
+function orderUrl(){const a=$('oAsset').value,p=$('oPos').value,q=$('oQuota').value,n=$('oNote').value.trim();
+  const title=`ORDINE ${a} ${p}${p==='FLAT'?'':' '+q}`;
+  const body=(n||'Ordine dalla mia sala.')+'\n\n(Non modificare il titolo: il desk legge l\'ordine da lì.)';
+  const lbl={BTC:'Bitcoin',NDX:'Nasdaq-100',EURUSD:'Euro/Dollaro'}[a],usd_=10000*q/100,th=x=>String(Math.round(x)).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  $('oPreview').innerHTML=p==='FLAT'?`Chiudi ogni posizione su <b>${lbl}</b> e resti in liquidità.`:`Metti <b>$${th(usd_)}</b> finti su <b>${lbl}</b> ${p==='LONG'?'al rialzo':'al ribasso'}${a==='EURUSD'?' (con leva 3 l\'esposizione è $'+th(usd_*3)+')':''}. Il resto della tua quota resta in liquidità.`;
+  $('oQw').hidden=p==='FLAT';
+  $('orderBtn').href=`https://github.com/${GH.owner}/${GH.repo}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;}
+['oAsset','oPos','oQuota'].forEach(id=>$(id).onchange=orderUrl);$('oNote').oninput=orderUrl;orderUrl();
+$('orderAlt').href=`https://github.com/${GH.owner}/${GH.repo}/actions/workflows/ordine.yml`;
 function renderMe(){
   const M=V.me;if(!M){$('meGrid').innerHTML='<div class="note">La tua sala si attiva al prossimo giro del desk.</div>';return}
   const cap=V.total.capital||30000,c=M.curve,eq=c.length?c[c.length-1][1]:cap,r=eq/cap-1;
   const vm=$('vsMe');vm.textContent=pct(r);vm.className='num '+cls(r);
   const cell=(k)=>{const m=M.assets[k];if(!m)return'';const a=V.assets[k];return `<div><span>${esc(m.short)}</span><b class="${cls(m.ret)}">${pct(m.ret)}</b>${posChip(m.pos)}${m.pos&&Math.abs(m.pos)<1?` <small class="mu">${Math.round(Math.abs(m.pos)*100)}%</small>`:''}</div>`};
   $('meGrid').innerHTML=`<div><span>Totale</span><b class="${cls(r)}">${usd(eq)}</b><small class="mu">${pct(r)} · desk ${pct((V.total.curve.length?V.total.curve[V.total.curve.length-1][1]:cap)/cap-1)}</small></div>`+KEYS.map(cell).join('');
-  $('meOrders').innerHTML=M.orders.length?M.orders.map(o=>`<div class="ev"><div class="top">${posChip(o.pos==='LONG'?1:o.pos==='SHORT'?-1:0)}<b>${esc((V.assets[o.asset]||{}).short||o.asset)}</b>${o.pos!=='FLAT'?`<span class="mu">${o.quota}%</span>`:''}<span class="chip ${o.status==='eseguito'?'champ':'demo'}">${o.status==='eseguito'?'ESEGUITO':'IN ATTESA'}</span><span class="t">${new Date(o.ts).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span></div><p>${o.status==='eseguito'?`Eseguito alla chiusura del ${dIt(o.d)} a ${price(o.price,o.asset)}.`:'Verrà eseguito alla prossima chiusura.'}${o.note?' · “'+esc(o.note)+'”':''}</p></div>`).join(''):'<div class="note">Nessun ordine ancora. Tocca <b>Dai un ordine</b> per il primo.</div>';
+  $('meOrders').innerHTML=M.orders.length?M.orders.map(o=>`<div class="ev"><div class="top">${posChip(o.pos==='LONG'?1:o.pos==='SHORT'?-1:0)}<b>${esc((V.assets[o.asset]||{}).short||o.asset)}</b>${o.pos!=='FLAT'?`<span class="mu">${o.quota}%</span>`:''}<span class="chip ${o.status==='eseguito'?'champ':'demo'}">${o.status==='eseguito'?'ESEGUITO':'IN ATTESA'}</span><span class="t">${new Date(o.ts).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span></div><p>${o.status==='eseguito'?`Eseguito alla chiusura del ${dIt(o.d)} a ${price(o.price,o.asset)}.`:'Verrà eseguito alla prossima chiusura.'}${o.note?' · “'+esc(o.note)+'”':''}</p></div>`).join(''):'<div class="note">Nessun ordine ancora. Scegli qui sopra e tocca <b>Invia ordine</b> per il primo.</div>';
 }
 
 /* ---------- laboratorio ---------- */
@@ -809,12 +869,78 @@ $('tRun').onclick=async()=>{
   $('tOut').hidden=false;
 };
 
+/* ---------- spiegazioni "?" ---------- */
+const nm_=id=>id==='bench'?'il benchmark':((V&&V.names&&V.names[id])||id);
+const HELP={
+ tour:['Come si legge l\'app',()=>`<p>L'app è un <b>fondo finto con prezzi veri</b>: $30.000 finti, $10.000 su Bitcoin, $10.000 sul Nasdaq-100 e $10.000 sull'euro-dollaro. Ogni giorno, da solo su GitHub, il desk scarica i prezzi, decide e aggiorna questa pagina.</p>
+  <ul><li><b>In alto</b>: quanto vale il fondo e quanto ha guadagnato o perso da quando è partito, confrontato con chi compra e tiene (il <b>benchmark</b>).</li>
+  <li><b>La sala disegnata</b>: davanti le 3 sale trading, dietro i reparti ricerca, a destra direzione e rischio. Tocca un tavolo per aprirlo.</li>
+  <li><b>Scheda del mercato</b> (a destra): cosa sta facendo quella sala e perché. Le 4 linguette spiegano come si decide.</li>
+  <li><b>Il fondo</b>: le persone, i loro messaggi, la classifica dei trader, il rischio e il report.</li>
+  <li><b>La tua sala</b>: $10.000 finti per mercato che comandi tu.</li>
+  <li><b>Laboratorio</b>: provi tu una strategia su 14 anni di storia, sul tuo iPad.</li></ul>
+  <p>Ogni riquadro ha un <b>?</b> che spiega quella parte.</p>`],
+ brief:['Oggi in breve',()=>`<p>Il riassunto del giorno scritto dal desk dopo l'ultimo giro: quanto vale il fondo, in che posizione è ogni mercato, se qualche strategia è stata promossa e come va la tua sala.</p><p>Il desk gira da solo ogni giorno. "Ultimo giro" in alto dice quando è successo l'ultima volta.</p>`],
+ detail:['La scheda del mercato',()=>{const a=A();return `<p>Mostra la sala selezionata (tocca BTC, NDX o EUR/USD sopra, o un tavolo nella sala disegnata).</p>
+  <ul><li><b>Desk dal vivo</b>: quanto hanno guadagnato o perso i $10.000 di questa sala <b>dal giorno di avvio</b> (${a?dIt(a.launch):'–'}), commissioni comprese. È un risultato vero, non un backtest.</li>
+  <li><b>Benchmark</b>: cosa avresti fatto senza fare nulla di furbo: ${a&&a.benchKind==='cash'?'per l\'euro-dollaro restare in liquidità (0%), perché comprare e tenere una valuta non ha senso.':'comprare il giorno di avvio e tenere.'}</li>
+  <li><b>Revisione</b>: il giorno in cui il comitato può cambiare strategia. Succede ogni 3 mesi, così non si cambia idea ogni settimana inseguendo il rumore.</li>
+  <li><b>Perché questa strategia</b>: il motivo scritto dell'ultima decisione.</li></ul>
+  <p>Se c'è scritto <b>BENCHMARK</b>, la sala sta semplicemente copiando il mercato: nessuna strategia ha ancora superato la verifica.</p>`}],
+ research:['Ricerca',()=>`<p>Sono tutte le strategie che il reparto ricerca segue su questo mercato, ordinate dalla migliore degli <b>ultimi 2 anni</b>.</p>
+  <ul><li><b>Prima colonna</b>: rendimento negli ultimi 2 anni e <b>Sharpe</b> (guadagno diviso per quanto oscilla: più è alto, più il guadagno è "liscio").</li>
+  <li><b>Seconda colonna, "dal vivo"</b>: come sta andando dal giorno di avvio, sui prezzi nuovi che nessuno conosceva.</li>
+  <li><b>Bordo verde</b>: negli ultimi 2 anni ha battuto il benchmark con margine. <b>Viola</b>: la strategia in uso.</li></ul>
+  <p>Verde <b>non</b> vuol dire "funziona": vedi il riquadro arancione nella scheda.</p>`],
+ verify:['Verifica',()=>`<p>È la prova più importante. Domanda: <b>"se avessimo usato il nostro metodo di scelta in passato, avremmo battuto il mercato?"</b></p>
+  <p>Il programma torna indietro nel tempo. Ogni 3 mesi sceglie la strategia migliore guardando <b>solo i dati fino a quel giorno</b>, poi guarda come va nei 3 mesi dopo, che non conosceva. Così per tutti gli anni.</p>
+  <p>La linea viola è il risultato di questo metodo, quella blu è il benchmark. Se il viola batte il blu per rendimento e Sharpe e vince almeno metà dei trimestri, l'esito è <b>VALIDO</b> e il fondo può usare la strategia con i soldi. Altrimenti resta sul benchmark.</p>`],
+ trades:['Operazioni',()=>`<p>Ogni volta che la sala ha cambiato posizione dal giorno di avvio: <b>LONG</b> = compra (guadagna se sale), <b>SHORT</b> = vende allo scoperto (guadagna se scende), <b>FLAT</b> = nessuna posizione.</p><p>Accanto vedi il prezzo e, quando un'operazione si chiude, quanto ha reso dopo i costi.</p>`],
+ log:['Decisioni',()=>`<p>Il diario del comitato: l'avvio, ogni revisione trimestrale e ogni <b>retrocessione</b> (se la strategia in uso fa peggio del benchmark di oltre 5 punti dopo 20 giorni, viene tolta subito). Ogni riga ha il suo motivo scritto.</p>`],
+ fund:['Il fondo',()=>`<p>È l'organizzazione del fondo, come in un hedge fund vero.</p>
+  <ul><li><b>Sala</b>: i messaggi di oggi. Analisti, macro, machine learning, rischio, trader e comitato. Usa i filtri per leggere solo un reparto.</li>
+  <li><b>Organigramma</b>: le persone fisse. Toccane una per il report e per chiedere "come va?".</li>
+  <li><b>Classifica</b>: un trader per ogni strategia su ogni mercato.</li>
+  <li><b>Rischio</b>: quanto potremmo perdere in un giorno brutto, i limiti e il kill switch.</li>
+  <li><b>Report</b>: quello che riceverebbe un investitore, mese per mese.</li></ul>
+  <p>Le persone sono simulate: ogni numero che dicono viene dai dati veri del giorno. Le operazioni le decidono solo le regole, non le chiacchiere.</p>`],
+ sala:['Sala',()=>HELP.fund[1]()],
+ org:['Organigramma',()=>`<p>Le persone fisse del fondo, divise per reparto. Le barre sono <b>energia, stress, fiducia e focus</b>, calcolati dai numeri: ad esempio lo stress del risk manager sale con il VaR, la fiducia dell'ingegnere ML sale solo se un modello batte il caso.</p>`],
+ rank:['Classifica',()=>`<p>Ogni strategia della ricerca, su ogni mercato, ha un suo trader. Sono ordinati per risultato <b>dal vivo</b> dall'avvio.</p>
+  <ul><li><b>IN CAMPO</b>: la sua strategia è quella che la sala usa davvero.</li><li><b>ATTIVO</b>: negli ultimi 2 anni ha battuto il benchmark; può essere promosso alla revisione.</li><li><b>PANCHINA</b>: non lo ha battuto.</li>
+  <li><b>ML</b>: usa un modello di machine learning.</li><li><b>AUTO</b>: è un trader che <b>si migliora da solo</b> (tocca "?" qui sotto, o toccalo per vedere la sua storia).</li></ul>
+  <p>I trader AUTO ogni mese provano piccole modifiche ai propri numeri (ad esempio passare dalla media 20/50 alla 25/50). Cambiano solo se la modifica è migliore sui 2 anni di allenamento <b>e</b> non è peggiore negli ultimi 3 mesi, che non hanno usato per scegliere. Così non si adattano al caso.</p>`],
+ risk:['Rischio',()=>`<ul><li><b>VaR 95%</b>: con le posizioni di oggi, in 1 giorno su 20 si potrebbe perdere più di questa cifra (calcolato sugli ultimi 250 giorni veri).</li>
+  <li><b>Perdita attesa nei giorni peggiori</b>: la media di quel 5% di giorni brutti.</li><li><b>Esposizione lorda</b>: quanti soldi sono in gioco rispetto al patrimonio (100% = tutto investito; con la leva può superarlo).</li>
+  <li><b>Perdita dal massimo</b>: quanto siamo sotto il valore più alto raggiunto.</li></ul>
+  <p>Il <b>kill switch</b> è il freno d'emergenza: se lo accendi, tutte le sale chiudono e restano in liquidità finché non lo spegni.</p>`],
+ rep:['Report',()=>`<p>Il riassunto per un investitore: valore del fondo (NAV), risultato contro il benchmark, da quale mercato vengono guadagni e perdite, mese per mese.</p><p>In fondo c'è la pagella del machine learning: il modello prova a indovinare se tra 5 giorni il prezzo sarà più alto. Vale qualcosa solo se indovina più spesso della <b>base</b>, cioè di chi dice sempre la direzione più frequente.</p>`],
+ me:['La tua sala',()=>`<p>Hai <b>$10.000 finti per ogni mercato</b>, separati dal desk. Il desk non li tocca mai: comandi solo tu. È il modo per vedere se le tue idee battono i trader e il benchmark.</p>
+  <ul><li><b>LONG</b>: compri, guadagni se il prezzo sale.</li><li><b>SHORT</b>: vendi allo scoperto, guadagni se scende.</li><li><b>FLAT</b>: chiudi tutto e resti in liquidità.</li>
+  <li><b>Quanto</b>: la parte dei $10.000 da usare. Il resto resta fermo.</li></ul>
+  <p><b>Come mandare un ordine</b>: scegli e tocca <b>Invia ordine</b>. Si apre GitHub con la richiesta già compilata: tocca il pulsante verde <b>Create</b>. Tutto qui. Il desk la legge, registra l'ordine, chiude la richiesta e aggiorna l'app in circa 2 minuti. Solo tu puoi dare ordini: se qualcun altro ci prova, viene ignorato.</p>
+  <p>L'ordine si esegue al <b>prezzo di chiusura</b> successivo, come tutte le sale. Vale sempre l'ultimo ordine dato per quel mercato.</p>`],
+ tm:['Macchina del tempo',()=>`<p>Prima di dare un ordine puoi vedere cosa rischi. Scegli obiettivo (dove prendi il guadagno), stop (dove accetti la perdita) e per quanti giorni. Il programma prende le giornate vere dell'ultimo anno, le rimescola 10.000 volte e conta quante volte arrivi prima all'obiettivo o prima allo stop.</p><p>Non dice dove andrà il prezzo: dice <b>quanto si muove</b>, così scegli stop e quota sapendo cosa rischi.</p>`],
+ lab:['Laboratorio',()=>`<p>Qui sei tu il ricercatore. Scegli un mercato e una strategia, cambi i numeri e premi <b>Prova</b>: il calcolo gira sul tuo iPad su tutta la storia dei prezzi.</p>
+  <ul><li><b>Incrocio di medie</b>: compra quando la media veloce supera la lenta (es. 20 e 50 giorni).</li><li><b>Rottura</b>: compra quando il prezzo fa il massimo degli ultimi N giorni.</li>
+  <li><b>Contro gli eccessi</b>: compra quando il prezzo è sceso molto sotto la sua media, vende quando è salito molto sopra.</li><li><b>Filtro media 200</b>: investito solo sopra la media di 200 giorni.</li><li><b>Machine learning</b>: un modello che impara dal passato.</li></ul>
+  <p>Poi leggi tre prove: il <b>grafico</b> contro il benchmark; le <b>due metà</b> (se funziona solo in una metà, era fortuna); il <b>test della fortuna</b> (10.000 strategie a caso con le stesse posizioni: se la tua non fa meglio di quasi tutte, il tempismo non vale nulla).</p>
+  <p>Attenzione: più combinazioni provi, più è facile trovarne una bella per caso. Il contatore in alto te lo ricorda.</p>`],
+};
+function openHelp(k){const h=HELP[k];if(!h)return;$('hTitle').textContent=h[0];$('hBody').innerHTML=h[1]();$('helpModal').hidden=false;$('hClose').focus()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-h]');if(b){e.preventDefault();openHelp(b.dataset.h)}});
+$('tabHelp').onclick=()=>openHelp(tab);$('ftabHelp').onclick=()=>openHelp(FT);
+const closeHelp=()=>{$('helpModal').hidden=true};$('hClose').onclick=closeHelp;
+$('helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')closeHelp()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('helpModal').hidden)closeHelp()});
+function renderBrief(){const F=V.fund;$('brief').innerHTML=(F&&F.brief?F.brief:['Il riepilogo compare dal prossimo giro del desk.']).map(x=>`<li>${esc(x)}</li>`).join('')}
+
 /* ---------- dati ---------- */
 async function load(){
   try{
     const r=await fetch('data/view.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(r.status);
     V=await r.json();$('overlay').hidden=true;
-    renderHud();renderStrip();renderTicker();renderDetail();renderTab();renderMe();renderFund();
+    renderBrief();renderHud();renderStrip();renderTicker();renderDetail();renderTab();renderMe();renderFund();
   }catch(e){$('overlay').hidden=false;$('news').textContent='Il desk non ha ancora fatto il primo giro.'}
 }
 load();setInterval(load,10*60*1000);setInterval(()=>{if(V)renderHud()},60000);

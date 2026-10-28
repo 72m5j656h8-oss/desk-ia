@@ -100,7 +100,7 @@ function buildFund({ view, labs, control, eventsBy, prevFeed }) {
       const champ = a.champion.id === b.id;
       traders.push({ id: b.id + '@' + k, name: traderName(b.id + k), asset: k, short: a.short, strat: b.name, ret2y: b.ret, sharpe: b.sharpe, maxDD: b.maxDD, fwd: b.fwd,
         pos: L.pos[b.id][n], status: champ ? 'in campo' : b.ok ? 'attivo' : 'panchina',
-        ml: b.id.startsWith('ml-') });
+        ml: b.id.startsWith('ml-'), auto: b.id.startsWith('ad-'), adapt: a.research.adapt && a.research.adapt[b.id] || null });
     }
   }
   traders.sort((x, y) => (y.fwd - x.fwd) || (y.sharpe - x.sharpe));
@@ -130,6 +130,17 @@ function buildFund({ view, labs, control, eventsBy, prevFeed }) {
       report: `${A[k].name}: ${I.above50 ? 'sopra' : 'sotto'} la media 50 e ${I.above200 ? 'sopra' : 'sotto'} la media 200 (${pct(I.d200)}). RSI 14 a ${Math.round(I.rsi)}${I.rsi > 70 ? ', ipercomprato' : I.rsi < 30 ? ', ipervenduto' : ''}. Volatilità al ${Math.round(I.volPct * 100)}° percentile dell'anno. Ultimo mese ${pct(I.r20)}.${m.prob != null ? ` Il modello ML stima un rialzo a 5 giorni al ${Math.round(m.prob * 100)}%, ma vale quanto una moneta finché non batte la base.` : ''}` });
   }
 
+  /* ---------- oggi in breve: due righe in italiano semplice ---------- */
+  const brief = [];
+  brief.push(`Il fondo vale ${usd(report.nav)}: ${pct(report.ret, 2)} da quando è partito. Comprare e tenere avrebbe fatto ${pct(report.benchRet, 2)}.`);
+  brief.push(keys.map(k => `${A[k].short} ${posTxt(A[k].position)}`).join(' · ') + (risk.kill ? ' — kill switch attivo, tutto in liquidità.' : '.'));
+  const valid = keys.filter(k => A[k].research.wf && A[k].research.wf.valid);
+  brief.push(valid.length ? `Metodo di ricerca valido su ${valid.map(k => A[k].short).join(', ')}: lì opera il campione.` : `Nessuna strategia ha ancora superato la verifica: le sale copiano il mercato (o restano in liquidità sull'euro). Prossima revisione il ${new Date(A[keys[0]].nextReview + 'T12:00:00Z').toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}.`);
+  const improved = traders.filter(t => t.adapt && t.adapt.hist.length && t.adapt.hist[0].from && t.adapt.hist[0].d >= A[t.asset].last.d);
+  if (improved.length) brief.push(`${improved.length} trader automatic${improved.length > 1 ? 'i hanno' : 'o ha'} cambiato i propri parametri oggi.`);
+  const myNav = view.me ? Object.values(view.me.assets).reduce((s, x) => s + x.equity, 0) : null;
+  if (myNav != null) brief.push(`La tua sala vale ${usd(myNav)} (${pct(myNav / cap - 1, 2)}).`);
+
   /* ---------- la sala: messaggi del giorno ---------- */
   const lastDay = keys.map(k => A[k].last.d).sort().pop();
   const msgs = [];
@@ -144,13 +155,15 @@ function buildFund({ view, labs, control, eventsBy, prevFeed }) {
     for (const t of moved.slice(0, 4)) say(t.name, 'Operazioni', `${A[k].short}: la mia strategia "${t.strat}" passa a ${posTxt(t.pos)} alla chiusura del ${A[k].last.d}. Sono ${t.status === 'in campo' ? 'il campione, quindi è un ordine vero della sala' : 'in prova, quindi è un\'operazione simulata della ricerca'}.`, 'Operazioni');
     const inPos = traders.filter(t => t.asset === k && t.pos !== 0).length, bench = traders.filter(t => t.asset === k && t.status === 'panchina').length;
     say(STAFF[k].name, 'Operazioni', `${A[k].short}: ${inPos} trader su ${traders.filter(t => t.asset === k).length} in posizione nella ricerca, ${bench} in panchina. La sala resta ${posTxt(A[k].position)} con "${A[k].champion.name === 'Benchmark' ? A[k].benchName : A[k].champion.name}".`, 'Operazioni');
+    for (const t of traders.filter(t => t.asset === k && t.adapt && t.adapt.hist.length && t.adapt.hist[0].from && t.adapt.hist[0].d >= A[k].last.d))
+      say(t.name, 'Ricerca', `${A[k].short}: mi sono migliorato. "${t.strat}" passa da ${t.adapt.hist[0].from} a ${t.adapt.hist[0].p}. ${t.adapt.hist[0].why} Ho controllato anche gli ultimi 3 mesi, che non avevo usato per scegliere.`, 'Ricerca');
     for (const e of eventsBy[k] || []) say(STAFF.cio.name, 'Comitato', `${A[k].short}: ${e}. ${A[k].champion.why}`, 'Comitato');
   }
   say(STAFF.cio.name, 'Comitato', agents.find(a => a.id === 'cio').report, 'Comitato');
 
   // il diario della sala: i messaggi di oggi sostituiscono quelli dello stesso giorno di mercato
   const feed = [...msgs, ...(Array.isArray(prevFeed) ? prevFeed : []).filter(m => m.d !== lastDay)].slice(0, 400);
-  return { fund: { regime, risk, report, traders, agents, ml, ind: Object.fromEntries(keys.map(k => [k, { ...ind[k], rsi: Math.round(ind[k].rsi), volPct: r4(ind[k].volPct), d200: r4(ind[k].d200), r20: r4(ind[k].r20), vol: r4(ind[k].vol) }])) }, feed };
+  return { fund: { brief, regime, risk, report, traders, agents, ml, ind: Object.fromEntries(keys.map(k => [k, { ...ind[k], rsi: Math.round(ind[k].rsi), volPct: r4(ind[k].volPct), d200: r4(ind[k].d200), r20: r4(ind[k].r20), vol: r4(ind[k].vol) }])) }, feed };
 }
 
 module.exports = { buildFund, STAFF, LIMITS };

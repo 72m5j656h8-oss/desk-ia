@@ -31,6 +31,11 @@ for (const ls of [false, true])
 // reparto machine learning: regressione logistica riaddestrata ogni mese solo sul passato
 for (const [h, ls] of [[5, true], [5, false], [1, true]])
   VARIANTS.push({ id: `ml-${h}-${ls ? 'ls' : 'l'}`, fam: 'ml', h, ls, name: `ML ${h === 1 ? '1 giorno' : h + ' giorni'} ${ls ? 'long+short' : 'solo long'}` });
+// trader adattivi: ogni mese provano piccole variazioni dei propri parametri e tengono la migliore
+// solo se vince sia sul periodo di allenamento sia sugli ultimi 3 mesi, che non hanno usato per allenarsi
+for (const [base, ls] of [['ma', true], ['ma', false], ['don', true], ['don', false], ['mr', true]])
+  VARIANTS.push({ id: `ad-${base}-${ls ? 'ls' : 'l'}`, fam: 'adapt', base, ls,
+    name: { ma: 'Medie adattive', don: 'Rottura adattiva', mr: 'Eccessi adattivi' }[base] + (base === 'mr' ? '' : ls ? ' long+short' : ' solo long') });
 const BENCH = { id: 'bench', fam: 'bench', name: 'Benchmark' };
 const FLAT = { id: 'flat', fam: 'flat', name: 'Tutto in liquidità (kill switch)' };
 const BY_ID = Object.fromEntries([...VARIANTS, BENCH, FLAT].map(v => [v.id, v]));
@@ -96,6 +101,7 @@ function positions(v, c, benchKind) {
     return pos;
   }
   if (v.fam === 'ml') return mlPositions(v, c).pos;
+  if (v.fam === 'adapt') throw new Error('le strategie adattive si calcolano in buildLab');
   throw new Error('famiglia sconosciuta ' + v.fam);
 }
 
@@ -220,11 +226,79 @@ function buildLab(assetKey, bars) {
   const dates = bars.map(b => b[0]), c = bars.map(b => b[4]);
   const pos = {}, rets = {};
   for (const v of [...VARIANTS, BENCH, FLAT]) {
+    if (v.fam === 'adapt') continue;
     pos[v.id] = positions(v, c, A.bench);
     const p = pos[v.id];
     rets[v.id] = returns(A, dates, c, t => p[t]);
   }
-  return { key: assetKey, A, dates, c, pos, rets };
+  const adapt = {};
+  for (const v of VARIANTS) if (v.fam === 'adapt') {
+    const res = adaptive(v, A, dates, c);
+    pos[v.id] = res.pos; rets[v.id] = returns(A, dates, c, t => res.pos[t]); adapt[v.id] = { hist: res.hist, cur: res.cur, label: res.label, tests: res.tests };
+  }
+  return { key: assetKey, A, dates, c, pos, rets, adapt };
+}
+
+/* ---------- trader adattivi ----------
+   Ogni 21 giorni di borsa il trader prova i "vicini" dei suoi parametri (es. media 20/50 -> 15/50, 25/50, 20/40, 20/60).
+   Allenamento: i 2 anni che finiscono 3 mesi fa. Prova: gli ultimi 3 mesi, che non ha usato per scegliere.
+   Cambia solo se il vicino batte i parametri attuali in allenamento (Sharpe +0,1) E non fa peggio nella prova.
+   Ogni decisione usa solo prezzi già passati: la stessa cosa si può rifare sul passato senza barare. */
+const GRID = {
+  ma: { dims: [[5, 10, 15, 20, 25, 30, 40, 50], [20, 30, 40, 50, 60, 80, 100, 120, 150, 200]], start: [20, 50], make: (p, ls) => ({ fam: 'ma', f: p[0], s: p[1], ls }), ok: p => p[0] < p[1], label: p => `${p[0]}/${p[1]}` },
+  don: { dims: [[10, 15, 20, 30, 40, 55, 70, 85, 100, 120]], start: [55], make: (p, ls) => ({ fam: 'don', n: p[0], ls }), ok: () => true, label: p => `${p[0]} giorni` },
+  mr: { dims: [[5, 10, 15, 20, 30, 40], [1, 1.5, 2, 2.5]], start: [20, 2], make: p => ({ fam: 'mr', w: p[0], z: p[1], ls: true }), ok: () => true, label: p => `${p[0]} giorni, ${String(p[1]).replace('.', ',')}σ` },
+};
+const AD = { every: 21, train: 504, hold: 63, margin: 0.1 };
+const gridCache = new Map();
+function adaptive(v, A, dates, c) {
+  const G = GRID[v.base], n = c.length;
+  const ckey = A.short + ':' + v.base + ':' + v.ls + ':' + n + ':' + c[n - 1];
+  let cache = gridCache.get(ckey);
+  if (!cache) { cache = new Map(); gridCache.set(ckey, cache); }
+  const series = p => {                       // rendimenti e somme cumulate per un set di parametri
+    const k = p.join(',');
+    if (!cache.has(k)) {
+      const pp = positions(G.make(p, v.ls), c, A.bench), rr = returns(A, dates, c, t => pp[t]);
+      const S1 = new Float64Array(n + 1), S2 = new Float64Array(n + 1);
+      for (let t = 0; t < n; t++) { S1[t + 1] = S1[t] + rr[t]; S2[t + 1] = S2[t] + rr[t] * rr[t]; }
+      cache.set(k, { pos: pp, S1, S2 });
+    }
+    return cache.get(k);
+  };
+  const ppy = n / Math.max(0.5, (dms(dates[n - 1]) - dms(dates[0])) / (365 * DAY));
+  const sharpe = (sr, a, b) => {              // rendimenti con indice in (a, b]
+    const m = b - a; if (m < 20) return 0;
+    const mu = (sr.S1[b + 1] - sr.S1[a + 1]) / m, q = (sr.S2[b + 1] - sr.S2[a + 1]) / m, sd = Math.sqrt(Math.max(0, q - mu * mu));
+    return sd > 1e-12 ? mu / sd * Math.sqrt(ppy) : 0;
+  };
+  const idx = G.start.map((x, d) => G.dims[d].indexOf(x));
+  const pOf = ix => ix.map((i, d) => G.dims[d][i]);
+  const pos = new Array(n).fill(0), hist = [];
+  let cur = idx.slice(), curSeries = series(pOf(cur)), tests = 0;
+  const first = 200 + AD.train + AD.hold;
+  hist.push({ d: dates[Math.min(first, n - 1)], p: G.label(pOf(cur)), why: 'Parametri di partenza.' });
+  let next = first;
+  for (let t = 0; t < n; t++) {
+    if (t >= next) {
+      next = t + AD.every; tests++;
+      const tr0 = t - AD.hold - AD.train, tr1 = t - AD.hold, ho0 = t - AD.hold, ho1 = t;
+      const curTr = sharpe(curSeries, tr0, tr1), curHo = sharpe(curSeries, ho0, ho1);
+      let best = null;
+      for (let d = 0; d < cur.length; d++) for (const step of [-1, 1]) {
+        const nb = cur.slice(); nb[d] += step;
+        if (nb[d] < 0 || nb[d] >= G.dims[d].length || !G.ok(pOf(nb))) continue;
+        const sr = series(pOf(nb)), sTr = sharpe(sr, tr0, tr1), sHo = sharpe(sr, ho0, ho1);
+        if (sTr > curTr + AD.margin && sHo >= curHo && (!best || sTr > best.sTr)) best = { nb, sr, sTr, sHo };
+      }
+      if (best) {
+        hist.push({ d: dates[t], p: G.label(pOf(best.nb)), from: G.label(pOf(cur)), why: `Allenamento: Sharpe ${best.sTr.toFixed(2).replace('.', ',')} contro ${curTr.toFixed(2).replace('.', ',')}. Ultimi 3 mesi: ${best.sHo.toFixed(2).replace('.', ',')} contro ${curHo.toFixed(2).replace('.', ',')}.` });
+        cur = best.nb; curSeries = best.sr;
+      }
+    }
+    pos[t] = curSeries.pos[t];
+  }
+  return { pos, hist, cur: G.label(pOf(cur)), label: G.label(pOf(cur)), tests };
 }
 
 // la scelta del reparto ricerca alla data di indice i (usa solo dati fino a i)

@@ -217,7 +217,8 @@ function viewAsset(L, S) {
     trades: trades.slice(-25).reverse(),
     research: { asOf: L.dates[end], pick: today.id, pickName: nameOf(today.id), pickWhy: today.why, bench: today.bench || null, board, fwdBench: fwd.bench,
       wf: wf ? { from: wf.from, ret: wf.ret, sharpe: wf.sharpe, maxDD: wf.maxDD, cagr: wf.cagr, bench: wf.bench, quarters: wf.quarters, beaten: wf.beaten, valid: wf.valid, curve: wf.curve, picks: wf.picks.map(p => ({ ...p, name: nameOf(p.id) })) } : null,
-      tested: R.VARIANTS.length, history: L.dates[0] },
+      tested: R.VARIANTS.length, history: L.dates[0],
+      adapt: Object.fromEntries(Object.entries(L.adapt || {}).map(([id, x]) => [id, { cur: x.cur, tests: x.tests, changes: x.hist.length - 1, hist: x.hist.slice(-12).reverse() }])) },
     log: S.log.slice(-10).reverse(),
   };
 }
