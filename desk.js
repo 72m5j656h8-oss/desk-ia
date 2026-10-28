@@ -121,13 +121,29 @@ async function updatePrices(key) {
 }
 
 /* ---------- desk di un asset ---------- */
-const nameOf = id => (id === 'bench' ? 'Benchmark' : R.BY_ID[id].name);
+const nameOf = id => (id === 'bench' ? 'Benchmark' : R.BY_ID[id] ? R.BY_ID[id].name : id);
 
-function runAsset(key, bars, st) {
+function runAsset(key, bars, st, control) {
   const L = R.buildLab(key, bars), A = L.A, end = L.dates.length - 1, today = L.dates[end];
   const S = st || { launch: today, log: [], nextReview: today };
   const events = [];
   const champ = () => (S.log.length ? S.log[S.log.length - 1] : null);
+  const kill = !!(control && control.kill);
+
+  // kill switch: tutto in liquidità finché non viene disattivato (le revisioni aspettano)
+  if (kill && S.log.length) {
+    const c = champ();
+    if (c.id !== 'flat') {
+      S.log.push({ d: today, id: 'flat', kind: 'kill switch', prev: c.id, why: `Kill switch attivato${control.reason ? ' (' + control.reason + ')' : ''}: la sala chiude le posizioni e resta in liquidità.` });
+      events.push('kill switch: tutto in liquidità');
+    }
+    return { S, L, view: viewAsset(L, S), events };
+  }
+  if (!kill && S.log.length && champ().id === 'flat') {
+    const c = champ(), back = c.prev || 'bench';
+    S.log.push({ d: today, id: back, kind: 'riattivazione', why: `Kill switch disattivato: la sala torna a operare con "${nameOf(back)}".` });
+    events.push('kill switch disattivato');
+  }
 
   // revisione trimestrale (alla prima esecuzione: avvio)
   if (!S.log.length || today >= S.nextReview) {
@@ -145,7 +161,7 @@ function runAsset(key, bars, st) {
   } else {
     // retrocessione: il campione fa peggio del benchmark dal vivo
     const c = champ();
-    if (c.id !== 'bench') {
+    if (c.id !== 'bench' && c.id !== 'flat') {
       const a = R.idxOnOrBefore(L.dates, c.d);
       if (end - a >= R.RULES.demoteDays) {
         const sched = S.log.map(x => ({ i: R.idxOnOrBefore(L.dates, x.d), id: x.id }));
@@ -158,7 +174,7 @@ function runAsset(key, bars, st) {
       }
     }
   }
-  return { S, view: viewAsset(L, S), events };
+  return { S, L, view: viewAsset(L, S), events };
 }
 const pct = x => (x >= 0 ? '+' : '') + (x * 100).toFixed(2).replace('.', ',') + '%';
 
@@ -243,13 +259,15 @@ function combine(curvesByKey) {           // somma giorno per giorno, usando l'u
   const view = { v: 1, generatedAt: new Date().toISOString(), assets: {}, sources: {} };
   const lines = [], meIn = {};
   const orders = readJson(path.join(DATA, 'orders.json'), []);
+  const control = readJson(path.join(DATA, 'control.json'), { kill: false });
+  const labs = {}, eventsBy = {};
   for (const key of Object.keys(R.ASSETS)) {
     let p;
     try { p = await updatePrices(key); }
     catch (e) { view.sources[key] = { error: e.message }; lines.push(`${key}: SALTATO · ${e.message}`); continue; }
     view.sources[key] = { source: p.source, bars: p.bars.length, from: p.bars[0][0], to: p.bars[p.bars.length - 1][0], warn: p.warn || null };
-    const { S, view: v, events } = runAsset(key, p.bars, state.assets[key]);
-    state.assets[key] = S; view.assets[key] = v;
+    const { S, L, view: v, events } = runAsset(key, p.bars, state.assets[key], control);
+    state.assets[key] = S; view.assets[key] = v; labs[key] = L; eventsBy[key] = events;
     meIn[key] = { bars: p.bars, launch: S.launch };
     lines.push(`${key}: ${p.source}, ${p.bars.length} giorni (+${p.added}) · campione ${v.champion.name} · posizione ${v.position > 0 ? 'LONG' : v.position < 0 ? 'SHORT' : 'FLAT'} · dal vivo ${pct(v.live.ret)} vs ${pct(v.live.bench)}` + (events.length ? ' · ' + events.join(', ') : ''));
   }
@@ -270,7 +288,14 @@ function combine(curvesByKey) {           // somma giorno per giorno, usando l'u
   };
   state.runs++; state.lastRun = new Date().toISOString(); view.runs = state.runs; view.lastRun = state.lastRun;
   view.rules = R.RULES;
-  view.names = Object.fromEntries([...R.VARIANTS, R.BENCH].map(v => [v.id, v.name]));
+  view.names = Object.fromEntries([...R.VARIANTS, R.BENCH, R.FLAT].map(v => [v.id, v.name]));
+  // l'organizzazione del fondo: agenti, sala, rischio, report (solo descrittiva, non cambia le operazioni)
+  const F = require('./fund.js');
+  const prevFeed = readJson(path.join(DATA, 'feed.json'), []);
+  const out = F.buildFund({ view, labs, control, eventsBy, prevFeed });
+  view.fund = out.fund;
+  writeJson(path.join(DATA, 'feed.json'), out.feed);
+  view.feed = out.feed.slice(0, 120);
   writeJson(path.join(DATA, 'desk.json'), state);
   writeJson(path.join(DATA, 'view.json'), view);
   lines.forEach(l => log(l));

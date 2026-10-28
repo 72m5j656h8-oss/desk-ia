@@ -28,8 +28,12 @@ for (const [w, z] of [[10, 1.5], [10, 2], [20, 1.5], [20, 2]])
   VARIANTS.push({ id: `mr-${w}-${z}`, fam: 'mr', w, z, ls: true, name: `Eccessi ${w} giorni oltre ${String(z).replace('.', ',')}σ` });
 for (const ls of [false, true])
   VARIANTS.push({ id: `t200-${ls ? 'ls' : 'l'}`, fam: 't200', ls, name: `Filtro media 200 ${ls ? 'long+short' : 'solo long'}` });
+// reparto machine learning: regressione logistica riaddestrata ogni mese solo sul passato
+for (const [h, ls] of [[5, true], [5, false], [1, true]])
+  VARIANTS.push({ id: `ml-${h}-${ls ? 'ls' : 'l'}`, fam: 'ml', h, ls, name: `ML ${h === 1 ? '1 giorno' : h + ' giorni'} ${ls ? 'long+short' : 'solo long'}` });
 const BENCH = { id: 'bench', fam: 'bench', name: 'Benchmark' };
-const BY_ID = Object.fromEntries([...VARIANTS, BENCH].map(v => [v.id, v]));
+const FLAT = { id: 'flat', fam: 'flat', name: 'Tutto in liquidità (kill switch)' };
+const BY_ID = Object.fromEntries([...VARIANTS, BENCH, FLAT].map(v => [v.id, v]));
 
 /* ---------- regole del reparto ricerca ---------- */
 const RULES = {
@@ -57,6 +61,7 @@ function sma(c, n) {
 function positions(v, c, benchKind) {
   const n = c.length, pos = new Array(n).fill(0);
   if (v.fam === 'bench') { if (benchKind === 'long') pos.fill(1); return pos; }
+  if (v.fam === 'flat') return pos;
   if (v.fam === 'ma' || v.fam === 't200') {
     const fast = v.fam === 'ma' ? sma(c, v.f) : c, slow = sma(c, v.fam === 'ma' ? v.s : 200);
     for (let t = 0; t < n; t++) { if (slow[t] == null || fast[t] == null) continue; pos[t] = fast[t] > slow[t] ? 1 : v.ls ? -1 : 0; }
@@ -90,7 +95,94 @@ function positions(v, c, benchKind) {
     }
     return pos;
   }
+  if (v.fam === 'ml') return mlPositions(v, c).pos;
   throw new Error('famiglia sconosciuta ' + v.fam);
+}
+
+/* ---------- machine learning ----------
+   Caratteristiche calcolate con i prezzi fino al giorno t compreso:
+   rendimento 1/5/20 giorni, volatilità a 20 giorni, distanza dalle medie 50 e 200,
+   RSI 14, regime di volatilità (20 su 100 giorni).
+   Obiettivo: il prezzo tra h giorni sarà più alto di oggi?
+   Il modello si riaddestra ogni ML.retrain giorni usando SOLO esempi il cui esito era già noto. */
+const ML = { window: 1000, retrain: 21, lambda: 1, warm: 260, up: 0.55, down: 0.45 };
+const FEAT_NAMES = ['rend. 1g', 'rend. 5g', 'rend. 20g', 'volatilità 20g', 'distanza media 50', 'distanza media 200', 'RSI 14', 'regime volatilità'];
+function mlFeatures(c) {
+  const n = c.length, F = new Array(n).fill(null), s50 = sma(c, 50), s200 = sma(c, 200);
+  const r = c.map((x, i) => (i ? x / c[i - 1] - 1 : 0));
+  for (let t = 200; t < n; t++) {
+    let a = 0, b = 0; for (let k = t - 19; k <= t; k++) { a += r[k]; b += r[k] * r[k]; }
+    const v20 = Math.sqrt(Math.max(0, b / 20 - (a / 20) ** 2));
+    let a2 = 0, b2 = 0; for (let k = t - 99; k <= t; k++) { a2 += r[k]; b2 += r[k] * r[k]; }
+    const v100 = Math.sqrt(Math.max(0, b2 / 100 - (a2 / 100) ** 2)) || 1e-9;
+    let g = 0, l = 0; for (let k = t - 13; k <= t; k++) { if (r[k] > 0) g += r[k]; else l -= r[k]; }
+    const rsi = l + g > 0 ? g / (g + l) : 0.5;
+    F[t] = [r[t], c[t] / c[t - 5] - 1, c[t] / c[t - 20] - 1, v20, c[t] / s50[t] - 1, c[t] / s200[t] - 1, rsi - 0.5, v20 / v100 - 1];
+  }
+  return F;
+}
+function solve(A, b) {             // Gauss con pivot parziale
+  const n = b.length, M = A.map((row, i) => [...row, b[i]]);
+  for (let i = 0; i < n; i++) {
+    let p = i; for (let k = i + 1; k < n; k++) if (Math.abs(M[k][i]) > Math.abs(M[p][i])) p = k;
+    [M[i], M[p]] = [M[p], M[i]];
+    const d = M[i][i] || 1e-12;
+    for (let k = i + 1; k < n; k++) { const f = M[k][i] / d; for (let j = i; j <= n; j++) M[k][j] -= f * M[i][j]; }
+  }
+  const x = new Array(n).fill(0);
+  for (let i = n - 1; i >= 0; i--) { let sm = M[i][n]; for (let j = i + 1; j < n; j++) sm -= M[i][j] * x[j]; x[i] = sm / (M[i][i] || 1e-12); }
+  return x;
+}
+function fitLogit(X, y, lambda) {   // regressione logistica con penalità L2 (Newton)
+  const d = X[0].length; let w = new Array(d).fill(0);
+  for (let it = 0; it < 8; it++) {
+    const g = new Array(d).fill(0), H = Array.from({ length: d }, () => new Array(d).fill(0));
+    for (let i = 0; i < X.length; i++) {
+      const x = X[i]; let z = 0; for (let j = 0; j < d; j++) z += w[j] * x[j];
+      const p = 1 / (1 + Math.exp(-z)), e = p - y[i], s = p * (1 - p);
+      for (let j = 0; j < d; j++) { g[j] += e * x[j]; for (let k = j; k < d; k++) H[j][k] += s * x[j] * x[k]; }
+    }
+    for (let j = 0; j < d; j++) { for (let k = 0; k < j; k++) H[j][k] = H[k][j]; if (j) { H[j][j] += lambda; g[j] += lambda * w[j]; } }
+    const step = solve(H, g); let mx = 0;
+    w = w.map((v, j) => { mx = Math.max(mx, Math.abs(step[j])); return v - step[j]; });
+    if (mx < 1e-6) break;
+  }
+  return w;
+}
+const mlCache = new Map();
+function mlPositions(v, c) {
+  const key = v.id + ':' + c.length + ':' + c[c.length - 1] + ':' + c[0];
+  if (mlCache.has(key)) return mlCache.get(key);
+  const n = c.length, F = mlFeatures(c), pos = new Array(n).fill(0), prob = new Array(n).fill(null);
+  let w = null, mu = null, sd = null, last = -1e9, hits = 0, tot = 0, p0 = 0;
+  for (let t = ML.warm + v.h; t < n; t++) {
+    if (t - last >= ML.retrain) {
+      // esempi s con esito noto al giorno t: s + h <= t
+      const X = [], y = [];
+      for (let s = Math.max(200, t - v.h - ML.window); s <= t - v.h; s++) if (F[s]) { X.push(F[s]); y.push(c[s + v.h] > c[s] ? 1 : 0); }
+      if (X.length >= 150) {
+        const d = X[0].length; mu = new Array(d).fill(0); sd = new Array(d).fill(0);
+        for (const x of X) for (let j = 0; j < d; j++) mu[j] += x[j] / X.length;
+        for (const x of X) for (let j = 0; j < d; j++) sd[j] += (x[j] - mu[j]) ** 2 / X.length;
+        sd = sd.map(q => Math.sqrt(q) || 1);
+        w = fitLogit(X.map(x => [1, ...x.map((q, j) => (q - mu[j]) / sd[j])]), y, ML.lambda);
+        last = t;
+      }
+    }
+    if (!w || !F[t]) continue;
+    const z = w[0] + F[t].reduce((a, q, j) => a + w[j + 1] * (q - mu[j]) / sd[j], 0), p = 1 / (1 + Math.exp(-z));
+    prob[t] = p;
+    // isteresi: entra oltre le soglie, esce quando la probabilità torna dalla parte opposta di 0,5
+    if (p0 === 0) p0 = p > ML.up ? 1 : (v.ls && p < ML.down) ? -1 : 0;
+    else if (p0 === 1 && p < 0.5) p0 = (v.ls && p < ML.down) ? -1 : 0;
+    else if (p0 === -1 && p > 0.5) p0 = p > ML.up ? 1 : 0;
+    pos[t] = p0;
+    // accuratezza fuori campione: la previsione di t viene verificata quando l'esito è noto
+    if (t + v.h < n) { tot++; if ((p > 0.5) === (c[t + v.h] > c[t])) hits++; }
+  }
+  const out = { pos, prob, accuracy: tot ? hits / tot : null, tested: tot, weights: w ? w.slice(1).map((q, j) => ({ f: FEAT_NAMES[j], w: Math.round(q * 1000) / 1000 })) : [] };
+  mlCache.set(key, out);
+  return out;
 }
 
 /* ---------- rendimenti con costi: ret[t] = movimento da t-1 a t con la posizione decisa a t-1 ----------
@@ -127,7 +219,7 @@ function buildLab(assetKey, bars) {
   const A = ASSETS[assetKey];
   const dates = bars.map(b => b[0]), c = bars.map(b => b[4]);
   const pos = {}, rets = {};
-  for (const v of [...VARIANTS, BENCH]) {
+  for (const v of [...VARIANTS, BENCH, FLAT]) {
     pos[v.id] = positions(v, c, A.bench);
     const p = pos[v.id];
     rets[v.id] = returns(A, dates, c, t => p[t]);
@@ -193,7 +285,7 @@ function A_valid(A, s, b) {
   return s.ret > b.ret && s.sharpe > b.sharpe;
 }
 
-const API = { ASSETS, VARIANTS, BENCH, BY_ID, RULES, buildLab, pick, walkForward, scheduleReturns, stats, changes, idxOnOrBefore, addDays, dms, returns, positions, r4 };
+const API = { ASSETS, VARIANTS, BENCH, FLAT, sma, BY_ID, RULES, mlPositions, ML, buildLab, pick, walkForward, scheduleReturns, stats, changes, idxOnOrBefore, addDays, dms, returns, positions, r4 };
 if (typeof module !== 'undefined' && module.exports) module.exports = API;
 else if (typeof window !== 'undefined') window.Research = API;
 

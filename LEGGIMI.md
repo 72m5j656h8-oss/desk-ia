@@ -16,6 +16,8 @@ Nessun ordine reale viene mai inviato e non serve nessuna chiave o password.
 |---|---|
 | `docs/research.js` | Il reparto ricerca: le 18 strategie, i costi, la verifica fuori campione (usato anche dal Laboratorio nell'app) |
 | `order.js` + `.github/workflows/ordine.yml` | La tua sala: il pulsante per dare ordini al desk |
+| `fund.js` | L'organizzazione del fondo: agenti, sala, regime macro, rischio (VaR, esposizione), report |
+| `kill.js` + `.github/workflows/kill.yml` | Il kill switch: tutte le sale in liquidità con un pulsante |
 | `desk.js` | Il giro giornaliero: prezzi, revisioni, retrocessioni, risultati |
 | `.github/workflows/desk.yml` | Dice a GitHub di fare un giro ogni giorno alle 02:23 ora italiana (01:23 d'inverno) |
 | `docs/index.html` | La dashboard con la sala trading e i reparti ricerca |
@@ -33,6 +35,15 @@ Nessun ordine reale viene mai inviato e non serve nessuna chiave o password.
 7. Apri la dashboard su `https://TUO-NOME-UTENTE.github.io/desk-ia/` (la prima pubblicazione può richiedere qualche minuto). Puoi aggiungerla alla schermata Home del telefono come una app.
 
 Da qui in poi gira da solo, anche con telefono e computer spenti.
+
+## Il fondo
+
+- **Organigramma**: direttrice degli investimenti, risk manager, analista macro, ingegnere machine learning, un analista per mercato e un trader per ogni strategia (63). Tocca un agente per il suo report, il suo stato e i suoi messaggi. Energia, stress, fiducia e focus sono calcolati dai dati, non inventati.
+- **Sala**: i messaggi del giorno (report, operazioni, rischi, macro, comitato), filtrabili.
+- **Classifica**: tutti i trader, con chi è in campo, chi è attivo e chi è in panchina.
+- **Rischio**: esposizione, VaR 95% a 1 giorno, perdita dal massimo, limiti e **kill switch** (Actions → Kill switch del fondo → ON/OFF).
+- **Report**: patrimonio, extra-rendimento sul benchmark, da dove vengono guadagni e perdite, mese per mese, precisione del machine learning.
+- **Machine learning**: 3 modelli (regressione logistica) riaddestrati ogni mese solo sul passato, in gara nel reparto ricerca come le altre strategie.
 
 ## La tua sala e il Laboratorio
 

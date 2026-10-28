@@ -1,0 +1,48 @@
+name: Kill switch del fondo
+
+on:
+  workflow_dispatch:
+    inputs:
+      stato:
+        description: "ON = chiudi tutte le posizioni e resta in liquidità · OFF = riprendi a operare"
+        type: choice
+        options: [ON, OFF]
+        default: "ON"
+      motivo:
+        description: "Perché? (facoltativo)"
+        type: string
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: desk-ia
+  cancel-in-progress: false
+
+jobs:
+  kill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Kill switch
+        env:
+          STATO: ${{ github.event.inputs.stato }}
+          MOTIVO: ${{ github.event.inputs.motivo }}
+        run: node kill.js
+      - name: Aggiorna il desk
+        run: node desk.js
+      - name: Salva
+        env:
+          STATO: ${{ github.event.inputs.stato }}
+        run: |
+          git config user.name "desk-ia-bot"
+          git config user.email "desk-ia-bot@users.noreply.github.com"
+          git add docs/data
+          git commit -m "Kill switch: $STATO"
+          git pull --rebase
+          git push

@@ -126,6 +126,61 @@ canvas.wf{width:100%;height:150px;display:block;margin-top:6px}
 .grade b{font-family:var(--f-mono);font-weight:500;font-size:14px}
 .grade small{font-size:11px;color:var(--mute)}
 
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.fchip{font-family:var(--f-disp);font-weight:700;font-size:10.5px;letter-spacing:.1em;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mute);background:var(--panel)}
+.fchip.ok{color:var(--gain);border-color:rgba(62,224,143,.4)}
+.fchip.warn{color:var(--warm);border-color:rgba(255,154,60,.45)}
+.fchip.bad{color:var(--loss);border-color:rgba(255,93,122,.5);background:rgba(255,93,122,.08)}
+.fpane{display:grid;gap:6px;max-height:560px;overflow:auto;min-width:0}
+.filters{display:flex;gap:5px;flex-wrap:wrap;position:sticky;top:0;background:var(--panel);padding-bottom:6px;z-index:1}
+.filters button{font:inherit;font-size:11.5px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);background:var(--panel2);color:var(--mute);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.msg{display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;padding:7px 8px;border-radius:8px;background:var(--panel2);font-size:12.5px}
+.msg .av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-disp);font-weight:700;font-size:11px;color:#140c2b}
+.msg .top{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.msg .t{color:var(--mute);font-family:var(--f-mono);font-size:10.5px;margin-left:auto}
+.msg p{margin:2px 0 0;color:var(--mute);line-height:1.45}
+.dchip{font-size:10px;padding:1px 6px;border-radius:4px;background:rgba(169,156,214,.12);color:var(--mute)}
+.org{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.agent{text-align:left;font:inherit;color:var(--fg);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 10px;cursor:pointer;display:grid;gap:4px;min-width:0}
+.agent:hover{border-color:var(--accent)}
+.agent:focus-visible{outline:2px solid var(--accent)}
+.agent .hd{display:flex;gap:8px;align-items:center;min-width:0}
+.agent .av{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--f-disp);font-weight:700;font-size:11px;color:#140c2b}
+.agent b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agent small{color:var(--mute);font-size:11px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.mini i{display:block;height:4px;border-radius:2px;background:var(--line);position:relative;overflow:hidden}
+.mini i::after{content:"";position:absolute;inset:0;width:var(--w);background:var(--c)}
+.rk{display:grid;grid-template-columns:22px minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:7px 8px;border-radius:8px;background:var(--panel2);font-size:12.5px;cursor:pointer;border:1px solid transparent;text-align:left;font-family:inherit;color:var(--fg);width:100%}
+.rk:hover{border-color:var(--accent)}
+.rk .nm{min-width:0}
+.rk .nm small{display:block;color:var(--mute);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk .v{font-family:var(--f-mono);text-align:right;font-size:12px}
+.rk .v small{display:block;color:var(--mute);font-size:10.5px}
+.chip.camp{background:rgba(139,108,255,.3);color:#e2d9ff}
+.chip.att{background:rgba(62,224,143,.15);color:var(--gain)}
+.chip.pan{background:rgba(169,156,214,.12);color:var(--mute)}
+.chip.ml{background:rgba(255,154,60,.18);color:var(--warm)}
+.lim{display:grid;gap:3px;font-size:12.5px}
+.lim .bar{height:8px;border-radius:4px;background:var(--panel2);position:relative;overflow:hidden}
+.lim .bar i{position:absolute;inset:0 auto 0 0;border-radius:4px}
+.lim .row{display:flex;justify-content:space-between;gap:8px}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{text-align:left;font-weight:500;color:var(--mute);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:4px 6px;border-bottom:1px solid var(--line)}
+.tbl td{padding:5px 6px;border-bottom:1px solid rgba(58,44,120,.5);font-variant-numeric:tabular-nums}
+.tblw{overflow-x:auto}
+.modal{position:fixed;inset:0;background:rgba(10,6,24,.72);display:grid;place-items:center;z-index:50;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.mbox{position:relative;width:min(520px,100%);max-height:100%;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.mclose{position:absolute;top:10px;right:10px}
+.mhead{display:flex;gap:12px;align-items:center;padding-right:40px}
+.avatar{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;font-family:var(--f-disp);font-weight:700;font-size:18px;color:#140c2b;flex:none}
+.sbars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;margin-top:12px}
+.sbars div{display:grid;gap:3px;font-size:12px}
+.sbars .row{display:flex;justify-content:space-between;color:var(--mute)}
+.sbars .bar{height:6px;border-radius:3px;background:var(--panel2);overflow:hidden}
+.sbars .bar i{display:block;height:100%;border-radius:3px}
+.mact{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 @media (max-width:800px){.how{grid-template-columns:minmax(0,1fr)}}
 .how h4{margin:0 0 4px;font-family:var(--f-disp);font-size:14px;letter-spacing:.04em}
@@ -164,6 +219,7 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
         <span>Giorni <b id="days" class="num">–</b></span>
         <span>Ultimo giro <b id="last">–</b></span>
       </div>
+      <div class="chips" id="fundChips"></div>
     </div>
     <div class="vs">
       <div class="r"><span><i class="dot" style="background:var(--accent)"></i>Desk IA</span><b class="num" id="vsDesk">–</b></div>
@@ -215,6 +271,35 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
     </div>
   </div>
 
+  <section class="card" id="fundCard">
+    <div class="dhead" style="flex-wrap:wrap;align-items:baseline"><div><div class="kick">Organizzazione · rischio · report</div><h3>Il fondo</h3></div><span class="kick" id="fundAsOf">–</span></div>
+    <div class="tabs" role="tablist" style="margin-top:10px">
+      <button class="btn ftab" data-f="sala" aria-pressed="true">Sala</button>
+      <button class="btn ftab" data-f="org" aria-pressed="false">Organigramma</button>
+      <button class="btn ftab" data-f="rank" aria-pressed="false">Classifica</button>
+      <button class="btn ftab" data-f="risk" aria-pressed="false">Rischio</button>
+      <button class="btn ftab" data-f="rep" aria-pressed="false">Report</button>
+    </div>
+    <div class="fpane" id="f-sala"></div>
+    <div class="fpane" id="f-org" hidden></div>
+    <div class="fpane" id="f-rank" hidden></div>
+    <div class="fpane" id="f-risk" hidden></div>
+    <div class="fpane" id="f-rep" hidden></div>
+  </section>
+
+  <div class="modal" id="agentModal" hidden role="dialog" aria-modal="true" aria-labelledby="amName">
+    <div class="mbox">
+      <button class="btn mclose" id="amClose" aria-label="Chiudi">✕</button>
+      <div class="mhead"><div class="avatar" id="amAv">–</div><div style="min-width:0"><h3 id="amName">–</h3><div class="mu" id="amRole">–</div><div class="tags" id="amTags"></div></div></div>
+      <div class="sbars" id="amStats"></div>
+      <div class="note" style="padding:0;margin-top:4px">Energia, stress, fiducia e focus sono calcolati dai numeri del desk (volatilità, perdite, precisione, limiti di rischio).</div>
+      <div class="why" style="margin-top:10px"><small id="amSayT">Ultimo report</small><span id="amSay">–</span></div>
+      <div class="mact"><button class="btn" id="amReport">Chiedi un report</button><button class="btn" id="amHow">Come va?</button><button class="btn" id="amMsgs">I suoi messaggi</button></div>
+      <div class="pane" id="amList" style="max-height:200px;margin-top:8px"></div>
+      <div class="note" style="padding:0;margin-top:6px">Le risposte sono costruite dai dati di oggi, non da un'IA che conversa: per parlarci a parole libere servirebbe una chiave API a pagamento.</div>
+    </div>
+  </div>
+
   <section class="card" id="meCard">
     <div class="dhead" style="flex-wrap:wrap;align-items:center"><div><div class="kick">$10.000 finti per mercato · comandi tu</div><h3>La tua sala</h3></div><a class="btn go" id="orderBtn" href="#" target="_blank" rel="noopener">Dai un ordine ↗</a></div>
     <div class="meGrid" id="meGrid"></div>
@@ -245,7 +330,7 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
     <div class="dhead" style="flex-wrap:wrap;align-items:baseline"><div><div class="kick">14 anni di prezzi veri · gira sul tuo dispositivo</div><h3>Laboratorio</h3></div><span class="kick" id="labTries">–</span></div>
     <div class="labForm">
       <label>Mercato<select id="lAsset"><option value="BTC">Bitcoin</option><option value="NDX">Nasdaq-100</option><option value="EURUSD">Euro/Dollaro (leva 3)</option></select></label>
-      <label>Strategia<select id="lFam"><option value="ma">Incrocio di medie</option><option value="don">Rottura dei massimi/minimi</option><option value="mr">Contro gli eccessi</option><option value="t200">Filtro media 200</option></select></label>
+      <label>Strategia<select id="lFam"><option value="ma">Incrocio di medie</option><option value="don">Rottura dei massimi/minimi</option><option value="mr">Contro gli eccessi</option><option value="t200">Filtro media 200</option><option value="ml">Machine learning</option></select></label>
       <label id="lP1w"><span id="lP1n">Media veloce (giorni)</span><input id="lP1" type="number" inputmode="numeric"></label>
       <label id="lP2w"><span id="lP2n">Media lenta (giorni)</span><input id="lP2" type="number" inputmode="decimal"></label>
       <label id="lLsw">Direzione<select id="lLs"><option value="1">Long e short</option><option value="0">Solo long</option></select></label>
@@ -268,7 +353,7 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
 
   <section class="card how">
     <div><h4>Sale trading</h4><p>Bitcoin, Nasdaq-100 ed Euro/Dollaro, $10.000 finti ciascuna. Tutti i trader di una sala usano la strategia campione. Si decide con la chiusura di ogni giorno, con commissioni, slippage e costo dello short. L'euro-dollaro usa leva 3, come un conto forex prudente.</p></div>
-    <div><h4>Reparto ricerca</h4><p>Ogni sala ha 18 strategie candidate, provate su tutto lo storico e seguite ogni giorno in avanti. Una strategia diventa candidata solo se negli ultimi 2 anni ha battuto il benchmark sia nel rendimento sia nel rapporto rischio/rendimento, con margine.</p></div>
+    <div><h4>Reparto ricerca</h4><p>Ogni sala ha 21 strategie candidate, tra cui 3 modelli di machine learning riaddestrati ogni mese solo sul passato, provate su tutto lo storico e seguite ogni giorno in avanti. Una strategia diventa candidata solo se negli ultimi 2 anni ha battuto il benchmark sia nel rendimento sia nel rapporto rischio/rendimento, con margine.</p></div>
     <div><h4>Revisioni e retrocessioni</h4><p>Ogni 3 mesi si sceglie il campione, ma solo se il metodo di scelta ha battuto il benchmark fuori campione su tutto lo storico. Altrimenti la sala resta sul benchmark. Se il campione fa peggio del benchmark di oltre 5 punti dopo 20 giorni, viene retrocesso.</p></div>
   </section>
 
@@ -380,9 +465,12 @@ const PODS=[];
 KEYS.forEach((k,i)=>PODS.push({x:0.7+i*4.65,y:2.6,w:3.6,seats:3,asset:i,kind:'trade'}));
 KEYS.forEach((k,i)=>PODS.push({x:0.7+i*4.65,y:-1.6,w:3.6,seats:2,asset:i,kind:'lab'}));
 PODS.push({x:5.35,y:5.8,w:3.6,seats:3,asset:-1,kind:'me'});
+PODS.push({x:0.7,y:5.8,w:3.6,seats:2,asset:-1,kind:'staff',staff:['cio','macro'],label:'DIREZIONE'});
+PODS.push({x:10.0,y:5.8,w:3.6,seats:2,asset:-1,kind:'staff',staff:['risk','ml'],label:'RISCHIO'});
 const SKIN=['#f2c29b','#d9a07a','#a8714d','#7a4a2c','#e8b48c'];
 const SHIRT=['#5b7cff','#c26bff','#4fc3c9','#f06fa8','#7c8cff','#58d39b','#b48cff'];
 PODS.forEach((p,pi)=>{p.ag=[];for(let s=0;s<p.seats;s++)p.ag.push({skin:SKIN[(pi*3+s)%5],shirt:p.kind==='lab'?'#e9e4ff':s===0?'#ff9a3c':SHIRT[(pi*2+s)%7],ph:Math.random()*6})});
+PODS.filter(p=>p.kind==='staff').forEach((p,j)=>{p.ag=[];for(let s=0;s<p.seats;s++)p.ag.push({skin:['#f2c29b','#a8714d','#e8b48c','#7a4a2c'][j*2+s],shirt:['#ff9a3c','#c26bff','#ff5d7a','#4fc3c9'][j*2+s],ph:Math.random()*6})});
 const cv=$('c'),ctx=cv.getContext('2d');
 let W=0,H=0,DPR=1,zoom=innerWidth<600?1.3:1,panX=0,panY=0,K=10,CX=0,CY=0;
 function resize(){const r=cv.getBoundingClientRect();DPR=Math.min(2,devicePixelRatio||1);W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR}
@@ -409,23 +497,42 @@ function draw(now){
   const order=PODS.map((p,i)=>i).sort((a,b)=>(PODS[a].x+PODS[a].y)-(PODS[b].x+PODS[b].y));
   for(const pi of order)drawPod(PODS[pi],pi,now);
   hits.length=0;for(const pi of order)label(PODS[pi],pi);
+  bubble(now);
+}
+let BUB=null,bubT=0;
+function firstSentence(t){t=String(t||'');const m=t.match(/^.*?[.!?](\s|$)/);t=(m?m[0]:t).trim();return t.length>90?t.slice(0,88)+'…':t}
+function bubbleText(p){if(!V||!V.fund)return null;const F=V.fund,ag=id=>F.agents.find(a=>a.id===id);
+  if(p.kind==='staff'){const id=p.staff[Math.floor(Math.random()*p.staff.length)];const a=ag(id);return a?firstSentence(a.report):null}
+  if(p.kind==='lab'){const a=ag(KEYS[p.asset]);return a?firstSentence(a.report):null}
+  if(p.kind==='trade'){const tr=(F.traders||[]).filter(t=>t.asset===KEYS[p.asset]);if(!tr.length)return null;const t=tr[Math.floor(Math.random()*tr.length)];return `${t.name}: ${t.pos?(t.pos>0?'sono LONG':'sono SHORT'):'nessuna posizione'} con "${t.strat}".`}
+  return null}
+function bubble(now){
+  if(!BUB||now>BUB.until){if(now>bubT){const cand=PODS.map((p,i)=>i).filter(i=>PODS[i].kind!=='me');const pi=cand[Math.floor(Math.random()*cand.length)],t=bubbleText(PODS[pi]);BUB=t?{pi,t,until:now+4200}:null;bubT=now+5200}if(!BUB)return}
+  const p=PODS[BUB.pi],[sx,sy]=P(p.x+p.w/2,p.y+0.6,2.9),fs=Math.max(10,Math.min(12,K*0.5));
+  ctx.font=`500 ${fs}px "IBM Plex Sans",sans-serif`;const maxW=Math.min(230,W*0.6),words=BUB.t.split(' '),lines=[];let cur='';
+  for(const w_ of words){const tt=cur?cur+' '+w_:w_;if(ctx.measureText(tt).width>maxW&&cur){lines.push(cur);cur=w_}else cur=tt}if(cur)lines.push(cur);
+  const lh=fs*1.3,bw=Math.max(...lines.map(l=>ctx.measureText(l).width))+16,bh=lines.length*lh+10;
+  let x=Math.max(4,Math.min(W-bw-4,sx-bw/2)),y=Math.max(4,sy-bh);
+  ctx.fillStyle='rgba(255,252,235,.97)';rr(x,y,bw,bh,8);ctx.fill();ctx.beginPath();ctx.moveTo(sx-6,y+bh);ctx.lineTo(sx+6,y+bh);ctx.lineTo(sx,y+bh+7);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#2a1f5a';ctx.textAlign='left';ctx.textBaseline='top';lines.forEach((l,i)=>ctx.fillText(l,x+8,y+5+i*lh));ctx.textBaseline='alphabetic';
 }
 function drawPod(p,pi,now){
-  const a=V&&V.assets[KEYS[p.asset]];
-  box(p.x,p.y,0,p.w,0.8,0.55,p.kind==='lab'?'#d9d2f5':'#e7defd',p.kind==='lab'?'#a99ad8':'#b9a9ea',p.kind==='lab'?'#8b7bc9':'#9886da');
+  const a=V&&V.assets[KEYS[p.asset]],wide=p.kind==='lab'||p.kind==='staff';
+  box(p.x,p.y,0,p.w,0.8,0.55,wide?'#d9d2f5':'#e7defd',wide?'#a99ad8':'#b9a9ea',wide?'#8b7bc9':'#9886da');
   p.ag.forEach((ag,s)=>{
-    const mx=p.x+0.25+s*(p.kind==='lab'?1.7:1.2);let scr='#6d8bff';
+    const mx=p.x+0.25+s*(wide?1.7:1.2);let scr='#6d8bff';
+    if(p.kind==='staff'&&V&&V.fund){const F=V.fund;scr=p.staff[s]==='risk'?(F.risk.kill?'#ff5d7a':F.risk.breaches.length?'#ffb46b':'#3ee08f'):p.staff[s]==='macro'?(F.regime.label==='RISK-ON'?'#3ee08f':F.regime.label==='RISK-OFF'?'#ff5d7a':'#ffb46b'):p.staff[s]==='ml'?'#ffb46b':'#c9bbff'}
     if(a&&p.kind==='trade')scr=a.position>0?'#3ee08f':a.position<0?'#ff5d7a':'#6d8bff';
     if(a&&p.kind==='lab')scr=a.research.pick!=='bench'?'#3ee08f':'#ffb46b';
     if(p.kind==='me'&&V&&V.me){const m=V.me.assets[KEYS[s]];scr=!m?'#6d8bff':m.pos>0?'#3ee08f':m.pos<0?'#ff5d7a':'#6d8bff'}
     const fl=0.75+0.25*Math.sin(now/300+ag.ph*3);
-    const sw=p.kind==='lab'?1.2:0.75;
+    const sw=wide?1.2:0.75;
     box(mx,p.y+0.18,0.55,sw,0.07,0.42,'#3b2d78','#2a1f5a','#221a4c');
     ctx.globalAlpha=fl;poly([P(mx+0.06,p.y+0.25,0.6),P(mx+sw-0.06,p.y+0.25,0.6),P(mx+sw-0.06,p.y+0.25,0.92),P(mx+0.06,p.y+0.25,0.92)],scr);ctx.globalAlpha=1;
     if(p.kind==='lab'){ctx.strokeStyle='rgba(20,12,43,.7)';ctx.lineWidth=1;ctx.beginPath();for(let k=0;k<6;k++){const [x1,y1]=P(mx+0.15+k*0.17,p.y+0.25,0.64+((k*37+Math.floor(now/900))%5)*0.05);k?ctx.lineTo(x1,y1):ctx.moveTo(x1,y1)}ctx.stroke()}
   });
   p.ag.forEach((ag,s)=>{
-    const ax=p.x+0.6+s*(p.kind==='lab'?1.7:1.2)+(p.kind==='lab'?0.25:0),ay=p.y+1.3,bob=Math.sin(now/600+ag.ph)*0.03;
+    const ax=p.x+0.6+s*(wide?1.7:1.2)+(wide?0.25:0),ay=p.y+1.3,bob=Math.sin(now/600+ag.ph)*0.03;
     box(ax-0.28,ay-0.05,0,0.56,0.5,0.32,'#4a3a8a','#3a2d72','#30255f');
     const [bx,by]=P(ax,ay+0.2,0.62+bob);ctx.fillStyle=ag.shirt;ctx.beginPath();ctx.ellipse(bx,by,K*0.24,K*0.3,0,0,Math.PI*2);ctx.fill();
     const [hx,hy]=P(ax,ay+0.2,1.08+bob);ctx.fillStyle=ag.skin;ctx.beginPath();ctx.arc(hx,hy,K*0.17,0,Math.PI*2);ctx.fill();
@@ -438,6 +545,7 @@ function label(p,pi){
   const [sx,sy]=P(p.x+p.w/2,p.y+0.4,1.75);let t1,t2='',col='#a99cd6';
   if(p.kind==='trade'){t1=a?a.short:KEYS[p.asset];if(a){t2=pct(a.live.ret);col=a.live.ret>=0?'#3ee08f':'#ff5d7a'}}
   else if(p.kind==='me'){t1='TUA SALA';if(V&&V.me&&V.me.curve.length){const c=V.me.curve,rt=c[c.length-1][1]/(V.total.capital||30000)-1;t2=pct(rt);col=rt>=0?'#3ee08f':'#ff5d7a'}else{t2='IN ATTESA';col='#ff9a3c'}}
+  else if(p.kind==='staff'){t1=p.label;if(V&&V.fund){const F=V.fund;if(p.staff[0]==='cio'){t2=F.regime.label;col=F.regime.label==='RISK-ON'?'#3ee08f':F.regime.label==='RISK-OFF'?'#ff5d7a':'#ff9a3c'}else{t2=F.risk.kill?'KILL SWITCH':'VaR '+fmt(F.risk.varPct*100,1)+'%';col=F.risk.kill?'#ff5d7a':F.risk.breaches.length?'#ff9a3c':'#3ee08f'}}}
   else{t1='RICERCA';if(a){t2=a.research.pick!=='bench'?'TROVATA':'IN PROVA';col=a.research.pick!=='bench'?'#3ee08f':'#ff9a3c'}}
   const fs=Math.max(10,Math.min(14,K*0.62));
   ctx.font=`700 ${fs}px "Chakra Petch",sans-serif`;const w1=ctx.measureText(t1).width;ctx.font=`500 ${fs*0.8}px "IBM Plex Mono",monospace`;const w2=t2?ctx.measureText(t2).width:0;
@@ -446,7 +554,7 @@ function label(p,pi){
   ctx.fillStyle=on?'rgba(139,108,255,.95)':'rgba(30,20,70,.9)';rr(x,y,w,h,5);ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.stroke();ctx.lineWidth=1;
   ctx.textAlign='center';ctx.textBaseline='top';ctx.fillStyle='#fff';ctx.font=`700 ${fs}px "Chakra Petch",sans-serif`;ctx.fillText(t1,sx,y+3);
   if(t2){ctx.font=`500 ${fs*0.8}px "IBM Plex Mono",monospace`;ctx.fillStyle=on?'#fff':col;ctx.fillText(t2,sx,y+3+fs*1.05)}
-  ctx.textBaseline='alphabetic';hits.push({x,y,w,h,i:p.asset,tab:p.kind==='lab'?'research':null,me:p.kind==='me'});
+  ctx.textBaseline='alphabetic';hits.push({x,y,w,h,i:p.asset,tab:p.kind==='lab'?'research':null,me:p.kind==='me',staff:p.staff||null});
 }
 function wallScreen(){
   const x0=5.2,x1=13.9,z0=1.35,z1=3.05,y=YMIN+0.01,U=40,o=P(x0,y,z1);
@@ -469,13 +577,87 @@ cv.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;
   else if(pts.size===2){const [a,b]=[...pts.values()];const d0=Math.hypot(a.x-b.x,a.y-b.y);p.x=e.offsetX;p.y=e.offsetY;const d1=Math.hypot(a.x-b.x,a.y-b.y);if(d0>0)zoomAt(d1/d0,(a.x+b.x)/2,(a.y+b.y)/2);return}
   p.x=e.offsetX;p.y=e.offsetY});
 cv.addEventListener('pointerup',e=>{const p=pts.get(e.pointerId);pts.delete(e.pointerId);
-  if(p&&Math.hypot(p.x-p.x0,p.y-p.y0)<6&&performance.now()-p.t<400){for(let h=hits.length-1;h>=0;h--){const r=hits[h];if(e.offsetX>=r.x-6&&e.offsetX<=r.x+r.w+6&&e.offsetY>=r.y-6&&e.offsetY<=r.y+r.h+30){if(r.me){$('meCard').scrollIntoView({behavior:'smooth'});break}select(r.i);if(r.tab){document.querySelector('.tab[data-t="research"]').click()}break}}}});
+  if(p&&Math.hypot(p.x-p.x0,p.y-p.y0)<6&&performance.now()-p.t<400){for(let h=hits.length-1;h>=0;h--){const r=hits[h];if(e.offsetX>=r.x-6&&e.offsetX<=r.x+r.w+6&&e.offsetY>=r.y-6&&e.offsetY<=r.y+r.h+30){if(r.me){$('meCard').scrollIntoView({behavior:'smooth'});break}if(r.staff){openAgent(r.staff[0]);break}select(r.i);if(r.tab){document.querySelector('.tab[data-t="research"]').click()}break}}}});
 cv.addEventListener('pointercancel',e=>pts.delete(e.pointerId));
 cv.addEventListener('wheel',e=>{e.preventDefault();zoomAt(Math.exp(-e.deltaY*0.0015),e.offsetX,e.offsetY)},{passive:false});
 function zoomAt(f,mx,my){const nz=Math.min(4,Math.max(0.7,zoom*f));f=nz/zoom;zoom=nz;panX=mx-W/2-f*(mx-W/2-panX);panY=my-H/2-f*(my-H/2-panY)}
 $('zin').onclick=()=>zoomAt(1.3,W/2,H/2);$('zout').onclick=()=>zoomAt(1/1.3,W/2,H/2);$('zfit').onclick=()=>{zoom=1;panX=0;panY=0};
 function frame(now){draw(now);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
+
+/* ---------- il fondo ---------- */
+const DEPT_COL={Direzione:'#c9bbff',Rischio:'#ff8fa3',Macro:'#ffb46b',Ricerca:'#7fe0c2',Analisi:'#8fb4ff',Operazioni:'#e7defd',Comitato:'#c9bbff',Rischi:'#ff8fa3',Trader:'#e7defd'};
+const ini=n=>String(n).split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+let FT='sala',FEEDF='Tutto',RANKF='Tutti';
+document.querySelectorAll('.ftab').forEach(b=>b.onclick=()=>{FT=b.dataset.f;document.querySelectorAll('.ftab').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));['sala','org','rank','risk','rep'].forEach(id=>$('f-'+id).hidden=id!==FT);renderFund()});
+function repoUrl(wf){const owner=location.hostname.split('.')[0],repo=location.pathname.split('/').filter(Boolean)[0]||'desk-ia';return location.hostname.endsWith('github.io')?`https://github.com/${owner}/${repo}/actions/workflows/${wf}`:'https://github.com'}
+function renderChips(){const F=V.fund;if(!F)return;const R_=F.risk;
+  $('fundChips').innerHTML=`<span class="fchip ${F.regime.label==='RISK-ON'?'ok':F.regime.label==='RISK-OFF'?'bad':'warn'}">${F.regime.label}</span><span class="fchip ${R_.breaches.length?'warn':'ok'}">VaR ${fmt(R_.varPct*100,1)}%</span><span class="fchip">ESPOSIZIONE ${fmt(R_.gross*100,0)}% LORDA</span><span class="fchip">${(F.traders||[]).filter(t=>t.status!=='panchina').length} TRADER ATTIVI · ${(F.traders||[]).filter(t=>t.status==='panchina').length} IN PANCHINA</span><span class="fchip ${R_.kill?'bad':''}">${R_.kill?'KILL SWITCH ATTIVO':'KILL SWITCH SPENTO'}</span>`}
+function bars4(st){const c={energia:'#8fb4ff',stress:'#ff8fa3',fiducia:'#ffb46b',focus:'#3ee08f'};return `<div class="mini">${Object.keys(c).map(k=>`<i style="--w:${st[k]}%;--c:${c[k]}" title="${k} ${st[k]}"></i>`).join('')}</div>`}
+function renderFund(){
+  const F=V&&V.fund;if(!F){$('f-sala').innerHTML='<div class="note">L\'organizzazione del fondo compare dal prossimo giro del desk.</div>';return}
+  renderChips();$('fundAsOf').textContent='Aggiornato '+ago(V.lastRun);
+  if(FT==='sala'){
+    const deps=['Tutto','Operazioni','Analisi','Macro','Rischi','Ricerca','Comitato'];
+    const list=(V.feed||[]).filter(m=>FEEDF==='Tutto'||m.tag===FEEDF||m.dept===FEEDF);
+    $('f-sala').innerHTML=`<div class="filters">${deps.map(d=>`<button data-d="${d}" aria-pressed="${d===FEEDF}">${d}</button>`).join('')}</div>`+(list.length?list.slice(0,80).map(m=>`<div class="msg"><span class="av" style="background:${DEPT_COL[m.dept]||'#e7defd'}">${esc(ini(m.who))}</span><div style="min-width:0"><div class="top"><b>${esc(m.who)}</b><span class="dchip">${esc(m.tag||m.dept)}</span><span class="t">${dSh(m.d)}</span></div><p>${esc(m.text)}</p></div></div>`).join(''):'<div class="note">Nessun messaggio in questa categoria.</div>');
+    $('f-sala').querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{FEEDF=b.dataset.d;renderFund()});
+  } else if(FT==='org'){
+    const groups=['Direzione','Rischio','Macro','Ricerca','Analisi'];
+    $('f-org').innerHTML=groups.map(g=>{const ag=F.agents.filter(a=>a.dept===g);if(!ag.length)return'';return `<div class="kick" style="margin-top:4px">${g}</div><div class="org">${ag.map(a=>`<button class="agent" data-a="${a.id}"><span class="hd"><span class="av" style="background:${DEPT_COL[a.dept]}">${esc(ini(a.name))}</span><span style="min-width:0"><b>${esc(a.name)}</b><small>${esc(a.role)}</small></span></span><small>${esc(a.status)}</small>${bars4(a.stats)}</button>`).join('')}</div>`}).join('')
+      +`<div class="kick" style="margin-top:4px">Trader</div><div class="note" style="padding:0">${F.traders.length} trader: ogni strategia del reparto ricerca su ogni mercato ha il suo trader. Li trovi nella <b>Classifica</b>.</div>`;
+    $('f-org').querySelectorAll('.agent').forEach(b=>b.onclick=()=>openAgent(b.dataset.a));
+  } else if(FT==='rank'){
+    const fs=['Tutti','BTC','NDX','EURUSD','ML'];const lab_={Tutti:'Tutti',BTC:'BTC',NDX:'NASDAQ',EURUSD:'EUR/USD',ML:'Solo ML'};
+    const list=F.traders.filter(t=>RANKF==='Tutti'||(RANKF==='ML'?t.ml:t.asset===RANKF));
+    $('f-rank').innerHTML=`<div class="filters">${fs.map(d=>`<button data-r="${d}" aria-pressed="${d===RANKF}">${lab_[d]}</button>`).join('')}</div><div class="note" style="padding:0 2px 4px">Ordinati per risultato dal vivo dall'avvio. <b>In campo</b> = strategia campione della sala, <b>attivo</b> = batte il benchmark negli ultimi 2 anni, <b>panchina</b> = no.</div>`
+      +list.map((t,i)=>`<button class="rk" data-t="${esc(t.id)}"><span class="mu num" style="font-size:11px">${i+1}</span><span class="nm"><b>${esc(t.name)}</b> <span class="chip ${t.status==='in campo'?'camp':t.status==='attivo'?'att':'pan'}">${t.status.toUpperCase()}</span>${t.ml?' <span class="chip ml">ML</span>':''}<small>${esc(t.strat)} · ${esc(t.short)} · ${t.pos>0?'LONG':t.pos<0?'SHORT':'FLAT'}</small></span><span class="v ${cls(t.fwd)}">${pct(t.fwd)}<small>dal vivo</small></span><span class="v ${cls(t.ret2y)}">${pct(t.ret2y)}<small>2 anni · S ${fmt(t.sharpe,2)}</small></span></button>`).join('');
+    $('f-rank').querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{RANKF=b.dataset.r;renderFund()});
+    $('f-rank').querySelectorAll('.rk').forEach(b=>b.onclick=()=>openTrader(b.dataset.t));
+  } else if(FT==='risk'){
+    const R_=F.risk,L_=R_.limits;
+    const bar=(lab,v,lim,txt)=>{const w=Math.min(100,100*v/lim),col=v>lim?'var(--loss)':v>0.8*lim?'var(--warm)':'var(--gain)';return `<div class="lim"><div class="row"><span>${lab}</span><b class="num">${txt}</b></div><div class="bar"><i style="width:${w}%;background:${col}"></i></div></div>`};
+    $('f-risk').innerHTML=`<div class="grade" style="margin-top:0"><div><span>Patrimonio</span><b>${usd(R_.nav)}</b><small>valore di oggi</small></div><div><span>VaR 95% 1 giorno</span><b>${usd(R_.var95)}</b><small>1 giorno su 20 si può perdere di più</small></div><div><span>Perdita attesa nei giorni peggiori</span><b>${usd(R_.es95)}</b><small>media del 5% peggiore</small></div></div>`
+      +bar('Esposizione lorda',R_.gross,L_.gross,`${fmt(R_.gross*100,0)}% / ${fmt(L_.gross*100,0)}%`)
+      +bar('VaR in % del patrimonio',R_.varPct,L_.var95,`${fmt(R_.varPct*100,1)}% / ${fmt(L_.var95*100,0)}%`)
+      +bar('Perdita dal massimo',R_.ddNow,L_.ddKill,`${fmt(R_.ddNow*100,1)}% / ${fmt(L_.ddKill*100,0)}%`)
+      +`<div class="kick" style="margin-top:6px">Esposizione per mercato</div>`+Object.entries(R_.expo).map(([k,v])=>bar(`${(V.assets[k]||{}).short||k} ${v>0?'(long)':v<0?'(short)':'(flat)'}`,Math.abs(v),L_.netAsset,`${pct(v,0)}`)).join('')
+      +`<div class="note">${R_.breaches.length?'<b style="color:var(--loss)">Limiti superati:</b> '+R_.breaches.map(esc).join('; ')+'.':'<b>Tutti i limiti rispettati.</b>'} Il VaR usa le posizioni di oggi applicate agli ultimi 250 giorni di mercato.</div>`
+      +`<div class="why" style="border-left-color:${R_.kill?'var(--loss)':'var(--warm)'}"><small>Kill switch</small>${R_.kill?`<b>Attivo dal ${dIt(R_.killSince)}</b>${R_.killReason?' ('+esc(R_.killReason)+')':''}: tutte le sale sono in liquidità.`:'Spento. Se lo accendi, tutte le sale chiudono le posizioni e restano in liquidità finché non lo spegni.'} <a class="btn go" style="margin-top:8px" href="${repoUrl('kill.yml')}" target="_blank" rel="noopener">${R_.kill?'Spegni il kill switch ↗':'Accendi il kill switch ↗'}</a></div>`;
+  } else {
+    const P_=F.report,att=Object.entries(P_.attribution),mx=Math.max(1,...att.map(x=>Math.abs(x[1])));
+    $('f-rep').innerHTML=`<div class="grade" style="margin-top:0"><div><span>Patrimonio (NAV)</span><b>${usd(P_.nav)}</b><small>${P_.days} giorni dall'avvio</small></div><div><span>Fondo</span><b class="${cls(P_.ret)}">${pct(P_.ret)}</b><small>benchmark ${pct(P_.benchRet)}</small></div><div><span>Extra-rendimento</span><b class="${cls(P_.excess)}">${pct(P_.excess)}</b><small>quanto il fondo ha aggiunto al mercato</small></div></div>`
+      +`<div class="kick" style="margin-top:6px">Da dove vengono guadagni e perdite</div>`+att.map(([k,v])=>`<div class="lim"><div class="row"><span>${esc((V.assets[k]||{}).name||k)}</span><b class="num ${cls(v)}">${v>=0?'+':'−'}${usd(Math.abs(v))}</b></div><div class="bar"><i style="width:${100*Math.abs(v)/mx}%;background:${v>=0?'var(--gain)':'var(--loss)'}"></i></div></div>`).join('')
+      +`<div class="kick" style="margin-top:8px">Mese per mese</div><div class="tblw"><table class="tbl"><thead><tr><th>Mese</th><th>Fondo</th><th>Benchmark</th><th>Differenza</th></tr></thead><tbody>${P_.months.slice().reverse().map(m=>`<tr><td>${m[0]}</td><td class="${cls(m[1])}">${pct(m[1])}</td><td class="${cls(m[2])}">${pct(m[2])}</td><td class="${cls(m[1]-m[2])}">${pct(m[1]-m[2])}</td></tr>`).join('')}</tbody></table></div>`
+      +`<div class="kick" style="margin-top:8px">Reparto machine learning · precisione fuori campione (12 mesi)</div><div class="tblw"><table class="tbl"><thead><tr><th>Mercato</th><th>Modello</th><th>Base</th><th>Esito</th></tr></thead><tbody>${Object.entries(F.ml).map(([k,m])=>`<tr><td>${esc((V.assets[k]||{}).short||k)}</td><td>${m.acc==null?'–':fmt(m.acc*100,1)+'%'}</td><td>${m.base==null?'–':fmt(m.base*100,1)+'%'}</td><td>${m.acc!=null&&m.acc>m.base+0.02?'<span class="up">batte il caso</span>':'<span class="mu">come il caso</span>'}</td></tr>`).join('')}</tbody></table></div><div class="note">La <b>base</b> è la precisione di chi indovina sempre la direzione più frequente. Un modello vale qualcosa solo se la supera.</div>`;
+  }
+}
+// scheda di un agente
+function openAgent(id){const F=V&&V.fund;if(!F)return;const a=F.agents.find(x=>x.id===id);if(!a)return;
+  showModal({name:a.name,role:a.role+' · '+a.dept,col:DEPT_COL[a.dept],tags:`<span class="chip champ">${esc(a.status.toUpperCase())}</span>`,stats:a.stats,report:a.report,
+    how:howAnswer(a.stats,a.status),who:a.name});}
+function openTrader(tid){const F=V&&V.fund;if(!F)return;const t=F.traders.find(x=>x.id===tid);if(!t)return;const a=V.assets[t.asset];
+  const st={energia:Math.max(20,Math.min(100,Math.round(50+50*Math.tanh(t.fwd*20)))),stress:Math.max(0,Math.min(100,Math.round(t.maxDD*150))),fiducia:Math.max(0,Math.min(100,Math.round(50+40*Math.tanh(t.sharpe)))),focus:t.status==='panchina'?40:85};
+  const rep=`Opero "${t.strat}" su ${a.name}. Negli ultimi 2 anni ${pct(t.ret2y)} con Sharpe ${fmt(t.sharpe,2)} e perdita massima ${fmt(t.maxDD*100,1)}%, contro ${pct((a.research.bench||{ret:0}).ret)} del benchmark. Dall'avvio del desk ${pct(t.fwd)}. Oggi sono ${t.pos>0?'LONG':t.pos<0?'SHORT':'senza posizione'}. ${t.status==='in campo'?'Sono la strategia campione: le mie decisioni sono quelle della sala.':t.status==='attivo'?'Sto battendo il benchmark negli ultimi 2 anni: alla revisione posso diventare campione, se il metodo di scelta resta valido fuori campione.':'Sono in panchina: negli ultimi 2 anni non ho battuto il benchmark con margine.'}`;
+  showModal({name:t.name,role:'Trader · '+a.short+(t.ml?' · machine learning':''),col:t.ml?'#ffb46b':'#e7defd',tags:`<span class="chip ${t.status==='in campo'?'camp':t.status==='attivo'?'att':'pan'}">${t.status.toUpperCase()}</span> ${posChip(t.pos)}`,stats:st,report:rep,how:howAnswer(st,t.status),who:t.name});}
+function howAnswer(st,status){
+  if(st.stress>70)return 'Giornata tesa: i numeri che seguo si muovono più del solito. Tengo le regole e non improvviso.';
+  if(st.fiducia<35)return 'Onestamente? Non vedo un vantaggio chiaro. Finché i dati non dicono altro, meglio seguire il benchmark che inventare.';
+  if(st.fiducia>70)return `Bene: i numeri sono dalla mia parte (${status.toLowerCase()}). Ma un buon periodo non è una prova: aspetto la verifica fuori campione.`;
+  return 'Tutto nella norma. Monitoro, aggiorno i report e aspetto la prossima revisione.';}
+let MODAL=null;
+function showModal(o){MODAL=o;$('amAv').textContent=ini(o.name);$('amAv').style.background=o.col;$('amName').textContent=o.name;$('amRole').textContent=o.role;$('amTags').innerHTML=o.tags;
+  const c={energia:'#8fb4ff',stress:'#ff8fa3',fiducia:'#ffb46b',focus:'#3ee08f'};
+  $('amStats').innerHTML=Object.keys(c).map(k=>`<div><span class="row"><span>${k[0].toUpperCase()+k.slice(1)}</span><b class="num">${o.stats[k]}</b></span><span class="bar"><i style="width:${o.stats[k]}%;background:${c[k]}"></i></span></div>`).join('');
+  $('amSayT').textContent='Ultimo report';$('amSay').textContent=o.report;$('amList').innerHTML='';
+  $('agentModal').hidden=false;$('amClose').focus();}
+function typeIn(el,txt){el.textContent='';let i=0;const step=()=>{i+=3;el.textContent=txt.slice(0,i);if(i<txt.length)setTimeout(step,12)};step()}
+$('amReport').onclick=()=>{if(!MODAL)return;$('amSayT').textContent='Report di oggi';typeIn($('amSay'),MODAL.report)};
+$('amHow').onclick=()=>{if(!MODAL)return;$('amSayT').textContent='Come va?';typeIn($('amSay'),MODAL.how)};
+$('amMsgs').onclick=()=>{if(!MODAL)return;const ms=(V.feed||[]).filter(m=>m.who===MODAL.who).slice(0,8);$('amList').innerHTML=ms.length?ms.map(m=>`<div class="ev"><div class="top"><span class="dchip">${esc(m.tag||m.dept)}</span><span class="t">${dSh(m.d)}</span></div><p>${esc(m.text)}</p></div>`).join(''):'<div class="note">Nessun messaggio recente in sala.</div>'};
+const closeModal=()=>{$('agentModal').hidden=true;MODAL=null};
+$('amClose').onclick=closeModal;$('agentModal').addEventListener('click',e=>{if(e.target.id==='agentModal')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('agentModal').hidden)closeModal()});
 
 /* ---------- la tua sala ---------- */
 (function(){const owner=location.hostname.split('.')[0],repo=location.pathname.split('/').filter(Boolean)[0]||'desk-ia';
@@ -491,7 +673,7 @@ function renderMe(){
 
 /* ---------- laboratorio ---------- */
 const RS=window.Research,LAB={cache:{}};
-const FAM={ma:{p1:['Media veloce (giorni)',20,2,150],p2:['Media lenta (giorni)',50,5,300],ls:true},don:{p1:['Giorni del massimo',55,5,250],p2:null,ls:true},mr:{p1:['Giorni della media',20,5,100],p2:['Soglia (deviazioni)',2,0.5,4],ls:false},t200:{p1:null,p2:null,ls:true}};
+const FAM={ma:{p1:['Media veloce (giorni)',20,2,150],p2:['Media lenta (giorni)',50,5,300],ls:true},don:{p1:['Giorni del massimo',55,5,250],p2:null,ls:true},mr:{p1:['Giorni della media',20,5,100],p2:['Soglia (deviazioni)',2,0.5,4],ls:false},t200:{p1:null,p2:null,ls:true},ml:{p1:['Orizzonte (giorni)',5,1,20],p2:null,ls:true}};
 (function(){const y=new Date().getUTCFullYear(),sel_=$('lFrom');for(let k=2013;k<=y-1;k++)sel_.insertAdjacentHTML('beforeend',`<option value="${k}">${k}</option>`);sel_.value='2016';})();
 let tries=0,seen=new Set();try{const t=JSON.parse(localStorage.getItem('labTries')||'[]');seen=new Set(t);tries=seen.size}catch(e){}
 function showTries(){$('labTries').textContent=`Combinazioni provate: ${tries}`}
@@ -509,8 +691,8 @@ $('lRun').onclick=async()=>{
   if(F.p2&&!(p2>=F.p2[2]&&p2<=F.p2[3]))return labErr(`${F.p2[0]}: scegli un valore tra ${F.p2[2]} e ${F.p2[3]}.`);
   if(fam==='ma'&&p1>=p2)return labErr('La media veloce deve essere più corta della media lenta.');
   let bars;try{bars=await getBars(k)}catch(e){return labErr('Non riesco a caricare i prezzi: riprova tra poco.')}
-  const v=fam==='ma'?{fam,f:Math.round(p1),s:Math.round(p2),ls}:fam==='don'?{fam,n:Math.round(p1),ls}:fam==='mr'?{fam,w:Math.round(p1),z:p2,ls:true}:{fam:'t200',ls};
-  const name=fam==='ma'?`Medie ${v.f}/${v.s}`:fam==='don'?`Rottura ${v.n} giorni`:fam==='mr'?`Eccessi ${v.w} giorni oltre ${fmt(v.z,1)}σ`:'Filtro media 200';
+  const v=fam==='ma'?{fam,f:Math.round(p1),s:Math.round(p2),ls}:fam==='don'?{fam,n:Math.round(p1),ls}:fam==='mr'?{fam,w:Math.round(p1),z:p2,ls:true}:fam==='ml'?{id:'lab-ml-'+Math.round(p1)+(ls?'ls':'l'),fam,h:Math.round(p1),ls}:{fam:'t200',ls};
+  const name=fam==='ma'?`Medie ${v.f}/${v.s}`:fam==='don'?`Rottura ${v.n} giorni`:fam==='mr'?`Eccessi ${v.w} giorni oltre ${fmt(v.z,1)}σ`:fam==='ml'?`ML ${v.h} giorni`:'Filtro media 200';
   const full=name+(fam!=='mr'?(ls?' long+short':' solo long'):'');
   const dates=bars.map(b=>b[0]),c=bars.map(b=>b[4]);
   let fi=dates.findIndex(d=>d>=$('lFrom').value+'-01-01');if(fi<1)fi=1;const end=dates.length-1;
@@ -632,7 +814,7 @@ async function load(){
   try{
     const r=await fetch('data/view.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(r.status);
     V=await r.json();$('overlay').hidden=true;
-    renderHud();renderStrip();renderTicker();renderDetail();renderTab();renderMe();
+    renderHud();renderStrip();renderTicker();renderDetail();renderTab();renderMe();renderFund();
   }catch(e){$('overlay').hidden=false;$('news').textContent='Il desk non ha ancora fatto il primo giro.'}
 }
 load();setInterval(load,10*60*1000);setInterval(()=>{if(V)renderHud()},60000);
