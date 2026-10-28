@@ -15,11 +15,15 @@ iframe { position: absolute; inset: 0; width: 1080px; height: 1920px; border: 0;
 #cap { position: absolute; left: 50px; right: 50px; top: 1185px; text-align: center; font-size: 72px; line-height: 1.12; color: #fff;
   -webkit-text-stroke: 3px #0b1020; paint-order: stroke fill; text-shadow: 0 5px 0 #0b1020, 0 0 18px rgba(0,0,0,.8); }
 #cap .k { background: #F2A93B; color: #0b1020; -webkit-text-stroke: 0; text-shadow: none; padding: 0 14px 4px; border-radius: 14px; display: inline-block; transform: rotate(-2deg); box-shadow: 0 6px 0 #8a5a12; }
+#hook { position: absolute; left: 0; right: 0; top: 330px; text-align: center; color: #fff; font: 700 118px/1.02 Pop; -webkit-text-stroke: 5px #0b1020; paint-order: stroke fill; text-shadow: 0 10px 0 #0b1020, 0 0 50px rgba(0,0,0,.9); }
+#hook span, #hook .l3 { color: #F2A93B; }
+#hook .l3 { font-size: 150px; }
 </style></head><body>
 <iframe id="tr" src="trader.html?shot=pip&tl=reelA/tl.json"></iframe>
 <div id="head"><span class="b">LE BASI</span><span class="m">NAS100 · esempio</span></div>
 <div id="panel"><svg id="sv" viewBox="0 0 1000 974"></svg></div>
 <div id="cap"></div>
+<div id="hook"><div class="l1">PERCHÉ ALLE <span>9:00</span></div><div class="l2">IL NASDAQ</div><div class="l3">IMPAZZISCE?</div></div>
 <script>
 const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), ease = u => { u = clamp(u); return u * u * (3 - 2 * u); };
 const $ = id => document.getElementById(id);
@@ -51,6 +55,7 @@ function candles(n) {
 }
 function tag(x, y, txt, col, a = 1) { return `<g opacity="${a}"><rect x="${x}" y="${y}" width="${txt.length * 19 + 28}" height="46" rx="10" fill="${col}"/><text x="${x + 14}" y="${y + 33}" font-size="28" fill="#0b1020">${txt}</text></g>`; }
 window.renderAt = function (t) {
+  { const a = t < 2.6 ? 1 : clamp(1 - (t - 2.6) / 0.35); const hk = $('hook'); hk.style.opacity = a; hk.style.transform = `scale(${1 + 0.04 * Math.sin(Math.min(t, 2.6) * 3)})`; }
   $('tr').contentWindow.renderAt(t);
   const E = TL.events, s = i => E[i].start, e = i => E[i].end;
   let k = 0; for (let i = 0; i < E.length; i++) if (E[i].start - 0.2 <= t) k = i;
