@@ -263,11 +263,6 @@ function combine(curvesByKey) {           // somma giorno per giorno, usando l'u
   const orders = readJson(path.join(DATA, 'orders.json'), []);
   const control = readJson(path.join(DATA, 'control.json'), { kill: false });
   const labs = {}, eventsBy = {};
-  // fondo globale: aggiorna i prezzi dei 17 mercati (se una fonte non risponde si usa lo storico salvato)
-  if (!process.env.DESK_MOCK) {
-    try { const u = await require('./universe.js').updateUniverse(); view.universe = u; const bad = u.filter(x => x.warn); lines.push(`Universo: ${u.length - bad.length}/${u.length} mercati aggiornati` + (bad.length ? ' · non aggiornati: ' + bad.map(x => x.key).join(', ') : '')); }
-    catch (e) { lines.push('Universo: aggiornamento non riuscito · ' + e.message); }
-  }
   for (const key of Object.keys(R.ASSETS)) {
     let p;
     try { p = await updatePrices(key); }
@@ -296,6 +291,11 @@ function combine(curvesByKey) {           // somma giorno per giorno, usando l'u
   state.runs++; state.lastRun = new Date().toISOString(); view.runs = state.runs; view.lastRun = state.lastRun;
   view.rules = R.RULES;
   view.names = Object.fromEntries([...R.VARIANTS, R.BENCH, R.FLAT].map(v => [v.id, v.name]));
+  // fondo globale: aggiorna i prezzi dei 18 mercati (se una fonte non risponde si usa lo storico salvato)
+  if (!process.env.DESK_MOCK) {
+    try { const u = await require('./universe.js').updateUniverse(); view.universe = u; const bad = u.filter(x => x.warn); lines.push(`Universo: ${u.length - bad.length}/${u.length} mercati aggiornati` + (bad.length ? ' · non aggiornati: ' + bad.map(x => x.key).join(', ') : '')); }
+    catch (e) { lines.push('Universo: aggiornamento non riuscito · ' + e.message); }
+  }
   // il fondo globale
   try {
     const G = require('./global.js').runGlobal(state.global, control);
