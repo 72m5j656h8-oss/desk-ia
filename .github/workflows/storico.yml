@@ -1,0 +1,31 @@
+name: Desk IA - scarica lo storico del portafoglio globale
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: desk-ia
+  cancel-in-progress: false
+
+jobs:
+  storico:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Scarica
+        run: node universe.js
+      - name: Salva
+        run: |
+          git config user.name "desk-ia-bot"
+          git config user.email "desk-ia-bot@users.noreply.github.com"
+          git add docs/data/universe
+          git commit -m "Storico del portafoglio globale" || exit 0
+          git pull --rebase
+          git push
