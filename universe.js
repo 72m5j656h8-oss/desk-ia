@@ -30,7 +30,7 @@ const UNIVERSE = [
   { key: 'UUP', name: 'Dollaro USA', cls: 'fx', y: 'UUP', s: 'uup.us', cost: 0.0008 },
   { key: 'FXE', name: 'Euro', cls: 'fx', y: 'FXE', s: 'fxe.us', cost: 0.0008 },
   { key: 'FXY', name: 'Yen giapponese', cls: 'fx', y: 'FXY', s: 'fxy.us', cost: 0.0008 },
-  { key: 'BTC', name: 'Bitcoin', cls: 'cr', y: 'BTC-USD', s: null, cost: 0.0015 },
+  { key: 'BTC', name: 'Bitcoin', cls: 'cr', y: 'BTC-USD', s: null, local: 'BTC', cost: 0.0015 },   // prima i prezzi Coinbase della sala Bitcoin
   // non si compra: è il tasso dei BOT USA a 3 mesi (in %), usato per la liquidità e per il costo della leva
   { key: 'IRX', name: 'Tasso BOT USA 3 mesi', cls: 'tasso', y: '^IRX', s: null, cost: 0, rate: true },
 ];
@@ -59,7 +59,12 @@ async function yahooRange(sym, p1) {
   if (!res || !res.timestamp) throw new Error('risposta Yahoo vuota');
   const q = res.indicators.quote[0], adj = res.indicators.adjclose && res.indicators.adjclose[0] && res.indicators.adjclose[0].adjclose;
   const off = (res.meta && res.meta.gmtoffset) || 0, out = [];
-  res.timestamp.forEach((ts, i) => { const c = adj && adj[i] > 0 ? adj[i] : q.close[i]; if (c > 0 || (c === 0 && sym === '^IRX')) out.push([new Date((ts + off) * 1000).toISOString().slice(0, 10), +c.toPrecision(8)]); });
+  const day = ts => new Date((ts + off) * 1000).toISOString().slice(0, 10);
+  res.timestamp.forEach((ts, i) => { const c = adj && adj[i] > 0 ? adj[i] : q.close[i]; if (c > 0 || (c === 0 && sym === '^IRX')) out.push([day(ts), +c.toPrecision(8)]); });
+  // a volte l'ultimo giorno chiuso arriva vuoto: si usa il prezzo di chiusura indicato da Yahoo per quel giorno
+  const lastTs = res.timestamp[res.timestamp.length - 1], m = res.meta || {};
+  if (!(q.close[q.close.length - 1] > 0) && m.regularMarketPrice > 0 && m.regularMarketTime && day(m.regularMarketTime) === day(lastTs) && m.regularMarketTime - lastTs > 5 * 3600)
+    out.push([day(lastTs), +(+m.regularMarketPrice).toPrecision(8)]);
   return out;
 }
 async function stooq(sym) {
@@ -77,7 +82,8 @@ const read = f => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch
 async function updateOne(u) {
   const file = path.join(DIR, u.key + '.json'), old = read(file);
   const errs = [];
-  for (const [name, fn] of [['Yahoo', () => yahoo(u.y)], ...(u.s ? [['Stooq', () => stooq(u.s)]] : [])]) {
+  const local = () => { const j = read(path.join(__dirname, 'docs', 'data', 'prices', u.local + '.json')); if (!j || !j.bars) throw new Error('nessun dato'); return j.bars.map(b => [b[0], b[4]]); };
+  for (const [name, fn] of [...(u.local ? [['Coinbase (sala Bitcoin)', local]] : []), ['Yahoo', () => yahoo(u.y)], ...(u.s ? [['Stooq', () => stooq(u.s)]] : [])]) {
     try {
       const rows = clean(await fn());
       if (rows.length < 500) throw new Error('storico troppo corto');
