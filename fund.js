@@ -25,6 +25,7 @@ const STAFF = {
   risk: { name: 'Marco De Luca', role: 'Risk manager', dept: 'Rischio' },
   macro: { name: 'Elena Russo', role: 'Analista macro', dept: 'Macro' },
   ml: { name: 'Davide Conti', role: 'Ingegnere machine learning', dept: 'Ricerca' },
+  pm: { name: 'Chiara Moretti', role: 'Gestrice del fondo globale', dept: 'Globale' },
   BTC: { name: 'Luca Marino', role: 'Analista quantitativo · Bitcoin', dept: 'Analisi' },
   NDX: { name: 'Sara Greco', role: 'Analista quantitativa · Nasdaq-100', dept: 'Analisi' },
   EURUSD: { name: 'Paolo Bruno', role: 'Analista quantitativo · Euro/Dollaro', dept: 'Analisi' },
@@ -42,8 +43,8 @@ function indicators(L) {
 }
 
 function buildFund({ view, labs, control, eventsBy, prevFeed }) {
-  const keys = Object.keys(view.assets), today = new Date().toISOString().slice(0, 10);
-  const A = view.assets, ind = {}, ml = {};
+  const keys = Object.keys(view.assets).filter(k => k !== 'GLOBAL'), today = new Date().toISOString().slice(0, 10);
+  const A = view.assets, ind = {}, ml = {}, G = view.global;
   for (const k of keys) {
     const L = labs[k]; ind[k] = indicators(L);
     // reparto ML: probabilità di oggi e precisione fuori campione negli ultimi 12 mesi, contro la frequenza di base
@@ -123,6 +124,14 @@ function buildFund({ view, labs, control, eventsBy, prevFeed }) {
   add('ml', { asset: null, stats: { energia: 80, stress: 30, fiducia: clamp(25 + 25 * beats), focus: 85 },
     status: beats ? 'Un modello batte il caso' : 'Nessun vantaggio trovato',
     report: `Precisione fuori campione negli ultimi 12 mesi del modello a 5 giorni: ${mlTxt}. La "base" è la precisione di chi dice sempre la direzione più frequente: un modello serve solo se la supera. Riaddestro i modelli ogni mese usando solo il passato.` });
+  if (G) {
+    const top = G.markets.filter(m => m.w).slice(0, 3).map(m => `${m.name} ${m.w > 0 ? 'long' : 'short'} ${pp(Math.abs(m.w), 0)}`).join(', ');
+    const longs = G.markets.filter(m => m.w > 0).length, shorts = G.markets.filter(m => m.w < 0).length;
+    const mu = G.research.find(r => r.id === 'multi'), b6 = G.research.find(r => r.id === 'b6040');
+    add('pm', { asset: null, stats: { energia: 80, stress: clamp(100 * G.risk.vol / (G.risk.target * 1.5)), fiducia: clamp(55 + 100 * (b6.all.maxDD - mu.all.maxDD)), focus: 85 },
+      status: G.kill ? 'Kill switch attivo' : `${longs} long · ${shorts} short`,
+      report: G.kill ? 'Kill switch attivo: il fondo globale è tutto in liquidità e incassa il tasso dei BOT.' : `Fondo globale su ${G.n} mercati: ${longs} long, ${shorts} short. Pesi maggiori: ${top}. Esposizione lorda ${pp(G.risk.gross, 0)}, volatilità stimata ${pp(G.risk.vol)} contro un obiettivo del ${pp(G.risk.target, 0)}. Nella storia dal 2005 la mia multi-strategia ha reso ${pct(mu.all.cagr)} l'anno contro ${pct(b6.all.cagr)} del 60/40, ma la sua perdita massima è stata -${pp(mu.all.maxDD, 0)} contro -${pp(b6.all.maxDD, 0)}.` });
+  }
   for (const k of keys) {
     const I = ind[k], m = ml[k];
     add(k, { asset: k, stats: { energia: 70, stress: clamp(I.volPct * 100), fiducia: clamp(50 + 30 * (I.above200 ? 1 : -1) * Math.min(1, Math.abs(I.d200) * 5)), focus: 80 },
@@ -132,7 +141,8 @@ function buildFund({ view, labs, control, eventsBy, prevFeed }) {
 
   /* ---------- oggi in breve: due righe in italiano semplice ---------- */
   const brief = [];
-  brief.push(`Il fondo vale ${usd(report.nav)}: ${pct(report.ret, 2)} da quando è partito. Comprare e tenere avrebbe fatto ${pct(report.benchRet, 2)}.`);
+  if (G) brief.push(`Fondo globale (18 mercati): ${usd(G.equity)}, ${pct(G.ret, 2)} dall'avvio contro ${pct(G.bench, 2)} del 60/40. ${G.kill ? 'Kill switch attivo: in liquidità.' : G.nextRebalance ? `Prossimo ribilanciamento fra ${G.nextRebalance} giorni di borsa.` : 'Ribilanciato oggi.'}`);
+  brief.push(`Le 3 sale (Bitcoin, Nasdaq, euro-dollaro) valgono ${usd(report.nav)}: ${pct(report.ret, 2)} da quando è partito. Comprare e tenere avrebbe fatto ${pct(report.benchRet, 2)}.`);
   brief.push(keys.map(k => `${A[k].short} ${posTxt(A[k].position)}`).join(' · ') + (risk.kill ? ' — kill switch attivo, tutto in liquidità.' : '.'));
   const valid = keys.filter(k => A[k].research.wf && A[k].research.wf.valid);
   brief.push(valid.length ? `Metodo di ricerca valido su ${valid.map(k => A[k].short).join(', ')}: lì opera il campione.` : `Nessuna strategia ha ancora superato la verifica: le sale copiano il mercato (o restano in liquidità sull'euro). Prossima revisione il ${new Date(A[keys[0]].nextReview + 'T12:00:00Z').toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}.`);
@@ -149,6 +159,12 @@ function buildFund({ view, labs, control, eventsBy, prevFeed }) {
   say(STAFF.macro.name, 'Macro', agents.find(a => a.id === 'macro').report);
   say(STAFF.ml.name, 'Ricerca', agents.find(a => a.id === 'ml').report);
   say(STAFF.risk.name, 'Rischi', agents.find(a => a.id === 'risk').report);
+  if (G) {
+    say(STAFF.pm.name, 'Globale', agents.find(a => a.id === 'pm').report);
+    const tr = G.trades[0];
+    if (tr && tr.d === G.asOf) say(STAFF.pm.name, 'Globale', `Ribilanciamento alla chiusura del ${new Date(tr.d + 'T12:00:00Z').toLocaleDateString('it-IT', { day: 'numeric', month: 'long' })}: ` + tr.changes.slice(0, 6).map(([k, a, b]) => `${(G.markets.find(m => m.key === k) || { name: k }).name} da ${pct(a, 0)} a ${pct(b, 0)}`).join(', ') + (tr.changes.length > 6 ? ` e altri ${tr.changes.length - 6}` : '') + '.', 'Operazioni');
+    for (const e of eventsBy.GLOBAL || []) say(STAFF.cio.name, 'Comitato', 'Fondo globale: ' + e + '.', 'Comitato');
+  }
   for (const k of keys) {
     const L = labs[k], n = L.c.length - 1;
     const moved = traders.filter(t => t.asset === k && L.pos[t.id.split('@')[0]][n] !== L.pos[t.id.split('@')[0]][n - 1]);

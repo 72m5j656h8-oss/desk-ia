@@ -177,6 +177,7 @@ function runAsset(key, bars, st, control) {
   return { S, L, view: viewAsset(L, S), events };
 }
 const pct = x => (x >= 0 ? '+' : '') + (x * 100).toFixed(2).replace('.', ',') + '%';
+const usd2 = x => '$' + Number(x).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 function viewAsset(L, S) {
   const A = L.A, end = L.dates.length - 1, li = Math.max(0, R.idxOnOrBefore(L.dates, S.launch));
@@ -262,6 +263,11 @@ function combine(curvesByKey) {           // somma giorno per giorno, usando l'u
   const orders = readJson(path.join(DATA, 'orders.json'), []);
   const control = readJson(path.join(DATA, 'control.json'), { kill: false });
   const labs = {}, eventsBy = {};
+  // fondo globale: aggiorna i prezzi dei 17 mercati (se una fonte non risponde si usa lo storico salvato)
+  if (!process.env.DESK_MOCK) {
+    try { const u = await require('./universe.js').updateUniverse(); const bad = u.filter(x => x.warn); lines.push(`Universo: ${u.length - bad.length}/${u.length} mercati aggiornati` + (bad.length ? ' · non aggiornati: ' + bad.map(x => x.key).join(', ') : '')); }
+    catch (e) { lines.push('Universo: aggiornamento non riuscito · ' + e.message); }
+  }
   for (const key of Object.keys(R.ASSETS)) {
     let p;
     try { p = await updatePrices(key); }
@@ -290,6 +296,12 @@ function combine(curvesByKey) {           // somma giorno per giorno, usando l'u
   state.runs++; state.lastRun = new Date().toISOString(); view.runs = state.runs; view.lastRun = state.lastRun;
   view.rules = R.RULES;
   view.names = Object.fromEntries([...R.VARIANTS, R.BENCH, R.FLAT].map(v => [v.id, v.name]));
+  // il fondo globale
+  try {
+    const G = require('./global.js').runGlobal(state.global, control);
+    state.global = G.S; view.global = G.view; eventsBy.GLOBAL = G.events;
+    if (G.view) lines.push(`Fondo globale: ${usd2(G.view.equity)} (${pct(G.view.ret)}) vs 60/40 ${pct(G.view.bench)} · ${G.view.markets.filter(m => m.w).length} mercati in posizione`);
+  } catch (e) { lines.push('Fondo globale: errore · ' + e.message); }
   // l'organizzazione del fondo: agenti, sala, rischio, report (solo descrittiva, non cambia le operazioni)
   const F = require('./fund.js');
   const prevFeed = readJson(path.join(DATA, 'feed.json'), []);

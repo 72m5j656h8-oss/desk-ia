@@ -76,7 +76,7 @@ async function updateOne(u) {
       if (rows.length < 500) throw new Error('storico troppo corto');
       // Yahoo ricalcola tutto lo storico "adjusted" a ogni dividendo: si sostituisce l'intera serie,
       // ma solo se è coerente con quella salvata negli ultimi giorni (rendimenti uguali)
-      if (old && old.bars && old.bars.length > 500) {
+      if (!u.rate && old && old.bars && old.bars.length > 500) {
         const m = new Map(old.bars), last = rows.slice(-30).filter(r => m.has(r[0]));
         let bad = 0; for (let i = 1; i < last.length; i++) { const a = last[i][1] / last[i - 1][1], b = m.get(last[i][0]) / m.get(last[i - 1][0]); if (Math.abs(a - b) > 0.01) bad++; }
         if (last.length > 5 && bad > last.length / 3) throw new Error('prezzi incoerenti con lo storico salvato');

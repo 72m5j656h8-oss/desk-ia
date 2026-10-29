@@ -177,6 +177,24 @@ canvas.wf{width:100%;height:150px;display:block;margin-top:6px}
 .steps li::before{content:counter(s);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;font:700 11px/1 var(--f-disp);color:var(--fg)}
 .whyNot{border-left:3px solid var(--warm);background:rgba(255,154,60,.06);border-radius:8px;padding:8px 10px;margin:8px 0;font-size:13px;line-height:1.5}
 .adh{font-size:12px;color:var(--mute)}
+.gHead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.gEq{font-family:var(--f-disp);font-size:30px;font-weight:700;letter-spacing:-.01em;line-height:1}
+.gkv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
+@media (max-width:640px){.gkv{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.gkv>div{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+.gkv span{display:block;font-size:11px;color:var(--mute);letter-spacing:.04em}
+.gkv b{display:block;font-family:var(--f-mono,monospace);font-size:16px;margin-top:2px}
+.gkv small{display:block;font-size:11px;color:var(--mute);margin-top:1px}
+.mk{display:grid;grid-template-columns:minmax(0,1fr) 120px 62px;gap:8px;align-items:center;padding:6px 2px;border-bottom:1px solid var(--line);font-size:13px}
+.mk .nm{min-width:0}.mk .nm small{display:block;color:var(--mute);font-size:11px}
+.wbar{position:relative;height:8px;background:var(--panel2);border-radius:4px;overflow:hidden}
+.wbar::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line)}
+.wbar i{position:absolute;top:0;bottom:0;border-radius:4px}
+.mk .v{text-align:right;font-family:var(--f-mono,monospace);font-size:12.5px}
+.clsRow{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.clsRow span{font-size:11.5px;background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--mute)}
+.clsRow b{color:var(--fg);font-weight:600}
+.gpane{max-height:440px;overflow:auto}
 .lim{display:grid;gap:3px;font-size:12.5px}
 .lim .bar{height:8px;border-radius:4px;background:var(--panel2);position:relative;overflow:hidden}
 .lim .bar i{position:absolute;inset:0 auto 0 0;border-radius:4px}
@@ -251,6 +269,23 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
   <section class="card" id="briefCard" style="margin-bottom:12px">
     <div class="dhead" style="align-items:center"><div><div class="kick">In parole semplici</div><h3>Oggi in breve <button class="hq" data-h="brief" aria-label="Spiegazione">?</button></h3></div><button class="btn" data-h="tour">Come si legge l'app</button></div>
     <ul class="brief" id="brief"><li>Collegamento al desk…</li></ul>
+  </section>
+
+  <section class="card" id="globalCard" style="margin-bottom:12px">
+    <div class="gHead">
+      <div><div class="kick">18 mercati · 3 strategie classiche · rischio sotto controllo</div><h3 style="margin-top:2px">Fondo globale <button class="hq" data-h="global" aria-label="Spiegazione">?</button></h3></div>
+      <div style="text-align:right"><div class="gEq num" id="gEq">–</div><div class="num" id="gRet" style="font-size:13px">–</div></div>
+    </div>
+    <div class="gkv" id="gKv"></div>
+    <div class="tabs" role="tablist">
+      <button class="btn gtab" data-g="pos" aria-pressed="true">Posizioni</button>
+      <button class="btn gtab" data-g="bt" aria-pressed="false">Storia dal 2005</button>
+      <button class="btn gtab" data-g="cr" aria-pressed="false">Nelle crisi</button>
+      <button class="btn gtab" data-g="st" aria-pressed="false">Strategie</button>
+      <button class="btn gtab" data-g="op" aria-pressed="false">Operazioni</button>
+      <button class="hq" id="gtabHelp" aria-label="Spiegazione della scheda">?</button>
+    </div>
+    <div class="gpane" id="g-pos"></div><div class="gpane" id="g-bt" hidden></div><div class="gpane" id="g-cr" hidden></div><div class="gpane" id="g-st" hidden></div><div class="gpane" id="g-op" hidden></div>
   </section>
 
   <div class="main">
@@ -398,7 +433,7 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
   </section>
 
   <section class="card how">
-    <div><h4>Sale trading</h4><p>Bitcoin, Nasdaq-100 ed Euro/Dollaro, $10.000 finti ciascuna. Tutti i trader di una sala usano la strategia campione. Si decide con la chiusura di ogni giorno, con commissioni, slippage e costo dello short. L'euro-dollaro usa leva 3, come un conto forex prudente.</p></div>
+    <div><h4>Fondo globale e sale trading</h4><p>Il fondo globale gestisce $30.000 su 18 mercati con parità di rischio e trend, ribilanciando ogni settimana. Le sale: Bitcoin, Nasdaq-100 ed Euro/Dollaro, $10.000 finti ciascuna. Tutti i trader di una sala usano la strategia campione. Si decide con la chiusura di ogni giorno, con commissioni, slippage e costo dello short. L'euro-dollaro usa leva 3, come un conto forex prudente.</p></div>
     <div><h4>Reparto ricerca</h4><p>Ogni sala ha 26 strategie candidate: 18 a regole fisse, 3 modelli di machine learning riaddestrati ogni mese e 5 trader automatici che ogni mese provano a migliorare i propri parametri, sempre usando solo il passato. Una strategia diventa candidata solo se negli ultimi 2 anni ha battuto il benchmark sia nel rendimento sia nel rapporto rischio/rendimento, con margine.</p></div>
     <div><h4>Revisioni e retrocessioni</h4><p>Ogni 3 mesi si sceglie il campione, ma solo se il metodo di scelta ha battuto il benchmark fuori campione su tutto lo storico. Altrimenti la sala resta sul benchmark. Se il campione fa peggio del benchmark di oltre 5 punti dopo 20 giorni, viene retrocesso.</p></div>
   </section>
@@ -636,7 +671,7 @@ function frame(now){draw(now);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
 
 /* ---------- il fondo ---------- */
-const DEPT_COL={Direzione:'#c9bbff',Rischio:'#ff8fa3',Macro:'#ffb46b',Ricerca:'#7fe0c2',Analisi:'#8fb4ff',Operazioni:'#e7defd',Comitato:'#c9bbff',Rischi:'#ff8fa3',Trader:'#e7defd'};
+const DEPT_COL={Globale:'#7fe3f2',Direzione:'#c9bbff',Rischio:'#ff8fa3',Macro:'#ffb46b',Ricerca:'#7fe0c2',Analisi:'#8fb4ff',Operazioni:'#e7defd',Comitato:'#c9bbff',Rischi:'#ff8fa3',Trader:'#e7defd'};
 const ini=n=>String(n).split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
 let FT='sala',FEEDF='Tutto',RANKF='Tutti';
 document.querySelectorAll('.ftab').forEach(b=>b.onclick=()=>{FT=b.dataset.f;document.querySelectorAll('.ftab').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));['sala','org','rank','risk','rep'].forEach(id=>$('f-'+id).hidden=id!==FT);renderFund()});
@@ -648,12 +683,12 @@ function renderFund(){
   const F=V&&V.fund;if(!F){$('f-sala').innerHTML='<div class="note">L\'organizzazione del fondo compare dal prossimo giro del desk.</div>';return}
   renderChips();$('fundAsOf').textContent='Aggiornato '+ago(V.lastRun);
   if(FT==='sala'){
-    const deps=['Tutto','Operazioni','Analisi','Macro','Rischi','Ricerca','Comitato'];
+    const deps=['Tutto','Globale','Operazioni','Analisi','Macro','Rischi','Ricerca','Comitato'];
     const list=(V.feed||[]).filter(m=>FEEDF==='Tutto'||m.tag===FEEDF||m.dept===FEEDF);
     $('f-sala').innerHTML=`<div class="filters">${deps.map(d=>`<button data-d="${d}" aria-pressed="${d===FEEDF}">${d}</button>`).join('')}</div>`+(list.length?list.slice(0,80).map(m=>`<div class="msg"><span class="av" style="background:${DEPT_COL[m.dept]||'#e7defd'}">${esc(ini(m.who))}</span><div style="min-width:0"><div class="top"><b>${esc(m.who)}</b><span class="dchip">${esc(m.tag||m.dept)}</span><span class="t">${dSh(m.d)}</span></div><p>${esc(m.text)}</p></div></div>`).join(''):'<div class="note">Nessun messaggio in questa categoria.</div>');
     $('f-sala').querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{FEEDF=b.dataset.d;renderFund()});
   } else if(FT==='org'){
-    const groups=['Direzione','Rischio','Macro','Ricerca','Analisi'];
+    const groups=['Direzione','Globale','Rischio','Macro','Ricerca','Analisi'];
     $('f-org').innerHTML=groups.map(g=>{const ag=F.agents.filter(a=>a.dept===g);if(!ag.length)return'';return `<div class="kick" style="margin-top:4px">${g}</div><div class="org">${ag.map(a=>`<button class="agent" data-a="${a.id}"><span class="hd"><span class="av" style="background:${DEPT_COL[a.dept]}">${esc(ini(a.name))}</span><span style="min-width:0"><b>${esc(a.name)}</b><small>${esc(a.role)}</small></span></span><small>${esc(a.status)}</small>${bars4(a.stats)}</button>`).join('')}</div>`}).join('')
       +`<div class="kick" style="margin-top:4px">Trader</div><div class="note" style="padding:0">${F.traders.length} trader: ogni strategia del reparto ricerca su ogni mercato ha il suo trader. Li trovi nella <b>Classifica</b>.</div>`;
     $('f-org').querySelectorAll('.agent').forEach(b=>b.onclick=()=>openAgent(b.dataset.a));
@@ -869,10 +904,66 @@ $('tRun').onclick=async()=>{
   $('tOut').hidden=false;
 };
 
+/* ---------- fondo globale ---------- */
+let GT='pos';
+document.querySelectorAll('.gtab').forEach(b=>b.onclick=()=>{GT=b.dataset.g;document.querySelectorAll('.gtab').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));['pos','bt','cr','st','op'].forEach(id=>$('g-'+id).hidden=id!==GT);renderGlobal()});
+const pc0=r=>r==null?'–':(r>=0?'+':'')+fmt(r*100,1)+'%';
+function logChart(cv,s,cols){const r=cv.getBoundingClientRect(),dp=Math.min(2,devicePixelRatio||1);cv.width=r.width*dp;cv.height=r.height*dp;
+  const g=cv.getContext('2d');g.setTransform(dp,0,0,dp,0,0);const w=r.width,h=r.height,pad=40;
+  const all=s.flatMap(x=>cols.map(c=>x[c[0]])).filter(v=>v>0).map(Math.log);let mn=Math.min(...all),mx=Math.max(...all);const sp=(mx-mn)||0.1;mn-=sp*.05;mx+=sp*.05;
+  const X=i=>pad+(w-pad-4)*i/Math.max(1,s.length-1),Y=v=>6+(h-24)*(1-(Math.log(Math.max(v,1e-6))-mn)/(mx-mn));
+  g.font='10px "IBM Plex Mono",monospace';g.fillStyle='#a99cd6';g.strokeStyle='rgba(160,140,255,.14)';g.lineWidth=1;
+  for(let i=0;i<=3;i++){const v=Math.exp(mn+(mx-mn)*i/3),y=Y(v);g.beginPath();g.moveTo(pad,y);g.lineTo(w-4,y);g.stroke();g.fillText('×'+fmt(v,v>=10?0:2),2,y+3)}
+  g.fillText(s[0][0].slice(0,4),pad,h-4);g.textAlign='right';g.fillText(s[s.length-1][0].slice(0,4),w-4,h-4);g.textAlign='left';
+  cols.slice().reverse().forEach(([kk,c])=>{g.beginPath();s.forEach((x,i)=>i?g.lineTo(X(i),Y(x[kk])):g.moveTo(X(i),Y(x[kk])));g.strokeStyle=c;g.lineWidth=kk===1?2:1.4;g.stroke()});}
+function renderGlobal(){
+  const G=V&&V.global;if(!G){$('gKv').innerHTML='<div class="note" style="grid-column:1/-1">Il fondo globale parte al prossimo giro del desk.</div>';return}
+  $('gEq').textContent=usd(G.equity);const gr=$('gRet');gr.textContent=`${pct(G.ret)} dall'avvio`;gr.className='num '+cls(G.ret);
+  const mu=G.research.find(r=>r.id==='multi'),b6=G.research.find(r=>r.id==='b6040');
+  $('gKv').innerHTML=`<div><span>Fondo dal vivo</span><b class="${cls(G.ret)}">${pct(G.ret)}</b><small>dal ${dIt(G.launch)} · ${G.days} giorni</small></div>`
+    +`<div><span>60/40</span><b class="${cls(G.bench)}">${pct(G.bench)}</b><small>S&amp;P 500 ${pct(G.spy)}</small></div>`
+    +`<div><span>Dal 2005, l'anno</span><b>${pc0(mu.all.cagr)}</b><small>60/40 ${pc0(b6.all.cagr)}</small></div>`
+    +`<div><span>Perdita massima</span><b class="up">-${fmt(mu.all.maxDD*100,0)}%</b><small>60/40 -${fmt(b6.all.maxDD*100,0)}%</small></div>`;
+  if(GT==='pos'){
+    const R_=G.risk,mx=Math.max(0.05,...G.markets.map(m=>Math.abs(m.w)));
+    const clsTxt=Object.entries(G.byCls).map(([c,v])=>`<span>${esc(G.cls[c]||c)} <b>${v.long?'+'+fmt(v.long*100,0)+'%':''}${v.short?' −'+fmt(v.short*100,0)+'%':''}${!v.long&&!v.short?'0%':''}</b></span>`).join('');
+    $('g-pos').innerHTML=(G.kill?'<div class="whyNot"><b>Kill switch attivo:</b> il fondo è tutto in liquidità e incassa il tasso dei BOT.</div>':'')
+      +`<div class="note" style="padding:0 0 6px">Esposizione lorda <b>${fmt(R_.gross*100,0)}%</b> (limite ${fmt(R_.grossMax*100,0)}%) · volatilità stimata <b>${fmt(R_.vol*100,1)}%</b> l'anno (obiettivo ${fmt(R_.target*100,0)}%) · in 1 giorno su 20 si può perdere più di <b>${usd(R_.var95)}</b>. ${G.nextRebalance?`Prossimo ribilanciamento fra ${G.nextRebalance} giorni di borsa.`:'Ribilanciato all\'ultima chiusura.'} La liquidità rende il ${fmt(G.cash*100,2)}% l'anno.</div>`
+      +`<div class="clsRow">${clsTxt}</div>`
+      +G.markets.map(m=>{const wd=50*Math.abs(m.w)/mx,col=m.w>0?'var(--gain)':'var(--loss)';const tr=m.trend==null?'storia breve':m.trend>=0.75?'trend forte in salita':m.trend>0?'trend in salita':m.trend<=-0.75?'trend forte in discesa':m.trend<0?'trend in discesa':'nessun trend';
+        return `<div class="mk"><span class="nm">${esc(m.name)} ${m.w>0.001?'<span class="chip long">LONG</span>':m.w<-0.001?'<span class="chip short">SHORT</span>':'<span class="chip flat">FLAT</span>'}<small>${esc(m.key)} · ${tr} · 12 mesi ${pc0(m.y1)} · oscilla ${fmt(m.vol*100,0)}% l'anno</small></span><span class="wbar"><i style="${m.w>=0?'left:50%':'right:50%'};width:${wd}%;background:${col}"></i></span><span class="v ${m.w>0?'up':m.w<0?'dn':'mu'}">${m.w?(m.w>0?'+':'−')+fmt(Math.abs(m.w)*100,1)+'%':'0%'}</span></div>`}).join('')
+      +`<div class="note">Le percentuali sono la parte del capitale messa su ogni mercato (con la leva il totale può superare il 100%). Un singolo mercato non può superare il ${fmt(R_.maxW*100,0)}%.</div>`;
+  } else if(GT==='bt'){
+    $('g-bt').innerHTML=`<div class="note" style="padding:0">Le stesse regole applicate dal ${dIt(G.btFrom)} a oggi, con costi, interessi della liquidità e costo della leva. Scala logaritmica.</div><canvas class="wf" id="gbc" style="height:200px" aria-label="Fondo globale contro 60/40 e S&P 500 dal 2005"></canvas>
+      <div class="legend"><span><i class="dot" style="background:#7fe3f2"></i>Fondo globale</span><span><i class="dot" style="background:#6fa0ff"></i>60/40</span><span><i class="dot" style="background:#a99cd6"></i>S&amp;P 500</span></div>
+      <div class="kick" style="margin-top:10px">Anno per anno</div><div class="tblw"><table class="tbl"><thead><tr><th>Anno</th><th>Fondo</th><th>60/40</th><th>S&amp;P 500</th></tr></thead><tbody>${G.years.slice().reverse().map(y=>`<tr><td>${y[0]}</td><td class="${cls(y[1])}">${pc0(y[1])}</td><td class="${cls(y[2])}">${pc0(y[2])}</td><td class="${cls(y[3])}">${pc0(y[3])}</td></tr>`).join('')}</tbody></table></div>`;
+    logChart($('gbc'),G.bt,[[1,'#7fe3f2'],[2,'#6fa0ff'],[3,'#a99cd6']]);
+  } else if(GT==='cr'){
+    $('g-cr').innerHTML=`<div class="note" style="padding:0 0 6px">Cosa è successo nei momenti peggiori dei mercati, dal massimo al minimo delle azioni USA. È qui che un hedge fund deve dimostrare di servire.</div><div class="tblw"><table class="tbl"><thead><tr><th>Crisi</th><th>Fondo</th><th>60/40</th><th>S&amp;P 500</th></tr></thead><tbody>${G.crises.map(c=>`<tr><td>${esc(c.name)}<br><small class="mu">${dSh(c.from)}/${c.from.slice(2,4)} – ${dSh(c.to)}/${c.to.slice(2,4)}</small></td><td class="${cls(c.multi)}">${pc0(c.multi)}</td><td class="${cls(c.b6040)}">${pc0(c.b6040)}</td><td class="${cls(c.spy)}">${pc0(c.spy)}</td></tr>`).join('')}</tbody></table></div>`;
+  } else if(GT==='st'){
+    $('g-st').innerHTML=`<div class="note" style="padding:0 0 6px">Dal ${dIt(G.btFrom)}. <b>Sharpe</b> = rendimento oltre la liquidità diviso per quanto oscilla. Le due metà servono a vedere se funziona sempre o solo in un periodo.</div>`
+      +G.research.map(r=>`<div class="lrow ${r.id==='multi'?'cur':''}"><span class="mu num" style="font-size:11px">${r.id==='multi'?'★':r.id.startsWith('b')||r.id==='spy'?'–':'·'}</span><span class="nm">${esc(r.name)}<small>${r.desc?esc(r.desc)+' ':''}Metà 1: Sharpe ${fmt(r.h1.sharpe,2)} · metà 2: ${fmt(r.h2.sharpe,2)}</small></span><span class="v">${pc0(r.all.cagr)}<small>l'anno · S ${fmt(r.all.sharpe,2)}</small></span><span class="v dn">-${fmt(r.all.maxDD*100,0)}%<small>perdita max</small></span></div>`).join('')
+      +`<div class="note">Il fondo usa la <b>multi-strategia</b> (★): un terzo in ognuna delle tre. Non è stata scelta perché è andata meglio, ma perché unire metodi diversi è la regola base della gestione del rischio. I numeri sono stati fissati prima del test e non vengono adattati al passato.</div>`;
+  } else {
+    $('g-op').innerHTML=G.trades.length?G.trades.map(t=>`<div class="ev"><div class="top"><span class="chip champ">RIBILANCIAMENTO</span><span class="t">${dIt(t.d)}</span></div><p>${t.changes.map(([k,a,b])=>`${esc((G.markets.find(m=>m.key===k)||{name:k}).name)} <b class="${b>a?'up':'dn'}">${pc0(a)} → ${pc0(b)}</b>`).join(' · ')}</p></div>`).join(''):'<div class="note">Nessuna operazione ancora.</div>';
+  }
+}
+$('gtabHelp').onclick=()=>openHelp('g-'+GT);
+
 /* ---------- spiegazioni "?" ---------- */
 const nm_=id=>id==='bench'?'il benchmark':((V&&V.names&&V.names[id])||id);
 const HELP={
- tour:['Come si legge l\'app',()=>`<p>L'app è un <b>fondo finto con prezzi veri</b>: $30.000 finti, $10.000 su Bitcoin, $10.000 sul Nasdaq-100 e $10.000 sull'euro-dollaro. Ogni giorno, da solo su GitHub, il desk scarica i prezzi, decide e aggiorna questa pagina.</p>
+ global:['Fondo globale',()=>`<p>È il fondo principale, costruito come un hedge fund sistematico vero: <b>$30.000 finti su 18 mercati</b> di tutto il mondo (azioni USA, Europa, Giappone ed emergenti, titoli di Stato, oro, petrolio, materie prime, valute e Bitcoin).</p>
+  <p>Usa tre metodi classici, un terzo ciascuno:</p><ul><li><b>Parità di rischio</b>: tiene tutti i mercati, ma chi oscilla di più pesa di meno.</li><li><b>Trend long/short</b>: compra ciò che sale da mesi e vende allo scoperto ciò che scende.</li><li><b>Trend solo long</b>: compra solo ciò che sale, il resto in liquidità.</li></ul>
+  <p>Poi il <b>gestore del rischio</b> scala tutto perché il fondo oscilli circa il 10% l'anno, con al massimo il 35% su un mercato e il 200% di esposizione totale. Ribilancia una volta a settimana.</p>
+  <p><b>Cosa aspettarsi, onestamente</b>: dal 2005 ha reso meno del 60/40 nei mercati in salita, ma ha perso molto meno nelle crisi (nel 2008 ha guadagnato). Non serve a battere la Borsa negli anni buoni: serve a non farti perdere un terzo dei soldi negli anni brutti. È il motivo per cui esistono gli hedge fund.</p>
+  <p>Il confronto è con il <b>60/40</b> (60% azioni USA, 40% titoli di Stato), il portafoglio di riferimento dei gestori.</p>`],
+ 'g-pos':['Posizioni',()=>`<p>Cosa ha in mano oggi il fondo. Ogni riga è un mercato: <b>LONG</b> se lo possiede (guadagna se sale), <b>SHORT</b> se lo ha venduto allo scoperto (guadagna se scende), <b>FLAT</b> se non ce l'ha.</p><p>La barra verde a destra o rossa a sinistra mostra quanto pesa. Sotto vedi il trend, quanto ha fatto in 12 mesi e quanto oscilla: i mercati più agitati pesano meno.</p><p>In alto: esposizione totale, volatilità stimata e quanto si potrebbe perdere in un giorno brutto (VaR).</p>`],
+ 'g-bt':['Storia dal 2005',()=>`<p>Le stesse regole di oggi applicate a 20 anni di prezzi veri, con commissioni, interessi sulla liquidità e costo della leva. Le linee mostrano quante volte si è moltiplicato il capitale.</p><p>Guarda soprattutto <b>quanto scende</b> la linea nel 2008, nel 2020 e nel 2022 rispetto alle altre.</p>`],
+ 'g-cr':['Nelle crisi',()=>`<p>I cinque momenti peggiori degli ultimi 20 anni, misurati dal massimo al minimo della Borsa USA. Un hedge fund vale qualcosa soprattutto qui: quando tutto crolla.</p>`],
+ 'g-st':['Strategie',()=>`<p>Le tre strategie del fondo, la loro combinazione e i due riferimenti (60/40 e S&P 500), dal 2005. Per ognuna: rendimento all'anno, Sharpe (quanto rende per ogni punto di oscillazione), perdita massima e Sharpe nelle due metà del periodo.</p><p>Se una strategia funziona solo in una metà, è stata fortuna. La multi-strategia regge in entrambe.</p>`],
+ 'g-op':['Operazioni',()=>`<p>Ogni ribilanciamento settimanale dal giorno di avvio, con i pesi che sono cambiati di almeno l'1%. Gli ordini si eseguono alla chiusura, con commissioni.</p>`],
+ tour:['Come si legge l\'app',()=>`<p>L'app è un <b>fondo finto con prezzi veri</b>. Ha due parti: il <b>Fondo globale</b> ($30.000 su 18 mercati, gestito come un hedge fund sistematico) e le <b>3 sale</b> ($10.000 ciascuna su Bitcoin, Nasdaq-100 ed euro-dollaro) con il reparto ricerca. Ogni giorno, da solo su GitHub, il desk scarica i prezzi, decide e aggiorna questa pagina.</p>
   <ul><li><b>In alto</b>: quanto vale il fondo e quanto ha guadagnato o perso da quando è partito, confrontato con chi compra e tiene (il <b>benchmark</b>).</li>
   <li><b>La sala disegnata</b>: davanti le 3 sale trading, dietro i reparti ricerca, a destra direzione e rischio. Tocca un tavolo per aprirlo.</li>
   <li><b>Scheda del mercato</b> (a destra): cosa sta facendo quella sala e perché. Le 4 linguette spiegano come si decide.</li>
@@ -940,7 +1031,7 @@ async function load(){
   try{
     const r=await fetch('data/view.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error(r.status);
     V=await r.json();$('overlay').hidden=true;
-    renderBrief();renderHud();renderStrip();renderTicker();renderDetail();renderTab();renderMe();renderFund();
+    renderBrief();renderGlobal();renderHud();renderStrip();renderTicker();renderDetail();renderTab();renderMe();renderFund();
   }catch(e){$('overlay').hidden=false;$('news').textContent='Il desk non ha ancora fatto il primo giro.'}
 }
 load();setInterval(load,10*60*1000);setInterval(()=>{if(V)renderHud()},60000);
