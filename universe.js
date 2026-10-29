@@ -31,6 +31,8 @@ const UNIVERSE = [
   { key: 'FXE', name: 'Euro', cls: 'fx', y: 'FXE', s: 'fxe.us', cost: 0.0008 },
   { key: 'FXY', name: 'Yen giapponese', cls: 'fx', y: 'FXY', s: 'fxy.us', cost: 0.0008 },
   { key: 'BTC', name: 'Bitcoin', cls: 'cr', y: 'BTC-USD', s: null, cost: 0.0015 },
+  // non si compra: è il tasso dei BOT USA a 3 mesi (in %), usato per la liquidità e per il costo della leva
+  { key: 'IRX', name: 'Tasso BOT USA 3 mesi', cls: 'tasso', y: '^IRX', s: null, cost: 0, rate: true },
 ];
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -50,7 +52,7 @@ async function yahoo(sym) {
   if (!res || !res.timestamp) throw new Error('risposta Yahoo vuota');
   const q = res.indicators.quote[0], adj = res.indicators.adjclose && res.indicators.adjclose[0] && res.indicators.adjclose[0].adjclose;
   const off = (res.meta && res.meta.gmtoffset) || 0, out = [];
-  res.timestamp.forEach((ts, i) => { const c = adj && adj[i] > 0 ? adj[i] : q.close[i]; if (c > 0) out.push([new Date((ts + off) * 1000).toISOString().slice(0, 10), +c.toPrecision(8)]); });
+  res.timestamp.forEach((ts, i) => { const c = adj && adj[i] > 0 ? adj[i] : q.close[i]; if (c > 0 || (c === 0 && sym === '^IRX')) out.push([new Date((ts + off) * 1000).toISOString().slice(0, 10), +c.toPrecision(8)]); });
   return out;
 }
 async function stooq(sym) {
@@ -60,7 +62,7 @@ async function stooq(sym) {
 }
 function clean(rows) {
   const m = new Map();
-  for (const [d, c] of rows) if (/^\d{4}-\d{2}-\d{2}$/.test(d) && d < TODAY && c > 0 && isFinite(c)) m.set(d, c);
+  for (const [d, c] of rows) if (/^\d{4}-\d{2}-\d{2}$/.test(d) && d < TODAY && c >= 0 && isFinite(c)) m.set(d, c);
   return [...m.entries()].sort((a, b) => (a[0] < b[0] ? -1 : 1));
 }
 const read = f => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return null; } };
