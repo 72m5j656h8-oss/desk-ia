@@ -45,9 +45,16 @@ async function get(url, text) {
     } catch (e) { if (i === 3) throw e; await sleep(1500 * i); }
   }
 }
+// Yahoo con tutta la storia a volte omette l'ultimo giorno: si scarica anche l'ultimo mese e si uniscono
 async function yahoo(sym) {
+  const full = await yahooRange(sym, 0), p1 = Math.floor(Date.parse(TODAY + 'T00:00:00Z') / 1000) - 40 * 86400;
+  let recent = []; try { recent = await yahooRange(sym, p1); } catch (e) { recent = []; }
+  const m = new Map(full); for (const [d, c] of recent) m.set(d, c);
+  return [...m.entries()];
+}
+async function yahooRange(sym, p1) {
   const p2 = Math.floor(Date.parse(TODAY + 'T00:00:00Z') / 1000) + 86400;
-  const j = await get(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?period1=0&period2=${p2}&interval=1d&events=div,split`);
+  const j = await get(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?period1=${p1}&period2=${p2}&interval=1d&events=div,split`);
   const res = j && j.chart && j.chart.result && j.chart.result[0];
   if (!res || !res.timestamp) throw new Error('risposta Yahoo vuota');
   const q = res.indicators.quote[0], adj = res.indicators.adjclose && res.indicators.adjclose[0] && res.indicators.adjclose[0].adjclose;
