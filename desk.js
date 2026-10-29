@@ -265,7 +265,7 @@ function combine(curvesByKey) {           // somma giorno per giorno, usando l'u
   const labs = {}, eventsBy = {};
   // fondo globale: aggiorna i prezzi dei 17 mercati (se una fonte non risponde si usa lo storico salvato)
   if (!process.env.DESK_MOCK) {
-    try { const u = await require('./universe.js').updateUniverse(); const bad = u.filter(x => x.warn); lines.push(`Universo: ${u.length - bad.length}/${u.length} mercati aggiornati` + (bad.length ? ' · non aggiornati: ' + bad.map(x => x.key).join(', ') : '')); }
+    try { const u = await require('./universe.js').updateUniverse(); view.universe = u; const bad = u.filter(x => x.warn); lines.push(`Universo: ${u.length - bad.length}/${u.length} mercati aggiornati` + (bad.length ? ' · non aggiornati: ' + bad.map(x => x.key).join(', ') : '')); }
     catch (e) { lines.push('Universo: aggiornamento non riuscito · ' + e.message); }
   }
   for (const key of Object.keys(R.ASSETS)) {
