@@ -1,0 +1,12 @@
+{"rubric":"CURIOSITÀ","sub":"le candele giapponesi","follow":"SEGUI per la prossima curiosità",
+"css":".cdl{display:flex;justify-content:center;gap:90px;align-items:flex-end;height:420px}.cdl div{width:110px;position:relative;border-radius:8px}.cdl div:before{content:'';position:absolute;left:50%;width:8px;margin-left:-4px;background:inherit;top:-70px;bottom:-70px;border-radius:4px;z-index:-1}",
+"scenes":[
+"<div class='emo'>🕯️</div><div class='big c'>Candele <span class='p'>giapponesi</span></div><div class='mid c a' data-at='2.6'>Da dove vengono?</div>",
+"<div class='big c'>🇯🇵 Osaka</div><div class='mid c'>inizio del <span class='a'>1700</span></div><div class='card' data-at='2.8'>🌾 mercato del riso di Dojima</div>",
+"<div class='mid c'>uno dei primi mercati</div><div class='big c p'>FUTURE</div><div class='card' data-at='2.8'>🌾 compravi riso non ancora raccolto</div>",
+"<div class='sm c'>secondo la leggenda…</div><div class='big c'>Munehisa<br><span class='p'>Homma</span></div><div class='card' data-at='2.6'>📜 studiava i prezzi ogni giorno</div>",
+"<div class='mid c'>i prezzi non si muovono solo per l'offerta…</div><div style='display:flex;gap:30px;justify-content:center'><div class='card' data-at='3.6'>😨 <span class='r'>paura</span></div><div class='card' data-at='4.6'>🤑 <span class='g'>avidità</span></div></div>",
+"<div class='mid c'>…e nascono le candele</div><div class='cdl'><div data-at='1.0' style='height:260px;background:#2fd08a'></div><div data-at='1.6' style='height:180px;background:#ff5a6a'></div><div data-at='2.2' style='height:320px;background:#2fd08a'></div></div><div class='sm c' data-at='3.0'>(secondo la tradizione)</div>",
+"<div class='big c'>🌾 → 📈</div><div class='mid c'>300 anni dopo: il <span class='p'>Nasdaq</span></div><div class='mid c' data-at='3.0'><span class='r'>paura</span> e <span class='g'>avidità</span>: le stesse</div>",
+"<div class='mid c'>Lo sapevi?</div>"
+]}
