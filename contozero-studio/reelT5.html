@@ -1,0 +1,136 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family: Pop; src: url(lib/Poppins-Bold.ttf); font-weight: 700; }
+@font-face { font-family: PopR; src: url(carosello/Poppins-Regular.ttf); font-weight: 400; }
+html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0b1020; font-family: Pop, sans-serif; }
+iframe { position: absolute; inset: 0; width: 1080px; height: 1920px; border: 0; }
+#head { position: absolute; top: 70px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: center; }
+#head .b { background: #F2A93B; color: #0b1020; font-size: 34px; padding: 8px 20px 10px; border-radius: 12px; box-shadow: 0 5px 0 #8a5a12; }
+#head .m { color: #cfd6ea; font: 400 28px PopR; background: rgba(11,16,32,.75); padding: 8px 16px; border-radius: 10px; }
+#panel { position: absolute; left: 40px; top: 170px; width: 1000px; height: 1000px; border-radius: 26px; overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0,0,0,.55), 0 0 0 3px #26304f; background: #a0a0a0; }
+#panel svg { width: 1000px; height: 1000px; display: block; }
+#cap { position: absolute; left: 50px; right: 50px; top: 1210px; text-align: center; font-size: 72px; line-height: 1.12; color: #fff;
+  -webkit-text-stroke: 3px #0b1020; paint-order: stroke fill; text-shadow: 0 5px 0 #0b1020, 0 0 18px rgba(0,0,0,.8); }
+#cap .k { background: #F2A93B; color: #0b1020; -webkit-text-stroke: 0; text-shadow: none; padding: 0 14px 4px; border-radius: 14px; display: inline-block; transform: rotate(-2deg); box-shadow: 0 6px 0 #8a5a12; }
+.lbl { font: 700 34px Pop; }
+#tent { position: absolute; left: 110px; right: 110px; top: 420px; background: rgba(11,16,32,.95); border: 3px solid #ff5a6a; border-radius: 24px;
+  padding: 28px 34px; color: #eef1f8; font: 700 46px Pop; display: grid; gap: 18px; opacity: 0; }
+#tent .t { font: 700 30px Pop; color: #ff5a6a; letter-spacing: 1px; }
+#wait { position: absolute; left: 0; right: 0; top: 720px; text-align: center; opacity: 0; }
+#wait span { display: inline-block; background: rgba(11,16,32,.93); color: #fff; font: 700 46px Pop; padding: 18px 34px; border-radius: 20px; border: 3px solid #26304f; }
+#open { position: absolute; left: 0; right: 0; top: 1110px; text-align: center; opacity: 0; }
+#open span { display: inline-block; background: #0b1020; color: #F2A93B; font: 700 34px Pop; padding: 10px 24px 12px; border-radius: 14px; border: 3px solid #F2A93B; }
+#wm { position: absolute; right: 190px; top: 186px; color: rgba(255,255,255,.85); font: 700 26px Pop; background: rgba(11,16,32,.6); padding: 6px 14px; border-radius: 10px; }
+#hook { position: absolute; left: 0; right: 0; top: 330px; text-align: center; color: #fff; font: 700 112px/1.04 Pop; -webkit-text-stroke: 5px #0b1020; paint-order: stroke fill; text-shadow: 0 10px 0 #0b1020, 0 0 50px rgba(0,0,0,.9); }
+#hook .r { color: #ff5a6a; } #hook .g { color: #2fd08a; }
+#q { position: absolute; left: 0; right: 0; top: 360px; text-align: center; font: 700 210px/1 Pop; opacity: 0; -webkit-text-stroke: 7px #0b1020; paint-order: stroke fill; text-shadow: 0 12px 0 #0b1020, 0 0 60px rgba(0,0,0,.9); }
+#q .y { color: #2fd08a; } #q .n { color: #ff5a6a; } #q .o { color: #fff; font-size: 110px; }
+#follow { position: absolute; left: 0; right: 0; top: 960px; text-align: center; opacity: 0; }
+#follow span { display: inline-block; background: #F2A93B; color: #0b1020; font: 700 54px Pop; padding: 14px 34px 18px; border-radius: 20px; box-shadow: 0 8px 0 #8a5a12; }
+</style></head><body>
+<iframe id="tr" src="trader.html?shot=pip&tl=reelT5/tl.json"></iframe>
+<div id="head"><span class="b">TRADE DEL GIORNO</span><span class="m" id="date">NAS100 · 15m · ieri 29 ott</span></div>
+<div id="panel">
+  <svg viewBox="0 0 1170 1170" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <marker id="ar" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 z" fill="#ff5a6a"/></marker>
+    </defs>
+    <g id="g_ieri">
+      <image href="reelT5/ieri.png" x="0" y="0" width="1170" height="1170"/>
+      <g id="i_asia"><rect x="13" y="55" width="335" height="428" fill="none" stroke="#F2A93B" stroke-width="7" stroke-dasharray="18 10" rx="6"/>
+        <rect x="24" y="68" width="150" height="54" rx="10" fill="#F2A93B"/><text x="99" y="107" text-anchor="middle" class="lbl" fill="#0b1020">ASIA</text></g>
+      <g id="i_long" opacity="0"><rect x="420" y="520" width="200" height="60" rx="12" fill="#2fd08a"/><text x="520" y="562" text-anchor="middle" class="lbl" fill="#0b1020">LONG ▲</text></g>
+      <g id="i_ws" opacity="0"><line x1="832" x2="832" y1="0" y2="1170" stroke="#ff5a6a" stroke-width="5" stroke-dasharray="14 9"/>
+        <rect x="420" y="250" width="400" height="56" rx="10" fill="#0b1020"/><text x="620" y="290" text-anchor="middle" class="lbl" fill="#fff">21:00 · CHIUDE WALL ST.</text>
+        <path d="M 760 380 L 760 960" stroke="#ff5a6a" stroke-width="12" stroke-linecap="round" marker-end="url(#ar)"/></g>
+      <g id="i_stop" opacity="0" transform="translate(585 640) rotate(-10)">
+        <rect x="-360" y="-115" width="720" height="230" rx="22" fill="rgba(11,16,32,.85)" stroke="#ff5a6a" stroke-width="14"/>
+        <text x="0" y="20" text-anchor="middle" style="font:700 120px Pop;letter-spacing:3px" fill="#ff5a6a">STOP</text>
+        <text x="0" y="88" text-anchor="middle" style="font:700 56px Pop" fill="#fff">−1R</text></g>
+    </g>
+    <g id="g_oggi" opacity="0">
+      <image href="reelT5/oggi.png" x="0" y="0" width="1170" height="1170"/>
+      <rect id="cover" x="0" y="0" width="956" height="1170" fill="#a0a0a0"/>
+      <g id="o_asia" opacity="0"><rect x="34" y="22" width="403" height="771" fill="none" stroke="#F2A93B" stroke-width="7" stroke-dasharray="18 10" rx="6"/>
+        <rect x="46" y="36" width="150" height="54" rx="10" fill="#F2A93B"/><text x="121" y="75" text-anchor="middle" class="lbl" fill="#0b1020">ASIA</text>
+        <line x1="34" x2="956" y1="793" y2="793" stroke="#F2A93B" stroke-width="6" stroke-dasharray="16 10"/>
+        <rect x="46" y="808" width="260" height="54" rx="10" fill="#F2A93B"/><text x="176" y="847" text-anchor="middle" class="lbl" fill="#0b1020">minimi Asia</text></g>
+      <g id="o_ws" opacity="0"><line x1="727" x2="727" y1="0" y2="1170" stroke="#2fd08a" stroke-width="6"/>
+        <rect x="600" y="120" width="330" height="56" rx="10" fill="#2fd08a"/><text x="765" y="160" text-anchor="middle" class="lbl" fill="#0b1020">14:30 WALL STREET</text></g>
+      <g id="o_sweep" opacity="0"><circle cx="740" cy="1040" r="95" fill="none" stroke="#ff5a6a" stroke-width="10"/>
+        <rect x="380" y="1050" width="260" height="56" rx="10" fill="#ff5a6a"/><text x="510" y="1090" text-anchor="middle" class="lbl" fill="#fff">DI NUOVO!</text></g>
+      <g id="o_in" opacity="0" transform="translate(585 470) rotate(-10)">
+        <rect x="-470" y="-125" width="940" height="250" rx="22" fill="rgba(11,16,32,.85)" stroke="#2fd08a" stroke-width="14"/>
+        <text x="0" y="5" text-anchor="middle" style="font:700 92px Pop;letter-spacing:2px" fill="#2fd08a">DI NUOVO DENTRO</text>
+        <text x="0" y="85" text-anchor="middle" style="font:700 56px Pop" fill="#fff">LONG ▲</text></g>
+      <g id="qm" opacity="0"><text x="860" y="640" text-anchor="middle" style="font:700 260px Pop" fill="#F2A93B" stroke="#0b1020" stroke-width="8" paint-order="stroke">?</text>
+        <rect x="630" y="700" width="330" height="60" rx="12" fill="#0b1020"/><text x="795" y="742" text-anchor="middle" class="lbl" fill="#F2A93B">ESITO DOMANI</text></g>
+    </g>
+  </svg>
+</div>
+<div id="tent"><div class="t">DOPO UNO STOP…</div><div>❌ non entrare più</div><div>❌ entrare per vendetta</div></div>
+<div id="wait"><span id="waittx">⏳ aspetto la mia conferma</span></div>
+<div id="open"><span>posizione aperta · non è un segnale</span></div>
+<div id="wm">@contozero.trading</div>
+<div id="follow"><span>SEGUI per l'esito domani</span></div>
+<div id="q"><div><span class="y">SÌ</span><span class="o"> o </span><span class="n">NO</span></div></div>
+<div id="cap"></div>
+<div id="hook"><div>IERI</div><div class="r">STOP ❌</div><div class="g">OGGI RIENTRO?</div></div>
+<script>
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v)), ease = u => { u = clamp(u); return u * u * (3 - 2 * u); };
+let TL, T = 0;
+const $ = id => document.getElementById(id);
+function fade(id, t0, t1 = 99) { const a = Math.min(clamp((T - t0) / 0.35), clamp((t1 - T) / 0.3)); $(id).setAttribute('opacity', a); return a; }
+function fadeD(id, t0, t1 = 99) { const a = Math.min(clamp((T - t0) / 0.3), clamp((t1 - T) / 0.3)); $(id).style.opacity = a; return a; }
+window.renderAt = function (t) {
+  T = t; const E = TL.events, s = i => E[i].start, e = i => E[i].end;
+  $('tr').contentWindow.renderAt(t);
+  $('hook').style.opacity = t < e(0) - 0.1 ? 1 : clamp(1 - (t - e(0) + 0.1) / 0.3);
+  // ieri
+  fade('i_long', s(0) + 0.6, s(1) + 0.3);
+  const st = Math.min(clamp((t - (s(1) + 0.7)) / 0.18), clamp((s(2) + 0.6 - t) / 0.3)); $('i_stop').setAttribute('opacity', st);
+  $('i_stop').setAttribute('transform', `translate(585 640) rotate(-10) scale(${1.6 - 0.6 * ease(st)})`);
+  fade('i_ws', s(2) + 1.8);
+  const go = clamp((t - (s(3) - 0.2)) / 0.4);
+  $('g_oggi').setAttribute('opacity', go); $('g_ieri').setAttribute('opacity', 1 - go);
+  const dt = t > s(3) - 0.1 ? 'NAS100 · 15m · oggi 30 ott' : 'NAS100 · 15m · ieri 29 ott'; if ($('date').textContent !== dt) $('date').textContent = dt;
+  // oggi
+  let rx = 437 * ease((t - s(3)) / 1.2);
+  if (t > s(3) + 1.6) rx = 437 + 290 * ease((t - s(3) - 1.6) / 1.5);
+  if (t > s(3) + 3.4) rx = 727 + 229 * ease((t - s(3) - 3.4) / 1.4);
+  $('cover').setAttribute('x', rx); $('cover').setAttribute('width', Math.max(0, 956 - rx));
+  fade('o_asia', s(3) + 0.3);
+  fade('o_ws', s(3) + 2.0, s(5));
+  fade('o_sweep', s(3) + 3.8, s(6));
+  fadeD('tent', s(4) + 0.3, s(5) + 0.1);
+  fadeD('wait', s(5) + 1.0, s(6) + 0.15);
+  $('waittx').textContent = '⏳ aspetto la mia conferma' + '.'.repeat(Math.floor(t * 3) % 4);
+  const di = Math.min(clamp((t - (s(6) + 0.3)) / 0.18), clamp((s(7) + 0.2 - t) / 0.3)); $('o_in').setAttribute('opacity', di);
+  $('o_in').setAttribute('transform', `translate(585 470) rotate(-10) scale(${1.6 - 0.6 * ease(di)})`);
+  fadeD('open', s(6) + 0.5);
+  fade('qm', s(7) + 0.3);
+  fadeD('follow', s(7) + 1.0, s(8) + 0.6);
+  const qa = clamp((t - s(8) - 0.8) / 0.25); $('q').style.opacity = qa;
+  $('q').style.transform = `scale(${qa ? 1 + 0.04 * Math.sin(t * 6) : 1})`;
+  if (t > s(8) + 0.8) $('follow').style.opacity = 1;
+  const cur = E.find(x => t >= x.start && t <= x.end + 0.15); let html = '';
+  if (cur) {
+    const words = cur.text.split(' '), chunks = []; let c = [];
+    for (const w of words) { c.push(w); if (c.join(' ').length > 16 || (/[.,!?…:]$/.test(w) && c.length > 1)) { chunks.push(c); c = []; } }
+    if (c.length) chunks.push(c);
+    const tot = cur.text.length; let acc = 0; const u = (t - cur.start) / (cur.end - cur.start); let pick = chunks[chunks.length - 1];
+    for (const ch of chunks) { acc += ch.join(' ').length + 1; if (u < acc / tot) { pick = ch; break; } }
+    html = pick.map(w => w === cur.key ? `<span class="k">${w}</span>` : w).join(' ');
+  }
+  if ($('cap').innerHTML !== html) $('cap').innerHTML = html;
+};
+(async () => {
+  TL = await (await fetch('reelT5/tl.json')).json();
+  await new Promise(r => { const f = $('tr'); const chk = () => (f.contentWindow && f.contentWindow.READY) ? r() : setTimeout(chk, 100); chk(); });
+  await document.fonts.ready;
+  window.READY = true;
+})();
+</script>
+</body></html>
