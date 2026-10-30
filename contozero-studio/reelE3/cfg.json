@@ -1,0 +1,12 @@
+{"rubric":"MITO","sub":"più trade = più soldi?","follow":"SEGUI per il prossimo mito",
+"css":".stamp{font:700 150px Pop;color:#ff5a6a;border:12px solid #ff5a6a;border-radius:24px;padding:0 40px;transform:rotate(-8deg);display:inline-block}",
+"scenes":[
+"<div class='big c'>“Più trade fai,<br>più guadagni”</div><div class='c' data-at='1.0'><span class='stamp'>FALSO</span></div>",
+"<div class='mid c'>Ogni trade <span class='r'>costa</span></div><div class='card' data-at='1.2'>📉 lo spread</div><div class='card' data-at='2.4'>💶 le commissioni</div><div class='card' data-at='3.6'>🎲 il rischio di sbagliare</div>",
+"<div class='emo'>🎰</div><div class='big c'>Entri senza motivo?</div><div class='mid c r' data-at='1.6'>Stai pagando per giocare.</div>",
+"<div class='emo'>⏳</div><div class='mid c'>I trader che durano…</div><div class='big c g' data-at='1.4'>ASPETTANO</div><div class='mid c' data-at='2.4'>anche per giorni</div>",
+"<div class='mid c'>la settimana scorsa</div><div style='display:flex;gap:26px;justify-content:center'><div class='card' data-at='0.8'>LUN · 0</div><div class='card' data-at='1.4'>MAR · 0</div><div class='card' data-at='2.0'>MER · 0</div></div><div class='big c a' data-at='3.4'>ZERO trade</div>",
+"<div class='card'><span class='r'>✗</span> non per mancanza di voglia</div><div class='card' data-at='2.0'><span class='g'>✓</span> la mia conferma non c'era</div>",
+"<div class='emo'>🧘</div><div class='mid c'>A volte la mossa migliore è</div><div class='big c g' data-at='2.0'>non fare niente</div>",
+"<div class='mid c'>Riusciresti a stare<br>3 giorni fermo?</div>"
+]}

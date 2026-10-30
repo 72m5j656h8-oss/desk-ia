@@ -1,0 +1,12 @@
+{"rubric":"PAROLA","sub":"spread","follow":"SEGUI per la prossima parola",
+"css":".px{display:flex;gap:30px;justify-content:center}.px div{flex:1;border-radius:22px;padding:26px;text-align:center;font:700 54px Pop}.gap{height:110px;border-left:8px dashed #F2A93B;margin:0 auto;width:0}",
+"scenes":[
+"<div class='big c p' style='font-size:150px'>SPREAD</div><div class='mid c' data-at='1.4'>ti costa soldi<br>anche se non lo sai</div>",
+"<div class='px'><div data-at='1.0' style='background:rgba(47,208,138,.18);border:4px solid #2fd08a;color:#2fd08a'>COMPRI<br>28.502</div><div data-at='2.2' style='background:rgba(255,90,106,.18);border:4px solid #ff5a6a;color:#ff5a6a'>VENDI<br>28.500</div></div><div class='sm c' data-at='3.0'>(prezzi d'esempio)</div>",
+"<div class='mid c'>la differenza</div><div class='big c a'>= SPREAD</div><div class='card' data-at='2.2'>🏦 il guadagno del broker</div>",
+"<div class='emo'>📉</div><div class='mid c'>appena entri sei già</div><div class='big c r' data-at='1.2'>in negativo</div>",
+"<div class='card'>📊 Nasdaq: di solito piccolo</div><div class='card' data-at='2.4'>📰 sulle notizie si <span class='r'>allarga</span></div>",
+"<div class='emo'>⚠️</div><div class='mid c'>entrare proprio sulla notizia</div><div class='big c r' data-at='1.6'>può costare caro</div>",
+"<div class='mid c'>ogni trade parte da</div><div class='big c r'>− spread</div>",
+"<div class='mid c'>Lo conoscevi?</div>"
+]}

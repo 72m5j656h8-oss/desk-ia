@@ -1,0 +1,12 @@
+{"rubric":"ERRORE","sub":"il revenge trading","follow":"SEGUI per il prossimo errore da evitare",
+"css":".bar{height:70px;border-radius:14px;background:#ff5a6a}",
+"scenes":[
+"<div class='card'><span class='r'>STOP</span> −1R</div><div class='emo' data-at='2.0'>😤</div><div class='mid c' data-at='3.0'>“rientra subito, <span class='r'>riprenditi i soldi</span>”</div>",
+"<div class='sm c'>quella voce ha un nome</div><div class='big c p'>REVENGE TRADING</div><div class='mid c' data-at='2.8'>il trading per <span class='r'>vendetta</span></div>",
+"<div class='card'><span class='r'>✗</span> senza setup</div><div class='card' data-at='1.6'><span class='r'>✗</span> posizione più grande</div><div class='card' data-at='3.2'>🎯 solo per recuperare</div>",
+"<div class='emo'>🤷</div><div class='big c'>Il mercato non sa<br>che hai perso.</div><div class='mid c r' data-at='2.0'>Non ti deve niente.</div>",
+"<div style='display:grid;gap:22px'><div class='bar' style='width:200px'></div><div class='bar' data-at='0.9' style='width:420px'></div><div class='bar' data-at='1.6' style='width:640px'></div></div><div class='mid c r' data-at='2.8'>in un'ora bruci un mese</div>",
+"<div class='mid c'>Dopo uno stop:</div><div class='card' data-at='1.4'>✋ ti fermi</div><div class='card' data-at='2.4'>😮‍💨 respiri</div><div class='card' data-at='3.6'><span class='g'>✓</span> rientri solo con la tua conferma</div>",
+"<div class='card'><span class='r'>STOP</span> · <span class='r'>STOP</span> di fila</div><div class='big c g' data-at='2.4'>il giorno dopo:<br>ho aspettato</div>",
+"<div class='mid c'>Ti è mai successo?</div>"
+]}
