@@ -1,0 +1,12 @@
+{"rubric":"LEZIONE","sub":"cos'è il Nasdaq","follow":"SEGUI per la prossima lezione",
+"css":".grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}.grid div{background:#141b31;border:3px solid #26304f;border-radius:20px;padding:24px 0;text-align:center;font-size:80px}",
+"scenes":[
+"<div class='emo'>📈</div><div class='big c'>Il <span class='p'>Nasdaq</span></div><div class='mid c a' data-at='1.8'>cos'è, esattamente?</div>",
+"<div class='big c'>Nasdaq <span class='p'>100</span></div><div class='card' data-at='1.4'>🧺 un indice: un paniere</div><div class='card' data-at='3.0'>🏢 le 100 aziende più grandi</div><div class='card' data-at='5.0'>🇺🇸 borsa americana della tecnologia</div>",
+"<div class='mid c'>i nomi che usi ogni giorno</div><div class='grid'><div data-at='1.4'>📱</div><div data-at='2.0'>💻</div><div data-at='2.6'>💬</div><div data-at='3.2'>🔌</div></div>",
+"<div class='card'>🏢 aziende <span class='g'>su</span> → indice <span class='g'>▲</span></div><div class='card' data-at='2.2'>🏢 aziende <span class='r'>giù</span> → indice <span class='r'>▼</span></div>",
+"<div class='card'><span class='r'>✗</span> non compro le azioni</div><div class='card' data-at='1.8'><span class='g'>✓</span> trading sull'indice</div><div class='mid c' data-at='3.2'><span class='g'>rialzo ▲</span> · <span class='r'>ribasso ▼</span></div>",
+"<div class='mid c'>Perché proprio lui?</div><div class='card' data-at='1.4'>⚡ si muove tanto</div><div class='card' data-at='2.6'>⏰ orari precisi</div>",
+"<div class='emo'>⚠️</div><div class='mid c'>si muove tanto…</div><div class='big c r' data-at='1.4'>ogni errore costa di più</div>",
+"<div class='mid c'>Sapevi cosa c'è<br>dentro il Nasdaq?</div>"
+]}

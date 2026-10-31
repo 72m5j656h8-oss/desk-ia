@@ -1,0 +1,12 @@
+{"rubric":"ERRORE","sub":"rischiare troppo","follow":"SEGUI per il prossimo errore da evitare",
+"css":".cmp{display:grid;grid-template-columns:1fr 1fr;gap:24px}.cmp div{border-radius:22px;padding:28px 10px;text-align:center;font:700 50px/1.25 Pop;background:#141b31;border:3px solid #26304f}",
+"scenes":[
+"<div class='emo'>🕳️</div><div class='big c'>Il modo più veloce<br>per svuotare un conto?</div><div class='mid c r' data-at='2.6'>rischiare troppo su un trade</div>",
+"<div class='sm c'>esempio</div><div class='big c r' style='font-size:170px'>10%</div><div class='mid c'>a operazione</div>",
+"<div class='mid c'>5 stop di fila</div><div class='big c r' data-at='1.4'>≈ −41% del conto</div><div class='sm c' data-at='2.2'>quasi metà</div>",
+"<div class='emo'>🎲</div><div class='big c'>5 stop di fila<br><span class='a'>capitano. A tutti.</span></div>",
+"<div class='cmp'><div><span class='r'>10%</span> a trade<br>5 stop<br><span class='r'>≈ −41%</span></div><div data-at='1.0'><span class='g'>1%</span> a trade<br>5 stop<br><span class='g'>≈ −5%</span></div></div><div class='mid c' data-at='5.0'>brucia, ma si recupera</div>",
+"<div class='card'><span class='r'>✗</span> non la strategia</div><div class='card' data-at='1.6'><span class='g'>✓</span> quanto rischi</div>",
+"<div class='big c'>1. <span class='a'>sopravvivere</span></div><div class='big c' data-at='1.8'>2. <span class='g'>guadagnare</span></div>",
+"<div class='mid c'>Sai quanto rischi<br>a trade?</div>"
+]}

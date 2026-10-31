@@ -1,0 +1,11 @@
+{"rubric":"CURIOSITÀ","sub":"il Black Monday","follow":"SEGUI per la prossima curiosità",
+"scenes":[
+"<div class='sm c'>lunedì</div><div class='big c' style='font-size:120px'>19 ottobre<br><span class='p'>1987</span></div><div class='mid c' data-at='3.4'>…fino all'apertura</div>",
+"<div class='mid c'>Dow Jones · in un giorno</div><div class='big c r' style='font-size:180px'>−22,6%</div>",
+"<div class='emo'>📉</div><div class='big c'>il peggior crollo<br>in <span class='r'>un giorno</span></div><div class='sm c' data-at='2.0'>della sua storia</div>",
+"<div class='sm c'>una delle cause</div><div class='big c'>🖥️ i computer</div><div class='card' data-at='2.4'>programmi che vendevano quando il mercato scendeva</div>",
+"<div class='card'>📉 più scendeva → più vendevano</div><div class='card' data-at='1.6'>🖥️ più vendevano → più scendeva</div><div class='emo' data-at='2.4'>🔁</div>",
+"<div class='sm c'>dopo quel giorno</div><div class='big c p'>CIRCUIT BREAKER</div><div class='card' data-at='3.0'>⏸️ pause obbligatorie se il mercato crolla troppo in fretta</div>",
+"<div class='card'>1987 · 🖥️ le macchine <span class='r'>spaventano</span></div><div class='card' data-at='2.6'>oggi · 🖥️ le macchine <span class='g'>muovono</span> il mercato</div>",
+"<div class='mid c'>Lo sapevi?</div>"
+]}

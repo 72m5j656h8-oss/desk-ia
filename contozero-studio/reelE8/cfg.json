@@ -1,0 +1,12 @@
+{"rubric":"MITO","sub":"il conto demo","follow":"SEGUI per il prossimo mito",
+"css":".stamp{font:700 110px Pop;color:#F2A93B;border:12px solid #F2A93B;border-radius:24px;padding:0 34px;transform:rotate(-8deg);display:inline-block}",
+"scenes":[
+"<div class='big c'>“Il conto demo<br>non serve a niente”</div><div class='c' data-at='2.6'><span class='stamp'>VERO A METÀ</span></div>",
+"<div class='card'><span class='g'>✓</span> in demo non c'è la paura dei soldi veri</div><div class='emo' data-at='2.6'>😨</div><div class='mid c' data-at='3.0'>e la paura cambia tutto</div>",
+"<div class='mid c'>ma il demo serve a</div><div class='big c g' data-at='1.8'>dimostrare che le tue regole funzionano</div>",
+"<div class='card'>🎮 soldi finti: non sei costante?</div><div class='card' data-at='1.8'>💶 soldi veri: <span class='r'>sarà peggio</span></div>",
+"<div class='emo'>👀</div><div class='mid c'>conto demo · numeri pubblici</div><div class='big c a' data-at='2.6'>anche gli stop</div>",
+"<div class='mid c'>soldi veri?</div><div class='big c'>solo dopo <span class='g'>mesi</span> di risultati</div>",
+"<div class='card'><span class='r'>✗</span> non ti rende trader</div><div class='card' data-at='1.4'><span class='g'>✓</span> ti dice se sei pronto</div>",
+"<div class='mid c'>Hai mai usato<br>un conto demo?</div>"
+]}

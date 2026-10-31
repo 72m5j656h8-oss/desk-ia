@@ -1,0 +1,12 @@
+{"rubric":"PAROLA","sub":"leva","follow":"SEGUI per la prossima parola",
+"css":".cmp{display:grid;grid-template-columns:1fr 1fr;gap:24px}.cmp div{border-radius:22px;padding:28px 10px;text-align:center;font:700 54px/1.25 Pop;background:#141b31;border:3px solid #26304f}",
+"scenes":[
+"<div class='big c p' style='font-size:170px'>LEVA</div><div class='mid c' data-at='1.4'>fa sognare…</div><div class='mid c r' data-at='2.4'>…e svuota i conti</div>",
+"<div class='emo'>🏋️</div><div class='mid c'>muovi più soldi<br>di quelli che hai</div>",
+"<div class='big c a'>1 : 20</div><div class='cmp'><div data-at='1.2'>hai<br>1.000 €</div><div data-at='2.6'>muovi<br>20.000 €</div></div>",
+"<div class='mid c'>se va dalla tua parte</div><div class='big c g' data-at='1.2'>guadagni come<br>su 20.000 €</div>",
+"<div class='mid c'>se va contro</div><div class='big c r' data-at='1.0'>perdi come<br>su 20.000 €</div>",
+"<div class='mid c'>🇪🇺 in Europa, per i clienti al dettaglio</div><div class='card' data-at='3.0'>indici principali: leva massima <span class='a'>1:20</span></div>",
+"<div class='card'><span class='r'>✗</span> non ti rende più bravo</div><div class='card' data-at='1.6'>⚡ ti rende più veloce</div><div class='mid c' data-at='3.2'>nel bene e nel <span class='r'>male</span></div>",
+"<div class='mid c'>La conoscevi?</div>"
+]}
