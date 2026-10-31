@@ -5,7 +5,7 @@ Elements inside a scene with data-at="sec" appear sec seconds after that line st
 import json, sys
 
 RUB = {"LEZIONE": ("📘", "#5b8cff"), "CURIOSITÀ": ("🤯", "#a66bff"), "MITO": ("❌", "#ff5a6a"),
-       "ERRORE": ("⚠️", "#ff9a3b"), "PAROLA": ("🔤", "#2fd08a"), "LA SETTIMANA": ("📰", "#F2D33B")}
+       "ERRORE": ("⚠️", "#ff9a3b"), "PAROLA": ("🔤", "#2fd08a"), "LA SETTIMANA": ("📰", "#F2D33B"), "REPORT": ("📊", "#F2A93B")}
 D = sys.argv[1]
 C = json.load(open(f"{D}/cfg.json"))
 ico, col = RUB[C["rubric"]]
