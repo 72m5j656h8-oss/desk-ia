@@ -1,0 +1,17 @@
+{"sub":"NAS100 · 15m · 29–30 ott",
+"charts":[
+ {"img":"reelX5/ieri.png","crop":[430,1560],"from":0,"to":3},
+ {"img":"reelX5/oggi.png","crop":[480,1520],"from":3,
+  "mask":[[755,1332,924,1525],[621,1206,633,1490],[592,1207,633,1219],[580,1477,633,1489],[591,1341,627,1355]],
+  "reveal":[[3,0,345],[3,1.6,574],[3,3.4,760]]}],
+"ov":[
+ {"l":0,"at":0,"to":3,"svg":"<rect x='10' y='483' width='265' height='414' fill='none' stroke='#F2A93B' stroke-width='6' stroke-dasharray='16 9' rx='5'/><rect x='18' y='492' width='110' height='44' rx='9' fill='#F2A93B'/><text x='73' y='524' text-anchor='middle' class='lbl' fill='#0b1020'>ASIA</text>"},
+ {"l":0,"at":0.6,"to":1,"svg":"<rect x='330' y='840' width='160' height='48' rx='10' fill='#2fd08a'/><text x='410' y='874' text-anchor='middle' class='lbl' fill='#0b1020'>LONG ▲</text>"},
+ {"l":2,"at":1.8,"to":3,"svg":"<line x1='657' x2='657' y1='430' y2='1560' stroke='#ff5a6a' stroke-width='4' stroke-dasharray='12 8'/><rect x='330' y='640' width='320' height='46' rx='9' fill='#0b1020'/><text x='490' y='673' text-anchor='middle' class='lbl' fill='#fff'>21:00 · CHIUDE WALL ST.</text><path d='M 600 780 L 600 1300' stroke='#ff5a6a' stroke-width='10' stroke-linecap='round' marker-end='url(#ar)'/>"},
+ {"l":3,"at":0.3,"svg":"<rect x='27' y='500' width='318' height='685' fill='none' stroke='#F2A93B' stroke-width='6' stroke-dasharray='16 9' rx='5'/><rect x='36' y='510' width='110' height='44' rx='9' fill='#F2A93B'/><text x='91' y='542' text-anchor='middle' class='lbl' fill='#0b1020'>ASIA</text><line x1='27' x2='760' y1='1185' y2='1185' stroke='#F2A93B' stroke-width='5' stroke-dasharray='14 9'/><rect x='36' y='1195' width='200' height='44' rx='9' fill='#F2A93B'/><text x='136' y='1227' text-anchor='middle' class='lbl' fill='#0b1020'>minimi Asia</text>"},
+ {"l":3,"at":2.0,"to":5,"svg":"<line x1='574' x2='574' y1='480' y2='1520' stroke='#2fd08a' stroke-width='5'/><rect x='470' y='560' width='270' height='46' rx='9' fill='#2fd08a'/><text x='605' y='593' text-anchor='middle' class='lbl' fill='#0b1020'>14:30 WALL ST.</text>"},
+ {"l":3,"at":3.8,"to":6,"svg":"<circle cx='580' cy='1420' r='70' fill='none' stroke='#ff5a6a' stroke-width='8'/><rect x='330' y='1430' width='190' height='46' rx='9' fill='#ff5a6a'/><text x='425' y='1463' text-anchor='middle' class='lbl' fill='#fff'>DI NUOVO!</text>"}],
+"stamp":[{"l":1,"at":0.7,"to":2,"text":"STOP","sub":"29 ott · −1R"},{"l":6,"at":0.3,"to":7,"text":"DI NUOVO DENTRO","sub":"LONG ▲","color":"#2fd08a"}],
+"cards":[{"l":4,"at":0.3,"to":5,"color":"#ff5a6a","html":"<div class='t'>DOPO UNO STOP…</div><div>❌ non entrare più</div><div>❌ entrare per vendetta</div>"}],
+"hook":["IERI","<span class='r'>STOP ❌</span>","<span class='g'>OGGI RIENTRO?</span>"],
+"wait":5,"open":6,"follow":"SEGUI per l'esito domani"}
