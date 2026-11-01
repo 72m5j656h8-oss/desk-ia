@@ -1,0 +1,11 @@
+{"rubric":"ERRORE","sub":"chiudere troppo presto","follow":"SEGUI per il prossimo errore da evitare",
+"css":".cmp{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:end;height:420px}.cmp div{border-radius:18px;text-align:center;font:700 44px Pop;display:flex;align-items:flex-end;justify-content:center;padding-bottom:16px}",
+"scenes":[
+"<div class='big c'>Chiudono in guadagno…</div><div class='big c r' data-at='2.0'>e perdono lo stesso. Perché?</div>",
+"<div class='emo'>😰</div><div class='mid c'>in guadagno: <span class='a'>paura</span></div><div class='big c' data-at='1.8'>chiudono subito</div>",
+"<div class='emo'>🙏</div><div class='mid c'>in perdita: <span class='a'>speranza</span></div><div class='big c' data-at='1.6'>aspettano</div>",
+"<div class='cmp'><div style='height:120px;background:rgba(47,208,138,.3);border:4px solid #2fd08a;color:#2fd08a'>+ piccoli</div><div data-at='0.8' style='height:380px;background:rgba(255,90,106,.3);border:4px solid #ff5a6a;color:#ff5a6a'>− grandi</div></div>",
+"<div class='emo'>🔄</div><div class='big c r'>il contrario di quello che serve</div>",
+"<div class='card'>🎯 il target lo decido <span class='a'>prima</span></div><div class='card' data-at='1.6'>⏳ e lo lascio lavorare</div>",
+"<div class='mid c'>Chiudi troppo presto?</div>"
+]}

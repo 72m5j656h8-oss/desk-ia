@@ -1,0 +1,9 @@
+{"rubric":"PAROLA","sub":"drawdown","follow":"SEGUI per la prossima parola",
+"scenes":[
+"<div class='big c p' style='font-size:140px'>DRAWDOWN</div><div class='mid c' data-at='0.6'>quanto può scendere un conto prima di risalire?</div>",
+"<svg viewBox='0 0 880 380' style='width:100%'><polyline points='20,300 160,180 260,230 380,80 520,260 640,200 860,60' fill='none' stroke='#eef1f8' stroke-width='10' stroke-linejoin='round'/><line x1='380' y1='80' x2='520' y2='260' stroke='#ff5a6a' stroke-width='14'/><circle cx='380' cy='80' r='16' fill='#2fd08a'/><circle cx='520' cy='260' r='16' fill='#ff5a6a'/></svg><div class='mid c' data-at='1.6'>dal punto più <span class='g'>alto</span> al più <span class='r'>basso</span></div>",
+"<div class='emo'>🏆</div><div class='big c'>ogni trader<br>ha drawdown</div><div class='mid c a' data-at='1.6'>anche i migliori</div>",
+"<div class='card'>📏 quanto è profondo</div><div class='card' data-at='1.8'>⏱️ quanto ci metti a uscirne</div>",
+"<div class='emo'>🛡️</div><div class='mid c'>per questo conta più di tutto</div><div class='big c g' data-at='1.0'>il rischio basso</div>",
+"<div class='mid c'>Lo conoscevi?</div>"
+]}

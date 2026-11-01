@@ -1,0 +1,9 @@
+{"rubric":"CURIOSITÀ","sub":"tori e orsi","follow":"SEGUI per la prossima curiosità","q":["TORO","ORSO"],
+"scenes":[
+"<div class='big c' style='font-size:150px'>🐂 vs 🐻</div><div class='mid c' data-at='1.0'>perché in borsa si parla di <span class='g'>tori</span> e <span class='r'>orsi</span>?</div>",
+"<div class='emo'>🐂</div><div class='big c g'>il toro</div><div class='mid c' data-at='1.6'>attacca dal basso verso l'alto ⬆️</div><div class='card' data-at='3.4'>📈 mercato che sale</div>",
+"<div class='emo'>🐻</div><div class='big c r'>l'orso</div><div class='mid c' data-at='1.6'>colpisce dall'alto verso il basso ⬇️</div><div class='card' data-at='3.6'>📉 mercato che scende</div>",
+"<div class='card'>📖 la spiegazione più famosa</div><div class='card' data-at='2.2'>🕰️ le vere origini? antiche e ancora discusse</div>",
+"<div class='card'>🐂 pensi che salga → <span class='g'>toro</span></div><div class='card' data-at='2.2'>🐻 pensi che scenda → <span class='r'>orso</span></div>",
+"<div class='mid c'>E tu oggi?</div>"
+]}

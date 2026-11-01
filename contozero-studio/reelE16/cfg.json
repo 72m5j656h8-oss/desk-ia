@@ -1,0 +1,11 @@
+{"rubric":"LEZIONE","sub":"supporti e resistenze","follow":"SEGUI per la prossima lezione",
+"css":".lv{position:relative;height:420px;border-radius:20px;background:#141b31;border:3px solid #26304f}.lv .ln{position:absolute;left:30px;right:30px;height:8px;border-radius:4px}.lv .t{position:absolute;right:40px;font:700 40px Pop}",
+"scenes":[
+"<div class='emo'>🏀</div><div class='big c'>Perché il prezzo <span class='p'>rimbalza</span> sempre sugli stessi livelli?</div>",
+"<div class='emo'>🧠</div><div class='mid c'>lì, in passato, qualcuno ha</div><div class='big c a' data-at='1.4'>comprato o venduto tanto</div>",
+"<div class='lv'><div class='ln' style='bottom:90px;background:#2fd08a'></div><div class='t g' style='bottom:110px'>SUPPORTO</div></div><div class='mid c' data-at='2.2'>i compratori l'hanno già fermato</div>",
+"<div class='lv'><div class='ln' style='top:90px;background:#ff5a6a'></div><div class='t r' style='top:110px'>RESISTENZA</div><div class='ln' style='bottom:90px;background:#2fd08a'></div><div class='t g' style='bottom:110px'>SUPPORTO</div></div><div class='mid c' data-at='2.2'>i venditori l'hanno già respinto</div>",
+"<div class='emo'>🐘</div><div class='big c'>il mercato<br>ha <span class='p'>memoria</span></div>",
+"<div class='emo'>💥</div><div class='mid c'>attenzione:</div><div class='big c r' data-at='0.8'>ogni livello prima o poi si rompe</div>",
+"<div class='mid c'>Li usi anche tu?</div>"
+]}
