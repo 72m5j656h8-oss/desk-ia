@@ -1,0 +1,11 @@
+{"rubric":"ERRORE","sub":"entrare sulla notizia","follow":"SEGUI per il prossimo errore da evitare",
+"scenes":[
+"<div class='card'>📰 notizia importante</div><div class='card' data-at='1.4'>💥 il prezzo esplode</div><div class='card' data-at='2.6'>🏃 entri subito</div><div class='big c r' data-at='3.8'>ERRORE</div>",
+"<div class='mid c'>nei secondi della notizia</div><div class='big c r' data-at='1.0'>lo spread si allarga</div>",
+"<div class='emo'>🦘</div><div class='mid c'>il prezzo salta</div><div class='card' data-at='3.0'>📉 ordine eseguito molto peggio</div>",
+"<div class='big c'>↗️ … ↘️</div><div class='mid c' data-at='1.4'>il primo movimento spesso torna indietro</div>",
+"<div class='emo'>🚪</div><div class='mid c'>chi è entrato di corsa</div><div class='big c r' data-at='1.6'>stop preso</div>",
+"<div class='card'>⏳ aspetto</div><div class='card' data-at='1.6'>🕯️ la candela deve chiudere</div><div class='card' data-at='3.2'><span class='g'>✓</span> la mia conferma</div>",
+"<div class='mid c'>la notizia è un'occasione</div><div class='big c g'>solo con pazienza</div>",
+"<div class='mid c'>Ti è mai capitato?</div>"
+]}

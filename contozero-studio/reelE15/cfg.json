@@ -1,0 +1,12 @@
+{"rubric":"PAROLA","sub":"slippage","follow":"SEGUI per la prossima parola",
+"css":".px{display:flex;gap:30px;justify-content:center}.px div{flex:1;border-radius:22px;padding:26px;text-align:center;font:700 52px Pop}",
+"scenes":[
+"<div class='big c p' style='font-size:150px'>SLIPPAGE</div><div class='mid c' data-at='1.2'>paghi un prezzo diverso da quello che vedevi</div>",
+"<div class='px'><div style='background:#141b31;border:3px solid #26304f'>clicchi a<br>28.500</div><div data-at='2.2' style='background:rgba(255,90,106,.18);border:4px solid #ff5a6a;color:#ff5a6a'>eseguito a<br>28.508</div></div><div class='sm c' data-at='2.8'>(prezzi d'esempio)</div>",
+"<div class='emo'>⚡</div><div class='mid c'>mercato velocissimo</div><div class='card' data-at='2.6'>📰 per esempio sulle notizie</div>",
+"<div class='card'>👆 il tuo clic</div><div class='card' data-at='1.4'>🏃 il prezzo è già andato avanti</div>",
+"<div class='card'><span class='g'>a volte</span> ti va bene</div><div class='card' data-at='1.6'><span class='r'>più spesso</span> ti costa</div>",
+"<div class='mid c'>anche lo stop</div><div class='card' data-at='1.8'>rischi <span class='a'>1%</span> → perdi <span class='r'>un po' di più</span></div>",
+"<div class='card'>👀 il prezzo che vedi</div><div class='big c' data-at='1.2'>≠</div><div class='card' data-at='1.8'>💶 il prezzo che paghi</div>",
+"<div class='mid c'>Lo conoscevi?</div>"
+]}

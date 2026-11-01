@@ -1,0 +1,12 @@
+{"rubric":"LEZIONE","sub":"le tre sessioni","follow":"SEGUI per la prossima lezione",
+"css":".ses{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.ses div{border-radius:20px;padding:26px 6px;text-align:center;font:700 44px/1.3 Pop;background:#141b31;border:3px solid #26304f}",
+"scenes":[
+"<div class='emo'>🌍</div><div class='big c'>Il mercato<br><span class='p'>non dorme mai</span></div><div class='mid c' data-at='2.2'>ma non è sempre sveglio uguale</div>",
+"<div class='mid c'>3 sessioni</div><div class='ses'><div data-at='1.2'>🌏<br>ASIA</div><div data-at='1.8'>🇬🇧<br>LONDRA</div><div data-at='2.4'>🇺🇸<br>NEW YORK</div></div>",
+"<div class='emo'>🌏</div><div class='big c'>Asia</div><div class='mid c' data-at='1.6'>di solito <span class='a'>tranquilla</span></div><div class='sm c' data-at='3.4'>range stretto</div>",
+"<div class='emo'>🇬🇧</div><div class='big c'>Londra</div><div class='mid c' data-at='1.8'>volumi europei → <span class='g'>il mercato si sveglia</span></div>",
+"<div class='emo'>🇺🇸</div><div class='big c'>New York</div><div class='mid c' data-at='2.0'>spesso i movimenti <span class='r'>più forti</span></div>",
+"<div class='mid c'>🇬🇧 + 🇺🇸 aperte insieme</div><div class='big c p' data-at='2.0'>mercato al massimo</div>",
+"<div class='emo'>⏰</div><div class='mid c'>sapere che ore sono</div><div class='big c a' data-at='1.8'>= sapere dove sta il prezzo</div>",
+"<div class='mid c'>Sapevi che il mercato<br>ha degli orari?</div>"
+]}

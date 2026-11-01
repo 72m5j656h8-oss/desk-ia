@@ -1,0 +1,12 @@
+{"rubric":"MITO","sub":"gli indicatori","follow":"SEGUI per il prossimo mito",
+"css":".stamp{font:700 150px Pop;color:#ff5a6a;border:12px solid #ff5a6a;border-radius:24px;padding:0 40px;transform:rotate(-8deg);display:inline-block}",
+"scenes":[
+"<div class='big c'>“Con gli indicatori giusti sai dove va il prezzo”</div><div class='c' data-at='3.0'><span class='stamp'>FALSO</span></div>",
+"<div class='emo'>🧮</div><div class='mid c'>quasi tutti calcolati sui</div><div class='big c a'>prezzi passati</div>",
+"<div class='card'><span class='g'>✓</span> cosa è già successo</div><div class='card' data-at='1.6'><span class='r'>✗</span> cosa succederà</div>",
+"<div class='emo'>🐢</div><div class='big c r'>spesso in ritardo</div><div class='mid c' data-at='2.4'>il segnale arriva a movimento partito</div>",
+"<div class='emo'>🍝</div><div class='mid c'>10 indicatori sul grafico</div><div class='big c r' data-at='1.4'>non vedi più niente</div>",
+"<div class='card'>📈 il prezzo</div><div class='card' data-at='1.2'>⏰ gli orari</div><div class='mid c' data-at='2.8'>il resto: <span class='a'>al minimo</span></div>",
+"<div class='card'><span class='g'>✓</span> uno strumento</div><div class='card' data-at='1.6'><span class='r'>✗</span> 🔮 una sfera di cristallo</div>",
+"<div class='mid c'>Usi indicatori?</div>"
+]}
