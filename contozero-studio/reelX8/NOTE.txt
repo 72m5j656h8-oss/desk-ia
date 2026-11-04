@@ -1,0 +1,3 @@
+Esito trade 3 nov: SHORT NAS100 a stop di notte (01:35 ora server), -999,67 EUR (-1R), swap +12,42.
+Saldo 99.017,54 EUR. Settimana finora: +1.013,43 EUR.
+Video esito: mercoledi 4 nov 17:00, eventualmente combinato col trade nuovo. Non mostrare il grafico notturno (privato).
