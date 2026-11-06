@@ -1,13 +1,1 @@
-{"badge":"TRADE DEL GIORNO","sub":"NAS100 · 5–6 nov",
-"charts":[
- {"img":"reelX10/ieri.png","crop":[440,1480],"from":0,"to":2},
- {"img":"reelX10/oggi.png","crop":[300,1640],"from":2,
-  "mask":[[756,328,924,377],[756,508,924,554],[756,856,924,904],[756,1570,924,1617],[618,750,924,832]]}],
-"ov":[
- {"l":0,"at":0.5,"to":2,"svg":"<path d='M 730 860 L 730 1230' stroke='#ff5a6a' stroke-width='10' stroke-linecap='round' marker-end='url(#ar)'/><rect x='450' y='1300' width='250' height='48' rx='10' fill='#ff5a6a'/><text x='575' y='1334' text-anchor='middle' class='lbl' fill='#fff'>IERI −5%</text>"},
- {"l":3,"at":0.2,"to":8,"svg":"<rect x='170' y='380' width='290' height='48' rx='10' fill='#2fd08a'/><text x='315' y='414' text-anchor='middle' class='lbl' fill='#0b1020'>ENTRATA GIUSTA</text>"},
- {"l":4,"at":0.3,"to":8,"svg":"<rect x='420' y='560' width='270' height='48' rx='10' fill='#ff5a6a'/><text x='555' y='594' text-anchor='middle' class='lbl' fill='#fff'>IO, IN RITARDO</text>"}],
-"stamp":[{"l":5,"at":0.1,"to":6,"text":"FUORI REGOLA ❌","sub":"stop più corto","color":"#ff5a6a"}],
-"cards":[{"l":1,"at":0.3,"to":2,"color":"#2fd08a","html":"<div class='t'>IERI</div><div>✅ short +2R</div><div>❌ long −1R</div><div>conto ≈ 100.000 €</div>"}],
-"hook":["OGGI HO","<span class='r'>SBAGLIATO</span>"],
-"open":6,"follow":"SEGUI per l'esito","q":["SÌ","NO"]}
+{"badge": "TRADE DEL GIORNO", "sub": "NAS100 · 5–6 nov", "charts": [{"img": "reelX10/ieri.png", "crop": [440, 1480], "from": 0, "to": 2}, {"img": "reelX10/oggi.png", "crop": [240, 1720], "from": 2, "mask": [[618, 782, 924, 864]]}], "ov": [{"l": 0, "at": 0.5, "to": 2, "svg": "<path d='M 730 860 L 730 1230' stroke='#ff5a6a' stroke-width='10' stroke-linecap='round' marker-end='url(#ar)'/><rect x='450' y='1300' width='250' height='48' rx='10' fill='#ff5a6a'/><text x='575' y='1334' text-anchor='middle' class='lbl' fill='#fff'>IERI −5%</text>"}], "stamp": [{"l": 5, "at": 0.1, "to": 6, "text": "FUORI REGOLA ❌", "sub": "stop più corto", "color": "#ff5a6a"}], "cards": [{"l": 1, "at": 0.3, "to": 2, "color": "#2fd08a", "html": "<div class='t'>IERI</div><div>✅ short +2R</div><div>❌ long −1R</div><div>conto ≈ 100.000 €</div>"}], "hook": ["OGGI HO", "<span class='r'>SBAGLIATO</span>"], "open": 6, "follow": "SEGUI per l'esito", "q": ["SÌ", "NO"]}
