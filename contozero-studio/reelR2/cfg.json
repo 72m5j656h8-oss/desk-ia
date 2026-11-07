@@ -1,1 +1,18 @@
-{"rubric": "REPORT", "sub": "settimana 2–6 nov", "follow": "SEGUI per il report di domenica", "q": ["SÌ", "NO"], "scenes": ["<div class='emo'>📊</div><div class='big c'>SETTIMANA 2</div><div class='mid c a' data-at='0.6'>com'è andata?</div>", "<div class='card'>✅ ✅ due target</div><div class='card' data-at='1.0'>❌ ❌ due stop</div>", "<div class='big c g' style='font-size:140px'>+2.019 €</div><div class='mid c' data-at='0.8'>+2,06% in una settimana</div>", "<img src='reelR2/mt5.png' style='width:70%;display:block;margin:0 auto;border-radius:14px'><div class='mid c' data-at='0.8'>saldo <span class='g'>100.023 €</span></div>", "<div class='card'>📉 il crollo del Nasdaq</div><div class='card' data-at='1.2'>❌ un mio errore</div><div class='card' data-at='2.4'>⏳ un trade aperto nel weekend</div>", "<div class='emo'>🧭</div><div class='mid c'>la lezione</div><div class='big c r' data-at='0.8'>contro trend = tutti gli stop</div>", "<div class='mid c'>Novembre chiude in positivo?</div>"]}
+{
+ "rubric": "REPORT",
+ "sub": "settimana 2–6 nov",
+ "follow": "SEGUI per il report di domenica",
+ "q": [
+  "SÌ",
+  "NO"
+ ],
+ "scenes": [
+  "<div class='emo'>📊</div><div class='big c'>SETTIMANA 2</div><div class='mid c a' data-at='0.6'>com'è andata?</div>",
+  "<div class='card'>✅ ✅ due target</div><div class='card' data-at='1.0'>❌ ❌ due stop</div>",
+  "<div class='big c g' style='font-size:140px'>+2.019 €</div><div class='mid c' data-at='0.8'>+2,06% in una settimana</div>",
+  "<img src='reelR2/mt5.png' style='width:70%;display:block;margin:0 auto;border-radius:14px'><div class='mid c' data-at='0.8'>saldo <span class='g'>100.023 €</span></div>",
+  "<div class='card'>📉 il crollo del Nasdaq</div><div class='card' data-at='1.2'>❌ un mio errore</div><div class='card' data-at='2.4'>⏳ un trade aperto nel weekend</div>",
+  "<div class='emo'>🧭</div><div class='mid c'>la lezione</div><div class='big c r' data-at='0.8'>entrata in ritardo = regole rotte</div>",
+  "<div class='mid c'>Novembre chiude in positivo?</div>"
+ ]
+}
