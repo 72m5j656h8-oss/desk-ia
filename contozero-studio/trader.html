@@ -273,7 +273,7 @@ window.renderAt = function (t) {
     camera.fov = +(P.get('fov') || 36); camera.updateProjectionMatrix();
     camera.position.set(0.1, +(P.get('cy') || 1.75), +(P.get('cz') || 4.6)); camera.lookAt(0.05, +(P.get('ly') || 2.0), 0);
     const esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
-    const title = esc(P.get('t') || '').replace(/\*([^*]+)\*/g, '<span class="k">$1</span>');
+    const title = esc(P.get('t') || '').replace(/\*([^*]+)\*([.,:;?!]*)/g, '<span style="white-space:nowrap"><span class="k">$1</span>$2</span>');
     ov.innerHTML = `<div style="position:absolute;left:0;right:0;top:${H * 0.15}px;text-align:center">
       <div class="brand" style="position:static"><div class="tag" style="--ts:46px">${esc(P.get('r') || '')}</div></div></div>
       <div style="position:absolute;bottom:${H * 0.135}px;left:0;right:0;text-align:center;color:#fff;font-size:44px;-webkit-text-stroke:3px #0b1020;paint-order:stroke fill;text-shadow:0 4px 0 #0b1020">@contozero.trading</div>`;
