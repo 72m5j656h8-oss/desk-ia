@@ -247,6 +247,23 @@ window.renderAt = function (t) {
     face.draw({ eye: blink, smirk: 1, brow: 'sure', look: 0 });
     if (SHOT === 'hero') { camera.fov = 40; camera.position.set(0.15, 1.45, 4.0); camera.lookAt(0.0, 1.2, -0.4); brand(110, 150, 44); }
     else { camera.fov = 30; camera.position.set(0.42, 1.92, 2.55); camera.lookAt(0.12, 1.76, 0.3); ov.innerHTML = ''; }
+  } else if (SHOT === 'cover') {
+    // copertina TikTok: ?shot=cover&r=RUBRICA&t=Titolo con *parola* evidenziata
+    const P = new URLSearchParams(location.search);
+    standCrossed(); root.position.set(0.0, 0, 0.35); root.rotation.y = -0.12;
+    chair.position.set(-0.6, 0, -0.9); chair.rotation.y = 0.5;
+    T.neck.rotation.set(0.0, 0.1, 0.04);
+    face.draw({ eye: 1, smirk: 1, brow: P.get('b') || 'sure', look: 0 });
+    camera.fov = +(P.get('fov') || 36); camera.updateProjectionMatrix();
+    camera.position.set(0.1, +(P.get('cy') || 1.75), +(P.get('cz') || 4.6)); camera.lookAt(0.05, +(P.get('ly') || 2.0), 0);
+    const esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+    const title = esc(P.get('t') || '').replace(/\*([^*]+)\*/g, '<span class="k">$1</span>');
+    ov.innerHTML = `<div style="position:absolute;left:0;right:0;top:${H * 0.15}px;text-align:center">
+      <div class="brand" style="position:static"><div class="tag" style="--ts:46px">${esc(P.get('r') || '')}</div></div></div>
+      <div style="position:absolute;bottom:${H * 0.135}px;left:0;right:0;text-align:center;color:#fff;font-size:44px;-webkit-text-stroke:3px #0b1020;paint-order:stroke fill;text-shadow:0 4px 0 #0b1020">@contozero.trading</div>`;
+    const cap = document.getElementById('cap');
+    cap.style.top = (H * 0.15 + 110) + 'px'; cap.style.fontSize = (P.get('fs') || 104) + 'px'; cap.style.lineHeight = '1.08';
+    cap.innerHTML = title;
   } else if (SHOT === 'banner') {
     standCrossed(); root.position.set(0.0, 0, 0.35); root.rotation.y = 0.12;
     chair.position.set(-0.3, 0, -0.75); chair.rotation.y = 0.5;
