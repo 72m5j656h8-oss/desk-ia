@@ -158,9 +158,13 @@ function makeFace(o) {
     }
     if (s.brow === 'up') { P(7, 10, 2, 2, o.brow); P(9, 9, 4, 2, o.brow); P(23, 10, 2, 2, o.brow); P(19, 9, 4, 2, o.brow); }
     else if (s.brow === 'sure') { P(7, 10, 6, 2, o.brow); P(19, 9, 6, 2, o.brow); }
+    else if (s.brow === 'sad') { P(7, 11, 3, 2, o.brow); P(10, 10, 3, 2, o.brow); P(19, 10, 3, 2, o.brow); P(22, 11, 3, 2, o.brow); }
     else { P(7, 10, 6, 2, o.brow); P(19, 10, 6, 2, o.brow); }
     const m = s.mouth || 0;
-    if (s.smirk) { P(13, 24, 5, 1, '#4a1a1a'); P(18, 23, 2, 1, '#4a1a1a'); }
+    if (s.m === 'grin') { P(11, 21, 1, 1, '#4a1a1a'); P(20, 21, 1, 1, '#4a1a1a'); P(12, 22, 8, 3, '#5a1818'); P(13, 22, 6, 1, '#f2efe8'); }
+    else if (s.m === 'frown') { P(13, 23, 6, 1, '#4a1a1a'); P(12, 24, 1, 1, '#4a1a1a'); P(19, 24, 1, 1, '#4a1a1a'); }
+    else if (s.m === 'o') { P(14, 22, 4, 4, '#5a1818'); }
+    else if (s.smirk) { P(13, 24, 5, 1, '#4a1a1a'); P(18, 23, 2, 1, '#4a1a1a'); }
     else if (m < .15) { P(13, 24, 6, 1, '#4a1a1a'); P(12, 23, 1, 1, '#4a1a1a'); P(19, 23, 1, 1, '#4a1a1a'); }
     else { const h = 1 + Math.round(m * 4), w = 6 + Math.round(m * 2), a = 16 - w / 2; P(a, 23, w, h + 1, '#5a1818'); P(a + 1, 23, w - 2, 1, '#f2efe8'); }
     t.needsUpdate = true;
@@ -253,7 +257,19 @@ window.renderAt = function (t) {
     standCrossed(); root.position.set(0.0, 0, 0.35); root.rotation.y = -0.12;
     chair.position.set(-0.6, 0, -0.9); chair.rotation.y = 0.5;
     T.neck.rotation.set(0.0, 0.1, 0.04);
-    face.draw({ eye: 1, smirk: 1, brow: P.get('b') || 'sure', look: 0 });
+    // pose: crossed (default) · win (target) · loss (stop) · think (posizione aperta) · shrug (nessun setup) · point (lezione/report)
+    const POSE = {
+      crossed: { f: { smirk: 1, brow: 'sure' } },
+      win:   { r: [-2.95, 0, 0.5, -0.35], l: [-2.95, 0, -0.5, -0.35], n: [-0.12, 0.05, 0.04], f: { m: 'grin', brow: 'up' } },
+      loss:  { r: [-2.05, 0, -0.5, -1.35], l: [-0.1, 0, 0.08, -0.2], n: [0.18, 0.15, 0.06], f: { m: 'frown', brow: 'sad', look: 1 } },
+      think: { r: [-0.95, 0, -0.5, -2.3], l: [-0.25, 1.05, 0.05, -1.5], n: [-0.05, -0.25, 0.08], f: { smirk: 1, brow: 'up', look: -1 } },
+      shrug: { r: [-0.2, 0, 0.55, -1.3], l: [-0.2, 0, -0.55, -1.3], n: [0.0, 0.0, 0.12], f: { m: 'frown', brow: 'up' } },
+      point: { r: [-3.0, 0, 0.2, 0], l: [-0.25, 1.05, 0.05, -1.5], n: [-0.06, 0.1, 0.04], f: { m: 'o', brow: 'up' } },
+    }[P.get('p') || 'crossed'];
+    if (POSE.r) { T.shR.rotation.set(POSE.r[0], POSE.r[1], POSE.r[2]); T.elR.rotation.set(POSE.r[3], 0, 0); }
+    if (POSE.l) { T.shL.rotation.set(POSE.l[0], POSE.l[1], POSE.l[2]); T.elL.rotation.set(POSE.l[3], 0, 0); }
+    if (POSE.n) T.neck.rotation.set(POSE.n[0], POSE.n[1], POSE.n[2]);
+    face.draw(Object.assign({ eye: 1, look: 0 }, POSE.f));
     camera.fov = +(P.get('fov') || 36); camera.updateProjectionMatrix();
     camera.position.set(0.1, +(P.get('cy') || 1.75), +(P.get('cz') || 4.6)); camera.lookAt(0.05, +(P.get('ly') || 2.0), 0);
     const esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
