@@ -288,6 +288,15 @@ footer{font-size:11.5px;color:var(--mute);max-width:80ch}
     <div class="gpane" id="g-pos"></div><div class="gpane" id="g-bt" hidden></div><div class="gpane" id="g-cr" hidden></div><div class="gpane" id="g-st" hidden></div><div class="gpane" id="g-op" hidden></div>
   </section>
 
+  <section class="card" id="daxCard" style="margin-bottom:12px">
+    <div class="gHead">
+      <div><div class="kick">Conto Zero DAX v1.0 · rottura range Asia · M5 · rischio 0,5%</div><h3 style="margin-top:2px">Sala DAX</h3></div>
+      <div style="text-align:right"><div class="gEq num" id="dxEq">–</div><div class="num" id="dxRet" style="font-size:13px">–</div></div>
+    </div>
+    <div class="gkv" id="dxKv"></div>
+    <div id="dxBody" class="mu" style="font-size:13px">In attesa del primo giro: su GitHub, Actions → Sala DAX - giro giornaliero → Run workflow.</div>
+  </section>
+
   <div class="main">
     <div class="stage">
       <canvas id="c" aria-label="Sala con tre desk di trading e tre reparti ricerca"></canvas>
@@ -1035,6 +1044,38 @@ async function load(){
   }catch(e){$('overlay').hidden=false;$('news').textContent='Il desk non ha ancora fatto il primo giro.'}
 }
 load();setInterval(load,10*60*1000);setInterval(()=>{if(V)renderHud()},60000);
+})();
+</script>
+<script>
+/* ---------- Sala DAX ---------- */
+(function(){
+const it=(x,d=2)=>Number(x).toLocaleString('it-IT',{minimumFractionDigits:d,maximumFractionDigits:d});
+const sg=x=>(x>0?'+':'')+it(x,1);
+const cl=x=>x>0?'up':x<0?'dn':'mu';
+const th='style="text-align:left;padding:4px 6px;color:var(--mute);font-weight:500;border-bottom:1px solid var(--line)"';
+const td='style="padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap"';
+function table(rows,head){return '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12.5px"><tr>'+head.map(h=>'<th '+th+'>'+h+'</th>').join('')+'</tr>'+rows.join('')+'</table></div>';}
+async function loadDax(){
+  let D;
+  try{const r=await fetch('data/dax/dax.json?'+Date.now());if(!r.ok)return;D=await r.json();}catch(e){return;}
+  const ret=(D.equity/D.capital-1)*100;
+  document.getElementById('dxEq').textContent=it(D.equity)+' €';
+  const rr=document.getElementById('dxRet');rr.textContent=sg(ret)+'% dal '+D.liveStart.split('-').reverse().join('/');rr.className='num '+cl(ret);
+  const L=D.live,A=D.all;
+  document.getElementById('dxKv').innerHTML=
+    '<div><span>Trade in sala</span><b>'+L.n+'</b><small>vincenti '+it(L.win,0)+'%</small></div>'+
+    '<div><span>Risultato in sala</span><b class="'+cl(L.R)+'">'+sg(L.R)+'R</b><small>DD max '+it(L.dd,1)+'%</small></div>'+
+    '<div><span>Storico dal 2022</span><b class="'+cl(A.R)+'">'+sg(A.R)+'R</b><small>'+A.n+' trade · PF '+(A.pf==null?'–':it(A.pf))+'</small></div>'+
+    '<div><span>Ultimo giorno</span><b>'+D.lastDay.split('-').reverse().join('/')+'</b><small>aggiornato ogni mattina</small></div>';
+  const last=D.trades.slice(-10).reverse().map(t=>'<tr><td '+td+'>'+t.d.slice(8)+'/'+t.d.slice(5,7)+'</td><td '+td+' class="'+(t.side==='LONG'?'up':'dn')+'">'+t.side+'</td><td '+td+'>'+t.in+' → '+t.out+'</td><td '+td+'>'+it(t.entry,1)+'</td><td '+td+'>'+it(t.stop,1)+' / '+it(t.tgt,1)+'</td><td '+td+'>'+t.res+'</td><td '+td+' class="'+cl(t.R)+'">'+sg(t.R)+'R</td></tr>');
+  const yrs=Object.entries(D.byYear).map(([y,s])=>'<tr><td '+td+'>'+y+(y<'2024'?' <span class="mu">(mai visto)</span>':'')+'</td><td '+td+'>'+s.n+'</td><td '+td+'>'+it(s.win,0)+'%</td><td '+td+' class="'+cl(s.R)+'">'+sg(s.R)+'R</td><td '+td+'>'+(s.pf==null?'–':it(s.pf))+'</td><td '+td+' class="'+cl(s.ret)+'">'+sg(s.ret)+'%</td><td '+td+'>'+it(s.dd,1)+'%</td></tr>');
+  document.getElementById('dxBody').innerHTML=
+    '<p style="margin:0 0 8px">Range Asia 00–08. Dalle 8, prima chiusura M5 oltre il massimo (long) o il minimo (short) se l\'altro lato non è stato preso. Stop a metà range ±10 punti, target RR 1:2, un trade al giorno, chiusura alle 22. Costo 2 punti a trade.</p>'+
+    '<div class="kick" style="margin:10px 0 4px">Ultimi trade</div>'+table(last,['Giorno','Lato','Orari','Entrata','Stop / Target','Esito','R'])+
+    '<div class="kick" style="margin:12px 0 4px">Anno per anno (rischio 0,5%)</div>'+table(yrs,['Anno','Trade','Vinc.','R','PF','Conto','DD max'])+
+    '<p style="margin:8px 0 0">La strategia è stata scelta sui dati 2024–2025: 2022, 2023 e 2026 sono la prova su dati che non ha mai visto.</p>';
+}
+loadDax();setInterval(loadDax,10*60*1000);
 })();
 </script>
 </body>

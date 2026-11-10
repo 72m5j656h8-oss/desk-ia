@@ -45,6 +45,13 @@ Da qui in poi gira da solo, anche con telefono e computer spenti.
 - **Report**: patrimonio, extra-rendimento sul benchmark, da dove vengono guadagni e perdite, mese per mese, precisione del machine learning.
 - **Machine learning**: 3 modelli (regressione logistica) riaddestrati ogni mese solo sul passato, in gara nel reparto ricerca come le altre strategie.
 
+## La sala DAX
+
+- **Strategia**: Conto Zero DAX v1.0, la stessa dello script Pine. Range Asia 00–08 ora italiana; dalle 8 la prima chiusura M5 oltre il massimo (long) o il minimo (short), se l'altro lato non è stato preso. Stop a metà range ±10 punti, target RR 1:2, un trade al giorno, chiusura alle 22. Rischio 0,5%, costo 2 punti a trade, 10.000 € finti dall'11/11/2026.
+- **Prezzi**: DAX minuto per minuto da Dukascopy (notte compresa). File: `dax.js` + `.github/workflows/dax.yml`, risultati in `docs/data/dax/dax.json`.
+- **Quando gira**: ogni mattina dal martedì al sabato alle 06:47 ora italiana (07:47 d'estate) e registra la giornata del giorno prima. Il primo giro scarica tutto dal 2022 e dura qualche minuto.
+- **Prova onesta**: la regola è stata scelta sul 2024–2025. 2022, 2023 e tutto ciò che viene dopo sono dati che non ha mai visto: quelli contano.
+
 ## La tua sala e il Laboratorio
 
 - **La tua sala**: nell'app tocca **Dai un ordine**. Si apre GitHub: premi **Run workflow**, scegli mercato, LONG, SHORT o FLAT e la quota, poi il pulsante verde **Run workflow**. L'ordine viene eseguito alla prima chiusura successiva, con le stesse commissioni delle altre sale.
