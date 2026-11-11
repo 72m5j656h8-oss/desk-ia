@@ -1,0 +1,22 @@
+{"badge":"TRADE DEL GIORNO","sub":"NAS100 · 15m · 11 nov",
+"charts":[
+ {"img":"reelX13/entrata.png","crop":[560,1400],"from":0,"to":3,"mask":[[620,650,924,730]],
+  "reveal":[[0,0,420],[2,1.4,560]]},
+ {"img":"reelX13/stop.png","crop":[450,1450],"from":3,
+  "reveal":[[3,0,400],[3,0.6,530],[4,0.3,580]]}],
+"ov":[
+ {"l":0,"at":0.4,"to":3,"svg":"<rect x='156' y='787' width='252' height='548' fill='none' stroke='#F2A93B' stroke-width='6' stroke-dasharray='16 9' rx='5'/><rect x='164' y='1290' width='110' height='44' rx='9' fill='#F2A93B'/><text x='219' y='1322' text-anchor='middle' class='lbl' fill='#0b1020'>ASIA</text>"},
+ {"l":1,"at":0.2,"to":3,"svg":"<path d='M 170 1300 L 520 720' stroke='#2fd08a' stroke-width='10' stroke-linecap='round' marker-end='url(#ag)'/><rect x='250' y='640' width='260' height='46' rx='9' fill='#2fd08a'/><text x='380' y='673' text-anchor='middle' class='lbl' fill='#0b1020'>SALE DA ORE ▲</text>"},
+ {"l":2,"at":2.2,"to":3,"svg":"<path d='M 560 700 L 560 900' stroke='#ff5a6a' stroke-width='10' stroke-linecap='round' marker-end='url(#ar)'/><rect x='600' y='760' width='160' height='46' rx='9' fill='#ff5a6a'/><text x='680' y='793' text-anchor='middle' class='lbl' fill='#fff'>SHORT ▼</text>"},
+ {"l":3,"at":0.2,"to":5,"svg":"<circle cx='394' cy='930' r='34' fill='none' stroke='#F2A93B' stroke-width='7'/><rect x='250' y='990' width='200' height='46' rx='9' fill='#F2A93B'/><text x='350' y='1023' text-anchor='middle' class='lbl' fill='#0b1020'>entrata</text><circle cx='519' cy='711' r='40' fill='none' stroke='#ff5a6a' stroke-width='8'/><rect x='560' y='760' width='130' height='46' rx='9' fill='#ff5a6a'/><text x='625' y='793' text-anchor='middle' class='lbl' fill='#fff'>STOP</text>"},
+ {"l":4,"at":0.4,"to":5,"svg":"<path d='M 500 760 L 560 590' stroke='#2fd08a' stroke-width='10' stroke-linecap='round' marker-end='url(#ag)'/><rect x='180' y='520' width='280' height='46' rx='9' fill='#2fd08a'/><text x='320' y='553' text-anchor='middle' class='lbl' fill='#0b1020'>+2,77% OGGI ▲</text>"}],
+"stamp":[
+ {"l":2,"at":2.4,"to":3,"text":"DENTRO","sub":"SHORT ▼","color":"#F2A93B"},
+ {"l":3,"at":0.9,"to":4,"text":"STOP","sub":"11 nov · −1R"},
+ {"l":8,"at":0.3,"to":9,"text":"0 SU 2","sub":"contro il mercato","color":"#ff5a6a"}],
+"cards":[
+ {"l":5,"at":0.3,"to":6,"color":"#F2A93B","html":"<div class='t'>NON UN ERRORE</div><div>un test</div><div>fino a fine mese</div>"},
+ {"l":6,"at":0.3,"to":7,"color":"#2fd08a","html":"<div class='t'>OGNI CONFERMA</div><div>a favore ✔</div><div>contro ✔</div>"},
+ {"l":7,"at":0.3,"to":8,"color":"#F2A93B","html":"<div class='t'>A FINE MESE</div><div>tengo o butto?</div><div>decidono i numeri</div>"}],
+"hook":["SHORT CONTRO IL MERCATO","<span class='g'>COM'È ANDATA?</span>"],
+"follow":"SEGUI per il verdetto di fine mese","q":["SÌ","NO"]}
