@@ -1,0 +1,10 @@
+{"rubric": "LA SETTIMANA", "sub": "9–13 novembre", "follow": "SEGUI per la prossima settimana", "q": ["SÌ", "NO"], "scenes": [
+"<div class='emo'>📰</div><div class='big c'>LA SETTIMANA</div><div class='mid c a' data-at='0.8'>del Nasdaq in 30 secondi</div>",
+"<div class='emo'>🔍</div><div class='big c'>DOMENICA</div><div class='mid c' data-at='0.8'>indagine del consiglio di Nvidia</div><div class='mid c a' data-at='2.0'>sul CEO Jensen Huang</div>",
+"<div class='big c'>LUNEDÌ</div><div class='big c g' data-at='0.8' style='font-size:150px'>+2,7%</div><div class='mid c' data-at='1.8'>rimbalzo del Nasdaq</div>",
+"<div class='big c'>MARTEDÌ</div><div class='card' data-at='0.6'>🔥 inflazione 0,4% (attesa 0,3%)</div><div class='big c r' data-at='3.0' style='font-size:120px'>Nvidia −5,5%</div>",
+"<div class='emo'>🤖</div><div class='big c'>MERCOLEDÌ</div><div class='mid c g' data-at='0.8'>l'intelligenza artificiale riparte</div>",
+"<div class='big c'>VENERDÌ</div><div class='card' data-at='0.6'>🏭 prezzi alla produzione 0,3% (attesi 0,4%)</div><div class='mid c g' data-at='2.6'>un po' di respiro</div>",
+"<div class='emo'>🏦</div><div class='mid c'>la paura resta:</div><div class='big c a' data-at='1.0'>rialzo dei tassi a dicembre?</div>",
+"<div class='emo'>📊</div><div class='big c'>MARTEDÌ 17</div><div class='mid c a' data-at='0.8'>i conti di Nvidia</div>",
+"<div class='mid c'>Salvano il Nasdaq?</div>"]}
