@@ -1,0 +1,9 @@
+{"rubric": "REPORT", "sub": "settimana 9–13 nov", "follow": "SEGUI per il report di domenica", "q": ["SÌ", "NO"], "scenes": [
+"<div class='emo'>📊</div><div class='big c'>SETTIMANA 3</div><div class='mid c a' data-at='0.6'>com'è andata?</div>",
+"<div class='card'>✅ un target</div><div class='card' data-at='1.2'>❌ ❌ ❌ ❌ quattro stop</div>",
+"<div class='big c'>LUNEDÌ</div><div class='card' data-at='0.6'>❌ ❌ due stop</div><div class='mid c r' data-at='2.2'>uno fuori regola, tenuto nel weekend</div>",
+"<div class='card'>✅ giovedì: target</div><div class='card' data-at='1.6'>😶 venerdì: stop a un passo dal target</div>",
+"<div class='big c r' style='font-size:140px'>−2.004 €</div><div class='mid c' data-at='1.4'>−2,0% in una settimana</div>",
+"<div class='emo'>🛡️</div><div class='mid c'>ogni stop</div><div class='big c g' data-at='0.8'>massimo 1%</div>",
+"<img src='reelR3/growth.png' style='width:92%;display:block;margin:0 auto;border-radius:14px'><div class='mid c' data-at='0.6'>saldo <span class='a'>98.028 €</span></div>",
+"<div class='mid c'>Settimana prossima in verde?</div>"]}
