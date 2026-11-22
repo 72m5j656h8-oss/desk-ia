@@ -1,0 +1,11 @@
+{"rubric": "REPORT", "sub": "settimana 16–20 nov", "follow": "SEGUI per il report di domenica", "q": ["SÌ", "NO"], "scenes": [
+"<div class='emo'>📊</div><div class='big c'>SETTIMANA 4</div><div class='mid c a' data-at='0.6'>com'è andata?</div>",
+"<div class='big c'>LUNEDÌ</div><div class='card' data-at='0.6'>❌ stop</div><div class='big c r' data-at='1.6'>−1%</div>",
+"<div class='big c'>MARTEDÌ</div><div class='card' data-at='0.6'>😶 nessun trade</div>",
+"<div class='big c'>MERCOLEDÌ</div><div class='mid c a' data-at='0.6'>long contro tendenza</div><div class='card' data-at='2.6'>✅ target nella notte · +2%</div>",
+"<div class='big c'>GIOVEDÌ</div><div class='card' data-at='0.6'>✅ altro target · +2%</div>",
+"<div class='big c'>VENERDÌ</div><div class='mid c r' data-at='0.6'>errore mio</div><div class='card' data-at='1.8'>❌ stop · −1%</div>",
+"<div class='big c g' style='font-size:150px'>+2.029 €</div><div class='mid c' data-at='1.2'>+2,07% in una settimana</div>",
+"<div class='emo'>💶</div><div class='mid c'>saldo</div><div class='big c g' data-at='0.6' style='font-size:120px'>100.058 €</div>",
+"<div class='mid c'>novembre</div><div class='big c a' data-at='0.6'>+0,05%</div><div class='sm c' data-at='1.2'>drawdown massimo 3,96%</div>",
+"<div class='mid c'>Settimana promossa?</div>"]}
