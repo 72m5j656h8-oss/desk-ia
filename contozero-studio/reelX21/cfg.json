@@ -1,0 +1,16 @@
+{"badge":"TRADE DEL GIORNO","sub":"NAS100 · 23 nov",
+"charts":[{"img":"reelX21/oggi.png","crop":[440,1460],"from":0,
+"mask":[[750,0,924,2000],[612,605,924,700]],
+"reveal":[[0,0,450],[1,0.4,465],[5,0,560]]}],
+"ov":[
+{"l":1,"at":0.6,"to":4,"svg":"<path d='M 430 1030 L 430 580' stroke='#2fd08a' stroke-width='10' stroke-linecap='round' marker-end='url(#ar)'/><rect x='250' y='760' width='170' height='46' rx='9' fill='#2fd08a'/><text x='335' y='793' text-anchor='middle' class='lbl' fill='#0b1020'>WALL STREET</text>"},
+{"l":6,"at":0.2,"svg":"<path d='M 520 600 L 520 880' stroke='#ff5a6a' stroke-width='10' stroke-linecap='round' marker-end='url(#ar)'/><rect x='540' y='720' width='130' height='46' rx='9' fill='#ff5a6a'/><text x='605' y='753' text-anchor='middle' class='lbl' fill='#0b1020'>SHORT</text>"}],
+"stamp":[
+{"l":2,"at":0.1,"to":3,"text":"+1000 PUNTI","sub":"in un pomeriggio","color":"#2fd08a"},
+{"l":5,"at":0.2,"to":6,"text":"LA MIA CONFERMA","sub":"","color":"#F2A93B"},
+{"l":7,"at":0.2,"to":8,"text":"DENTRO","sub":"posizione aperta · non è un segnale","color":"#F2A93B"}],
+"cards":[
+{"l":3,"at":0.2,"to":4,"color":"#F2A93B","html":"<div class='t'>QUASI TUTTI</div><div>🏃 comprano</div><div>😱 paura di perdersi il movimento</div>"},
+{"l":8,"at":0.2,"to":9,"color":"#F2A93B","html":"<div class='t'>RISCHIO</div><div>1% del conto</div><div>come sempre</div>"}],
+"hook":["SHORT DOPO","<span class='g'>+1000 PUNTI?</span>"],
+"open":7,"follow":"SEGUI per l'esito di domani","q":["SÌ","NO"]}
