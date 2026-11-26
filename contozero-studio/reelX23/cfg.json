@@ -1,0 +1,15 @@
+{"badge":"TRADE DEL GIORNO","sub":"NAS100 · 25-26 nov",
+"charts":[
+{"img":"reelX23/a.png","crop":[600,1480],"from":0,"to":3,"mask":[[750,0,924,2000],[612,688,924,742]],"reveal":[[0,0,455],[1,0,750]]},
+{"img":"reelX23/b.png","crop":[600,1300],"from":3,"mask":[[750,0,924,2000],[612,903,924,962]],"reveal":[[3,0,570]]}],
+"ov":[
+{"l":0,"at":1.2,"to":2,"svg":"<circle cx='435' cy='1370' r='48' fill='none' stroke='#2fd08a' stroke-width='8'/><rect x='240' y='1340' width='130' height='46' rx='9' fill='#2fd08a'/><text x='305' y='1373' text-anchor='middle' class='lbl' fill='#0b1020'>LONG</text>"},
+{"l":1,"at":0.2,"to":3,"svg":"<path d='M 480 1280 L 690 690' stroke='#2fd08a' stroke-width='10' stroke-linecap='round'/>"},
+{"l":5,"at":0.3,"to":7,"svg":"<rect x='410' y='775' width='160' height='175' fill='none' stroke='#F2A93B' stroke-width='6' stroke-dasharray='16 9' rx='5'/><rect x='420' y='960' width='140' height='46' rx='9' fill='#F2A93B'/><text x='490' y='993' text-anchor='middle' class='lbl' fill='#0b1020'>FERMO</text>"}],
+"stamp":[
+{"l":1,"at":0.2,"to":2,"text":"TARGET","sub":"+2R · il secondo di fila","color":"#2fd08a"},
+{"l":4,"at":0.3,"to":5,"text":"WALL STREET CHIUSA","sub":"Thanksgiving","color":"#F2A93B"},
+{"l":6,"at":0.2,"to":8,"text":"NESSUN TRADE","sub":"nessuna conferma","color":"#F2A93B"}],
+"cards":[{"l":2,"at":0.2,"to":3,"color":"#2fd08a","html":"<div class='t'>ULTIMI 2 TRADE</div><div>↩️ contro la direzione</div><div>🎯 tutti e due a target</div>"}],
+"hook":["IL LONG CONTRO LA DISCESA…","<span class='g'>COM'È ANDATO?</span>"],
+"follow":"SEGUI per il trade di domani","q":["SÌ","NO"]}
