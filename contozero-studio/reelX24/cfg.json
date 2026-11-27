@@ -1,0 +1,12 @@
+{"badge":"TRADE DEL GIORNO","sub":"NAS100 · 27 nov",
+"charts":[{"img":"reelX24/oggi.png","crop":[640,1380],"from":0,"mask":[[750,0,924,2000],[612,796,924,850]],"reveal":[[0,0,455],[1,0.3,482],[3,0.2,750]]}],
+"ov":[
+{"l":1,"at":0.2,"to":4,"svg":"<line x1='90' y1='1300' x2='600' y2='1300' stroke='#F2A93B' stroke-width='6' stroke-dasharray='16 9'/><rect x='110' y='1240' width='210' height='46' rx='9' fill='#F2A93B'/><text x='215' y='1273' text-anchor='middle' class='lbl' fill='#0b1020'>IL MIO LIVELLO</text>"},
+{"l":2,"at":0.3,"to":5,"svg":"<circle cx='474' cy='1300' r='44' fill='none' stroke='#ff5a6a' stroke-width='8'/><rect x='520' y='1280' width='160' height='46' rx='9' fill='#ff5a6a'/><text x='600' y='1313' text-anchor='middle' class='lbl' fill='#0b1020'>SOLO SPIKE</text>"},
+{"l":3,"at":0.5,"svg":"<path d='M 510 1230 L 550 830' stroke='#2fd08a' stroke-width='10' stroke-linecap='round'/>"}],
+"stamp":[
+{"l":4,"at":0.1,"to":6,"text":"NIENTE CONFERMA","sub":"niente trade","color":"#ff5a6a"},
+{"l":7,"at":0.2,"to":9,"text":"NESSUN TRADE","sub":"meglio perso che fuori regola","color":"#F2A93B"}],
+"cards":[],
+"hook":["PERCHÉ NON","<span class='g'>SONO ENTRATO?</span>"],
+"follow":"SEGUI per il report di domenica","q":["SÌ","NO"]}
