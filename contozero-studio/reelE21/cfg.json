@@ -1,0 +1,13 @@
+{"rubric":"LA SETTIMANA","sub":"23-27 novembre","follow":"SEGUI per il report di domani","q":["TORO","ORSO"],
+"scenes":[
+"<div class='emo'>📰</div><div class='big c'>Nasdaq</div><div class='mid c a' data-at='0.6'>23-27 novembre</div>",
+"<div class='mid c'>LUNEDÌ</div><div class='big c g' style='font-size:130px' data-at='0.4'>+1000</div><div class='mid c' data-at='1.0'>punti in un pomeriggio</div>",
+"<div class='mid c'>MARTEDÌ · MERCOLEDÌ</div><div class='big c r' data-at='0.5'>tutto restituito</div><div class='mid c' data-at='1.8'>…e anche di più</div>",
+"<div class='emo'>🦃</div><div class='mid c'>GIOVEDÌ</div><div class='big c a' data-at='0.6'>Wall Street chiusa</div><div class='mid c' data-at='1.4'>Thanksgiving</div>",
+"<div class='mid c'>VENERDÌ</div><div class='big c' data-at='0.4'>mezza giornata</div><div class='mid c g' data-at='1.8'>e il prezzo risale</div>",
+"<svg viewBox='0 0 880 380' style='width:100%'><polyline points='20,320 180,300 260,60 400,90 520,340 640,330 760,200 860,180' fill='none' stroke='#eef1f8' stroke-width='10' stroke-linejoin='round'/></svg><div class='mid c' data-at='0.8'>centinaia di punti <span class='g'>su</span> e <span class='r'>giù</span></div>",
+"<div class='emo'>🕐</div><div class='mid c'>da dicembre</div><div class='big c a' style='font-size:130px' data-at='1.2'>23 ore</div><div class='mid c' data-at='2.4'>di scambi al giorno</div>",
+"<div class='card'>⏱️ più ore di mercato</div><div class='card' data-at='1.0'>🎯 più occasioni</div><div class='card' data-at='2.2'>📢 più rumore</div>",
+"<div class='emo'>📊</div><div class='big c'>domani</div><div class='mid c a' data-at='0.5'>il report della settimana</div>",
+"<div class='mid c'>Dicembre sarà…</div>"
+]}
